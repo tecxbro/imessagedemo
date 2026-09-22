@@ -1,0 +1,38 @@
+{
+  "id": "overlapping-arrivals",
+  "silentOnFrozenDouble": true,
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "One",
+        "direction": "incoming",
+        "atMs": 2000
+      },
+      {
+        "id": "m2",
+        "text": "Two",
+        "direction": "outgoing",
+        "atMs": 2000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.1.atMs",
+      "message": "overlaps an earlier arrival"
+    }
+  ]
+}

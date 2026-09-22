@@ -1,0 +1,85 @@
+{
+  "note": "Adapters own the fixed strings inside IosCatalogueScene and MacCatalogueScene. These expectations name slots and boundaries only.",
+  "scenes": [
+    {
+      "id": "ios-text",
+      "requiredSlots": ["ios-messages-app", "message-list", "message-bubble"],
+      "directions": ["incoming", "outgoing"],
+      "forbiddenSlots": ["facetime-card", "system-message", "player-chrome", "preview-controls"]
+    },
+    {
+      "id": "macos-text",
+      "requiredSlots": ["macos-messages-app", "message-list", "message-bubble"],
+      "directions": ["incoming", "outgoing"],
+      "forbiddenSlots": ["facetime-card", "system-message", "player-chrome", "preview-controls"]
+    },
+    {
+      "id": "link",
+      "requiredSlots": ["link-preview"],
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "image",
+      "requiredSlots": ["message-images"],
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "audio",
+      "requiredSlots": ["message-audio"],
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "attachment",
+      "requiredSlots": ["message-attachment"],
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "typing",
+      "requiredSlots": ["typing-indicator"],
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "tapback",
+      "requiredSlots": ["message-bubble"],
+      "note": "The frozen catalogue scene exists. DemoFlow still cannot carry reactions, so the transcript route is tests/negative/reactions.json."
+    },
+    {
+      "id": "bubble-effect",
+      "requiredSlots": ["message-row"],
+      "effects": ["slam", "loud", "gentle", "invisible-ink"]
+    },
+    {
+      "id": "screen-effect",
+      "requiredSlots": ["screen-effect"],
+      "tier": "catalogue-only",
+      "notCompiled": true,
+      "forbiddenSlots": ["player-chrome"]
+    },
+    {
+      "id": "facetime",
+      "requiredSlots": ["facetime-card"],
+      "forbiddenSlots": ["message-list", "message-row"],
+      "standalone": true,
+      "nativeCapture": false
+    },
+    {
+      "id": "system",
+      "requiredSlots": ["system-message"],
+      "forbiddenSlots": ["message-row"],
+      "standalone": true,
+      "notMessageKind": true
+    },
+    {
+      "id": "image-viewer",
+      "requiredSlots": ["image-viewer"],
+      "tier": "catalogue-only",
+      "forbiddenSlots": ["player-chrome", "preview-controls"]
+    },
+    {
+      "id": "effects-picker",
+      "requiredSlots": ["ios-effects-picker"],
+      "platform": "ios",
+      "tier": "catalogue-only"
+    }
+  ]
+}

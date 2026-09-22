@@ -1,0 +1,39 @@
+{
+  "id": "reactions",
+  "silentOnFrozenDouble": true,
+  "note": "Tapbacks are pinned, but DemoFlow has no reactions field. Stripping this would hide the tapback.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Nice",
+        "direction": "incoming",
+        "atMs": 1000,
+        "reactions": [
+          {
+            "type": "love",
+            "byMe": true
+          }
+        ]
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.reactions",
+      "message": "Unrecognized key: \"reactions\""
+    }
+  ]
+}

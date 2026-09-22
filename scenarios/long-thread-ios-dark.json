@@ -1,0 +1,128 @@
+{
+  "id": "long-thread-ios-dark",
+  "title": "Long thread with wrapping, clusters, and date gaps",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "long-thread-ios-dark-m01",
+      "text": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+      "direction": "incoming",
+      "atMs": 1789916520000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m02",
+      "text": "On the train.",
+      "direction": "outgoing",
+      "atMs": 1789916550000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m03",
+      "text": "Here.",
+      "direction": "incoming",
+      "atMs": 1790003400000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m04",
+      "text": "By the doors.",
+      "direction": "incoming",
+      "atMs": 1790003422000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m05",
+      "text": "The blue ones.",
+      "direction": "incoming",
+      "atMs": 1790003448000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m06",
+      "text": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+      "direction": "outgoing",
+      "atMs": 1790007600000,
+      "status": "delivered"
+    },
+    {
+      "id": "long-thread-ios-dark-m07",
+      "text": "Note 1",
+      "direction": "incoming",
+      "atMs": 1790007620000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m08",
+      "text": "Note 2",
+      "direction": "outgoing",
+      "atMs": 1790007640000,
+      "status": "delivered"
+    },
+    {
+      "id": "long-thread-ios-dark-m09",
+      "text": "Note 3",
+      "direction": "incoming",
+      "atMs": 1790007660000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m10",
+      "text": "Note 4",
+      "direction": "outgoing",
+      "atMs": 1790007680000,
+      "status": "delivered"
+    },
+    {
+      "id": "long-thread-ios-dark-m11",
+      "text": "Note 5",
+      "direction": "incoming",
+      "atMs": 1790007700000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m12",
+      "text": "Note 6",
+      "direction": "outgoing",
+      "atMs": 1790007720000,
+      "status": "delivered"
+    },
+    {
+      "id": "long-thread-ios-dark-m13",
+      "text": "Note 7",
+      "direction": "incoming",
+      "atMs": 1790007740000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m14",
+      "text": "Note 8",
+      "direction": "outgoing",
+      "atMs": 1790007760000,
+      "status": "delivered"
+    },
+    {
+      "id": "long-thread-ios-dark-m15",
+      "text": "Note 9",
+      "direction": "incoming",
+      "atMs": 1790007780000,
+      "status": "read"
+    },
+    {
+      "id": "long-thread-ios-dark-m16",
+      "text": "Note 10",
+      "direction": "outgoing",
+      "atMs": 1790007800000,
+      "status": "delivered"
+    }
+  ]
+}

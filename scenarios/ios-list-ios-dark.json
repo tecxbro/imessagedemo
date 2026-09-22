@@ -1,0 +1,23 @@
+{
+  "id": "ios-list-ios-dark",
+  "title": "iOS conversation list",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "list",
+  "messages": [
+    {
+      "id": "ios-list-ios-dark-m01",
+      "text": "Are you close?",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "status": "read"
+    }
+  ]
+}

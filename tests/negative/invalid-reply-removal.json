@@ -1,0 +1,57 @@
+{
+  "id": "invalid-reply-removal",
+  "silentOnFrozenDouble": true,
+  "note": "A reply must not target a removed message. The frozen schema currently drops both fields.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "keep",
+        "text": "Keep this.",
+        "direction": "incoming",
+        "atMs": 1000
+      },
+      {
+        "id": "gone",
+        "text": "Remove this.",
+        "direction": "outgoing",
+        "atMs": 2000,
+        "removed": true
+      },
+      {
+        "id": "reply",
+        "text": "Replying anyway.",
+        "direction": "incoming",
+        "atMs": 3000,
+        "replyTo": {
+          "id": "gone"
+        }
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.1.removed",
+      "message": "Unrecognized key: \"removed\""
+    },
+    {
+      "path": "messages.2.replyTo",
+      "message": "Unrecognized key: \"replyTo\""
+    },
+    {
+      "path": "messages.2.replyTo.id",
+      "message": "reply target is missing or removed"
+    }
+  ]
+}

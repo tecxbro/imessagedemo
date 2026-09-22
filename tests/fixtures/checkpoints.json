@@ -1,0 +1,1986 @@
+[
+  {
+    "scenarioId": "basic-ios-light",
+    "checkpoints": [
+      {
+        "id": "basic-ios-light__basic-ios-light-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "basic-ios-light-m01"
+        ]
+      },
+      {
+        "id": "basic-ios-light__basic-ios-light-m02",
+        "atMs": 1790008800000,
+        "label": "See you there.",
+        "messageIds": [
+          "basic-ios-light-m01",
+          "basic-ios-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "basic-ios-dark",
+    "checkpoints": [
+      {
+        "id": "basic-ios-dark__basic-ios-dark-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "basic-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "basic-ios-dark__basic-ios-dark-m02",
+        "atMs": 1790008800000,
+        "label": "See you there.",
+        "messageIds": [
+          "basic-ios-dark-m01",
+          "basic-ios-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "basic-macos-light",
+    "checkpoints": [
+      {
+        "id": "basic-macos-light__basic-macos-light-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "basic-macos-light-m01"
+        ]
+      },
+      {
+        "id": "basic-macos-light__basic-macos-light-m02",
+        "atMs": 1790008800000,
+        "label": "See you there.",
+        "messageIds": [
+          "basic-macos-light-m01",
+          "basic-macos-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "basic-macos-dark",
+    "checkpoints": [
+      {
+        "id": "basic-macos-dark__basic-macos-dark-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "basic-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "basic-macos-dark__basic-macos-dark-m02",
+        "atMs": 1790008800000,
+        "label": "See you there.",
+        "messageIds": [
+          "basic-macos-dark-m01",
+          "basic-macos-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "long-thread-ios-light",
+    "checkpoints": [
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m01",
+        "atMs": 1789916520000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-ios-light-m01"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m02",
+        "atMs": 1789916550000,
+        "label": "On the train.",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m03",
+        "atMs": 1790003400000,
+        "label": "Here.",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m04",
+        "atMs": 1790003422000,
+        "label": "By the doors.",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m05",
+        "atMs": 1790003448000,
+        "label": "The blue ones.",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m06",
+        "atMs": 1790007600000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m07",
+        "atMs": 1790007620000,
+        "label": "Note 1",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m08",
+        "atMs": 1790007640000,
+        "label": "Note 2",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m09",
+        "atMs": 1790007660000,
+        "label": "Note 3",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m10",
+        "atMs": 1790007680000,
+        "label": "Note 4",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m11",
+        "atMs": 1790007700000,
+        "label": "Note 5",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m12",
+        "atMs": 1790007720000,
+        "label": "Note 6",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11",
+          "long-thread-ios-light-m12"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m13",
+        "atMs": 1790007740000,
+        "label": "Note 7",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11",
+          "long-thread-ios-light-m12",
+          "long-thread-ios-light-m13"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m14",
+        "atMs": 1790007760000,
+        "label": "Note 8",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11",
+          "long-thread-ios-light-m12",
+          "long-thread-ios-light-m13",
+          "long-thread-ios-light-m14"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m15",
+        "atMs": 1790007780000,
+        "label": "Note 9",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11",
+          "long-thread-ios-light-m12",
+          "long-thread-ios-light-m13",
+          "long-thread-ios-light-m14",
+          "long-thread-ios-light-m15"
+        ]
+      },
+      {
+        "id": "long-thread-ios-light__long-thread-ios-light-m16",
+        "atMs": 1790007800000,
+        "label": "Note 10",
+        "messageIds": [
+          "long-thread-ios-light-m01",
+          "long-thread-ios-light-m02",
+          "long-thread-ios-light-m03",
+          "long-thread-ios-light-m04",
+          "long-thread-ios-light-m05",
+          "long-thread-ios-light-m06",
+          "long-thread-ios-light-m07",
+          "long-thread-ios-light-m08",
+          "long-thread-ios-light-m09",
+          "long-thread-ios-light-m10",
+          "long-thread-ios-light-m11",
+          "long-thread-ios-light-m12",
+          "long-thread-ios-light-m13",
+          "long-thread-ios-light-m14",
+          "long-thread-ios-light-m15",
+          "long-thread-ios-light-m16"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "long-thread-ios-dark",
+    "checkpoints": [
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m01",
+        "atMs": 1789916520000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m02",
+        "atMs": 1789916550000,
+        "label": "On the train.",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m03",
+        "atMs": 1790003400000,
+        "label": "Here.",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m04",
+        "atMs": 1790003422000,
+        "label": "By the doors.",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m05",
+        "atMs": 1790003448000,
+        "label": "The blue ones.",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m06",
+        "atMs": 1790007600000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m07",
+        "atMs": 1790007620000,
+        "label": "Note 1",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m08",
+        "atMs": 1790007640000,
+        "label": "Note 2",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m09",
+        "atMs": 1790007660000,
+        "label": "Note 3",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m10",
+        "atMs": 1790007680000,
+        "label": "Note 4",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m11",
+        "atMs": 1790007700000,
+        "label": "Note 5",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m12",
+        "atMs": 1790007720000,
+        "label": "Note 6",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11",
+          "long-thread-ios-dark-m12"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m13",
+        "atMs": 1790007740000,
+        "label": "Note 7",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11",
+          "long-thread-ios-dark-m12",
+          "long-thread-ios-dark-m13"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m14",
+        "atMs": 1790007760000,
+        "label": "Note 8",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11",
+          "long-thread-ios-dark-m12",
+          "long-thread-ios-dark-m13",
+          "long-thread-ios-dark-m14"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m15",
+        "atMs": 1790007780000,
+        "label": "Note 9",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11",
+          "long-thread-ios-dark-m12",
+          "long-thread-ios-dark-m13",
+          "long-thread-ios-dark-m14",
+          "long-thread-ios-dark-m15"
+        ]
+      },
+      {
+        "id": "long-thread-ios-dark__long-thread-ios-dark-m16",
+        "atMs": 1790007800000,
+        "label": "Note 10",
+        "messageIds": [
+          "long-thread-ios-dark-m01",
+          "long-thread-ios-dark-m02",
+          "long-thread-ios-dark-m03",
+          "long-thread-ios-dark-m04",
+          "long-thread-ios-dark-m05",
+          "long-thread-ios-dark-m06",
+          "long-thread-ios-dark-m07",
+          "long-thread-ios-dark-m08",
+          "long-thread-ios-dark-m09",
+          "long-thread-ios-dark-m10",
+          "long-thread-ios-dark-m11",
+          "long-thread-ios-dark-m12",
+          "long-thread-ios-dark-m13",
+          "long-thread-ios-dark-m14",
+          "long-thread-ios-dark-m15",
+          "long-thread-ios-dark-m16"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "long-thread-macos-light",
+    "checkpoints": [
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m01",
+        "atMs": 1789916520000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-macos-light-m01"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m02",
+        "atMs": 1789916550000,
+        "label": "On the train.",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m03",
+        "atMs": 1790003400000,
+        "label": "Here.",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m04",
+        "atMs": 1790003422000,
+        "label": "By the doors.",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m05",
+        "atMs": 1790003448000,
+        "label": "The blue ones.",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m06",
+        "atMs": 1790007600000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m07",
+        "atMs": 1790007620000,
+        "label": "Note 1",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m08",
+        "atMs": 1790007640000,
+        "label": "Note 2",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m09",
+        "atMs": 1790007660000,
+        "label": "Note 3",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m10",
+        "atMs": 1790007680000,
+        "label": "Note 4",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m11",
+        "atMs": 1790007700000,
+        "label": "Note 5",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m12",
+        "atMs": 1790007720000,
+        "label": "Note 6",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11",
+          "long-thread-macos-light-m12"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m13",
+        "atMs": 1790007740000,
+        "label": "Note 7",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11",
+          "long-thread-macos-light-m12",
+          "long-thread-macos-light-m13"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m14",
+        "atMs": 1790007760000,
+        "label": "Note 8",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11",
+          "long-thread-macos-light-m12",
+          "long-thread-macos-light-m13",
+          "long-thread-macos-light-m14"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m15",
+        "atMs": 1790007780000,
+        "label": "Note 9",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11",
+          "long-thread-macos-light-m12",
+          "long-thread-macos-light-m13",
+          "long-thread-macos-light-m14",
+          "long-thread-macos-light-m15"
+        ]
+      },
+      {
+        "id": "long-thread-macos-light__long-thread-macos-light-m16",
+        "atMs": 1790007800000,
+        "label": "Note 10",
+        "messageIds": [
+          "long-thread-macos-light-m01",
+          "long-thread-macos-light-m02",
+          "long-thread-macos-light-m03",
+          "long-thread-macos-light-m04",
+          "long-thread-macos-light-m05",
+          "long-thread-macos-light-m06",
+          "long-thread-macos-light-m07",
+          "long-thread-macos-light-m08",
+          "long-thread-macos-light-m09",
+          "long-thread-macos-light-m10",
+          "long-thread-macos-light-m11",
+          "long-thread-macos-light-m12",
+          "long-thread-macos-light-m13",
+          "long-thread-macos-light-m14",
+          "long-thread-macos-light-m15",
+          "long-thread-macos-light-m16"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "long-thread-macos-dark",
+    "checkpoints": [
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m01",
+        "atMs": 1789916520000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m02",
+        "atMs": 1789916550000,
+        "label": "On the train.",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m03",
+        "atMs": 1790003400000,
+        "label": "Here.",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m04",
+        "atMs": 1790003422000,
+        "label": "By the doors.",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m05",
+        "atMs": 1790003448000,
+        "label": "The blue ones.",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m06",
+        "atMs": 1790007600000,
+        "label": "I can meet you by the south entrance once the rain lets up, but the line for the gallery wraps around the block and I do not want to lose our place if you are still on the train.",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m07",
+        "atMs": 1790007620000,
+        "label": "Note 1",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m08",
+        "atMs": 1790007640000,
+        "label": "Note 2",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m09",
+        "atMs": 1790007660000,
+        "label": "Note 3",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m10",
+        "atMs": 1790007680000,
+        "label": "Note 4",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m11",
+        "atMs": 1790007700000,
+        "label": "Note 5",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m12",
+        "atMs": 1790007720000,
+        "label": "Note 6",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11",
+          "long-thread-macos-dark-m12"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m13",
+        "atMs": 1790007740000,
+        "label": "Note 7",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11",
+          "long-thread-macos-dark-m12",
+          "long-thread-macos-dark-m13"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m14",
+        "atMs": 1790007760000,
+        "label": "Note 8",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11",
+          "long-thread-macos-dark-m12",
+          "long-thread-macos-dark-m13",
+          "long-thread-macos-dark-m14"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m15",
+        "atMs": 1790007780000,
+        "label": "Note 9",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11",
+          "long-thread-macos-dark-m12",
+          "long-thread-macos-dark-m13",
+          "long-thread-macos-dark-m14",
+          "long-thread-macos-dark-m15"
+        ]
+      },
+      {
+        "id": "long-thread-macos-dark__long-thread-macos-dark-m16",
+        "atMs": 1790007800000,
+        "label": "Note 10",
+        "messageIds": [
+          "long-thread-macos-dark-m01",
+          "long-thread-macos-dark-m02",
+          "long-thread-macos-dark-m03",
+          "long-thread-macos-dark-m04",
+          "long-thread-macos-dark-m05",
+          "long-thread-macos-dark-m06",
+          "long-thread-macos-dark-m07",
+          "long-thread-macos-dark-m08",
+          "long-thread-macos-dark-m09",
+          "long-thread-macos-dark-m10",
+          "long-thread-macos-dark-m11",
+          "long-thread-macos-dark-m12",
+          "long-thread-macos-dark-m13",
+          "long-thread-macos-dark-m14",
+          "long-thread-macos-dark-m15",
+          "long-thread-macos-dark-m16"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "sms-ios-light",
+    "checkpoints": [
+      {
+        "id": "sms-ios-light__sms-ios-light-m01",
+        "atMs": 1790008740000,
+        "label": "The gate changed to B12.",
+        "messageIds": [
+          "sms-ios-light-m01"
+        ]
+      },
+      {
+        "id": "sms-ios-light__sms-ios-light-m02",
+        "atMs": 1790008800000,
+        "label": "I will text when I land.",
+        "messageIds": [
+          "sms-ios-light-m01",
+          "sms-ios-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "sms-ios-dark",
+    "checkpoints": [
+      {
+        "id": "sms-ios-dark__sms-ios-dark-m01",
+        "atMs": 1790008740000,
+        "label": "The gate changed to B12.",
+        "messageIds": [
+          "sms-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "sms-ios-dark__sms-ios-dark-m02",
+        "atMs": 1790008800000,
+        "label": "I will text when I land.",
+        "messageIds": [
+          "sms-ios-dark-m01",
+          "sms-ios-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "sms-macos-light",
+    "checkpoints": [
+      {
+        "id": "sms-macos-light__sms-macos-light-m01",
+        "atMs": 1790008740000,
+        "label": "The gate changed to B12.",
+        "messageIds": [
+          "sms-macos-light-m01"
+        ]
+      },
+      {
+        "id": "sms-macos-light__sms-macos-light-m02",
+        "atMs": 1790008800000,
+        "label": "I will text when I land.",
+        "messageIds": [
+          "sms-macos-light-m01",
+          "sms-macos-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "sms-macos-dark",
+    "checkpoints": [
+      {
+        "id": "sms-macos-dark__sms-macos-dark-m01",
+        "atMs": 1790008740000,
+        "label": "The gate changed to B12.",
+        "messageIds": [
+          "sms-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "sms-macos-dark__sms-macos-dark-m02",
+        "atMs": 1790008800000,
+        "label": "I will text when I land.",
+        "messageIds": [
+          "sms-macos-dark-m01",
+          "sms-macos-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "media-ios-light",
+    "checkpoints": [
+      {
+        "id": "media-ios-light__media-ios-light-m01",
+        "atMs": 1790008740000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "media-ios-light-m01"
+        ]
+      },
+      {
+        "id": "media-ios-light__media-ios-light-m02",
+        "atMs": 1790008800000,
+        "label": "attachment",
+        "messageIds": [
+          "media-ios-light-m01",
+          "media-ios-light-m02"
+        ]
+      },
+      {
+        "id": "media-ios-light__media-ios-light-m03",
+        "atMs": 1790008860000,
+        "label": "image",
+        "messageIds": [
+          "media-ios-light-m01",
+          "media-ios-light-m02",
+          "media-ios-light-m03"
+        ]
+      },
+      {
+        "id": "media-ios-light__media-ios-light-m04",
+        "atMs": 1790008920000,
+        "label": "audio",
+        "messageIds": [
+          "media-ios-light-m01",
+          "media-ios-light-m02",
+          "media-ios-light-m03",
+          "media-ios-light-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "media-ios-dark",
+    "checkpoints": [
+      {
+        "id": "media-ios-dark__media-ios-dark-m01",
+        "atMs": 1790008740000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "media-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "media-ios-dark__media-ios-dark-m02",
+        "atMs": 1790008800000,
+        "label": "attachment",
+        "messageIds": [
+          "media-ios-dark-m01",
+          "media-ios-dark-m02"
+        ]
+      },
+      {
+        "id": "media-ios-dark__media-ios-dark-m03",
+        "atMs": 1790008860000,
+        "label": "image",
+        "messageIds": [
+          "media-ios-dark-m01",
+          "media-ios-dark-m02",
+          "media-ios-dark-m03"
+        ]
+      },
+      {
+        "id": "media-ios-dark__media-ios-dark-m04",
+        "atMs": 1790008920000,
+        "label": "audio",
+        "messageIds": [
+          "media-ios-dark-m01",
+          "media-ios-dark-m02",
+          "media-ios-dark-m03",
+          "media-ios-dark-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "media-macos-light",
+    "checkpoints": [
+      {
+        "id": "media-macos-light__media-macos-light-m01",
+        "atMs": 1790008740000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "media-macos-light-m01"
+        ]
+      },
+      {
+        "id": "media-macos-light__media-macos-light-m02",
+        "atMs": 1790008800000,
+        "label": "attachment",
+        "messageIds": [
+          "media-macos-light-m01",
+          "media-macos-light-m02"
+        ]
+      },
+      {
+        "id": "media-macos-light__media-macos-light-m03",
+        "atMs": 1790008860000,
+        "label": "image",
+        "messageIds": [
+          "media-macos-light-m01",
+          "media-macos-light-m02",
+          "media-macos-light-m03"
+        ]
+      },
+      {
+        "id": "media-macos-light__media-macos-light-m04",
+        "atMs": 1790008920000,
+        "label": "audio",
+        "messageIds": [
+          "media-macos-light-m01",
+          "media-macos-light-m02",
+          "media-macos-light-m03",
+          "media-macos-light-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "media-macos-dark",
+    "checkpoints": [
+      {
+        "id": "media-macos-dark__media-macos-dark-m01",
+        "atMs": 1790008740000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "media-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "media-macos-dark__media-macos-dark-m02",
+        "atMs": 1790008800000,
+        "label": "attachment",
+        "messageIds": [
+          "media-macos-dark-m01",
+          "media-macos-dark-m02"
+        ]
+      },
+      {
+        "id": "media-macos-dark__media-macos-dark-m03",
+        "atMs": 1790008860000,
+        "label": "image",
+        "messageIds": [
+          "media-macos-dark-m01",
+          "media-macos-dark-m02",
+          "media-macos-dark-m03"
+        ]
+      },
+      {
+        "id": "media-macos-dark__media-macos-dark-m04",
+        "atMs": 1790008920000,
+        "label": "audio",
+        "messageIds": [
+          "media-macos-dark-m01",
+          "media-macos-dark-m02",
+          "media-macos-dark-m03",
+          "media-macos-dark-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "typing-status-ios-light",
+    "checkpoints": [
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m01",
+        "atMs": 1790008200000,
+        "label": "Did it send?",
+        "messageIds": [
+          "typing-status-ios-light-m01"
+        ]
+      },
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m02",
+        "atMs": 1790008260000,
+        "label": "Sending the photo.",
+        "messageIds": [
+          "typing-status-ios-light-m01",
+          "typing-status-ios-light-m02"
+        ]
+      },
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m03",
+        "atMs": 1790008320000,
+        "label": "Sent the address.",
+        "messageIds": [
+          "typing-status-ios-light-m01",
+          "typing-status-ios-light-m02",
+          "typing-status-ios-light-m03"
+        ]
+      },
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m04",
+        "atMs": 1790008380000,
+        "label": "It says delivered.",
+        "messageIds": [
+          "typing-status-ios-light-m01",
+          "typing-status-ios-light-m02",
+          "typing-status-ios-light-m03",
+          "typing-status-ios-light-m04"
+        ]
+      },
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m05",
+        "atMs": 1790008440000,
+        "label": "Marked read.",
+        "messageIds": [
+          "typing-status-ios-light-m01",
+          "typing-status-ios-light-m02",
+          "typing-status-ios-light-m03",
+          "typing-status-ios-light-m04",
+          "typing-status-ios-light-m05"
+        ]
+      },
+      {
+        "id": "typing-status-ios-light__typing-status-ios-light-m06",
+        "atMs": 1790008500000,
+        "label": "This one failed.",
+        "messageIds": [
+          "typing-status-ios-light-m01",
+          "typing-status-ios-light-m02",
+          "typing-status-ios-light-m03",
+          "typing-status-ios-light-m04",
+          "typing-status-ios-light-m05",
+          "typing-status-ios-light-m06"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "typing-status-ios-dark",
+    "checkpoints": [
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m01",
+        "atMs": 1790008200000,
+        "label": "Did it send?",
+        "messageIds": [
+          "typing-status-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m02",
+        "atMs": 1790008260000,
+        "label": "Sending the photo.",
+        "messageIds": [
+          "typing-status-ios-dark-m01",
+          "typing-status-ios-dark-m02"
+        ]
+      },
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m03",
+        "atMs": 1790008320000,
+        "label": "Sent the address.",
+        "messageIds": [
+          "typing-status-ios-dark-m01",
+          "typing-status-ios-dark-m02",
+          "typing-status-ios-dark-m03"
+        ]
+      },
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m04",
+        "atMs": 1790008380000,
+        "label": "It says delivered.",
+        "messageIds": [
+          "typing-status-ios-dark-m01",
+          "typing-status-ios-dark-m02",
+          "typing-status-ios-dark-m03",
+          "typing-status-ios-dark-m04"
+        ]
+      },
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m05",
+        "atMs": 1790008440000,
+        "label": "Marked read.",
+        "messageIds": [
+          "typing-status-ios-dark-m01",
+          "typing-status-ios-dark-m02",
+          "typing-status-ios-dark-m03",
+          "typing-status-ios-dark-m04",
+          "typing-status-ios-dark-m05"
+        ]
+      },
+      {
+        "id": "typing-status-ios-dark__typing-status-ios-dark-m06",
+        "atMs": 1790008500000,
+        "label": "This one failed.",
+        "messageIds": [
+          "typing-status-ios-dark-m01",
+          "typing-status-ios-dark-m02",
+          "typing-status-ios-dark-m03",
+          "typing-status-ios-dark-m04",
+          "typing-status-ios-dark-m05",
+          "typing-status-ios-dark-m06"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "typing-status-macos-light",
+    "checkpoints": [
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m01",
+        "atMs": 1790008200000,
+        "label": "Did it send?",
+        "messageIds": [
+          "typing-status-macos-light-m01"
+        ]
+      },
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m02",
+        "atMs": 1790008260000,
+        "label": "Sending the photo.",
+        "messageIds": [
+          "typing-status-macos-light-m01",
+          "typing-status-macos-light-m02"
+        ]
+      },
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m03",
+        "atMs": 1790008320000,
+        "label": "Sent the address.",
+        "messageIds": [
+          "typing-status-macos-light-m01",
+          "typing-status-macos-light-m02",
+          "typing-status-macos-light-m03"
+        ]
+      },
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m04",
+        "atMs": 1790008380000,
+        "label": "It says delivered.",
+        "messageIds": [
+          "typing-status-macos-light-m01",
+          "typing-status-macos-light-m02",
+          "typing-status-macos-light-m03",
+          "typing-status-macos-light-m04"
+        ]
+      },
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m05",
+        "atMs": 1790008440000,
+        "label": "Marked read.",
+        "messageIds": [
+          "typing-status-macos-light-m01",
+          "typing-status-macos-light-m02",
+          "typing-status-macos-light-m03",
+          "typing-status-macos-light-m04",
+          "typing-status-macos-light-m05"
+        ]
+      },
+      {
+        "id": "typing-status-macos-light__typing-status-macos-light-m06",
+        "atMs": 1790008500000,
+        "label": "This one failed.",
+        "messageIds": [
+          "typing-status-macos-light-m01",
+          "typing-status-macos-light-m02",
+          "typing-status-macos-light-m03",
+          "typing-status-macos-light-m04",
+          "typing-status-macos-light-m05",
+          "typing-status-macos-light-m06"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "typing-status-macos-dark",
+    "checkpoints": [
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m01",
+        "atMs": 1790008200000,
+        "label": "Did it send?",
+        "messageIds": [
+          "typing-status-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m02",
+        "atMs": 1790008260000,
+        "label": "Sending the photo.",
+        "messageIds": [
+          "typing-status-macos-dark-m01",
+          "typing-status-macos-dark-m02"
+        ]
+      },
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m03",
+        "atMs": 1790008320000,
+        "label": "Sent the address.",
+        "messageIds": [
+          "typing-status-macos-dark-m01",
+          "typing-status-macos-dark-m02",
+          "typing-status-macos-dark-m03"
+        ]
+      },
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m04",
+        "atMs": 1790008380000,
+        "label": "It says delivered.",
+        "messageIds": [
+          "typing-status-macos-dark-m01",
+          "typing-status-macos-dark-m02",
+          "typing-status-macos-dark-m03",
+          "typing-status-macos-dark-m04"
+        ]
+      },
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m05",
+        "atMs": 1790008440000,
+        "label": "Marked read.",
+        "messageIds": [
+          "typing-status-macos-dark-m01",
+          "typing-status-macos-dark-m02",
+          "typing-status-macos-dark-m03",
+          "typing-status-macos-dark-m04",
+          "typing-status-macos-dark-m05"
+        ]
+      },
+      {
+        "id": "typing-status-macos-dark__typing-status-macos-dark-m06",
+        "atMs": 1790008500000,
+        "label": "This one failed.",
+        "messageIds": [
+          "typing-status-macos-dark-m01",
+          "typing-status-macos-dark-m02",
+          "typing-status-macos-dark-m03",
+          "typing-status-macos-dark-m04",
+          "typing-status-macos-dark-m05",
+          "typing-status-macos-dark-m06"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "bubble-effects-ios-light",
+    "checkpoints": [
+      {
+        "id": "bubble-effects-ios-light__bubble-effects-ios-light-m01",
+        "atMs": 1790008200000,
+        "label": "Slam.",
+        "messageIds": [
+          "bubble-effects-ios-light-m01"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-light__bubble-effects-ios-light-m02",
+        "atMs": 1790008260000,
+        "label": "Loud.",
+        "messageIds": [
+          "bubble-effects-ios-light-m01",
+          "bubble-effects-ios-light-m02"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-light__bubble-effects-ios-light-m03",
+        "atMs": 1790008320000,
+        "label": "Gentle.",
+        "messageIds": [
+          "bubble-effects-ios-light-m01",
+          "bubble-effects-ios-light-m02",
+          "bubble-effects-ios-light-m03"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-light__bubble-effects-ios-light-m04",
+        "atMs": 1790008380000,
+        "label": "Hidden until you swipe.",
+        "messageIds": [
+          "bubble-effects-ios-light-m01",
+          "bubble-effects-ios-light-m02",
+          "bubble-effects-ios-light-m03",
+          "bubble-effects-ios-light-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "bubble-effects-ios-dark",
+    "checkpoints": [
+      {
+        "id": "bubble-effects-ios-dark__bubble-effects-ios-dark-m01",
+        "atMs": 1790008200000,
+        "label": "Slam.",
+        "messageIds": [
+          "bubble-effects-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-dark__bubble-effects-ios-dark-m02",
+        "atMs": 1790008260000,
+        "label": "Loud.",
+        "messageIds": [
+          "bubble-effects-ios-dark-m01",
+          "bubble-effects-ios-dark-m02"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-dark__bubble-effects-ios-dark-m03",
+        "atMs": 1790008320000,
+        "label": "Gentle.",
+        "messageIds": [
+          "bubble-effects-ios-dark-m01",
+          "bubble-effects-ios-dark-m02",
+          "bubble-effects-ios-dark-m03"
+        ]
+      },
+      {
+        "id": "bubble-effects-ios-dark__bubble-effects-ios-dark-m04",
+        "atMs": 1790008380000,
+        "label": "Hidden until you swipe.",
+        "messageIds": [
+          "bubble-effects-ios-dark-m01",
+          "bubble-effects-ios-dark-m02",
+          "bubble-effects-ios-dark-m03",
+          "bubble-effects-ios-dark-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "bubble-effects-macos-light",
+    "checkpoints": [
+      {
+        "id": "bubble-effects-macos-light__bubble-effects-macos-light-m01",
+        "atMs": 1790008200000,
+        "label": "Slam.",
+        "messageIds": [
+          "bubble-effects-macos-light-m01"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-light__bubble-effects-macos-light-m02",
+        "atMs": 1790008260000,
+        "label": "Loud.",
+        "messageIds": [
+          "bubble-effects-macos-light-m01",
+          "bubble-effects-macos-light-m02"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-light__bubble-effects-macos-light-m03",
+        "atMs": 1790008320000,
+        "label": "Gentle.",
+        "messageIds": [
+          "bubble-effects-macos-light-m01",
+          "bubble-effects-macos-light-m02",
+          "bubble-effects-macos-light-m03"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-light__bubble-effects-macos-light-m04",
+        "atMs": 1790008380000,
+        "label": "Hidden until you swipe.",
+        "messageIds": [
+          "bubble-effects-macos-light-m01",
+          "bubble-effects-macos-light-m02",
+          "bubble-effects-macos-light-m03",
+          "bubble-effects-macos-light-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "bubble-effects-macos-dark",
+    "checkpoints": [
+      {
+        "id": "bubble-effects-macos-dark__bubble-effects-macos-dark-m01",
+        "atMs": 1790008200000,
+        "label": "Slam.",
+        "messageIds": [
+          "bubble-effects-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-dark__bubble-effects-macos-dark-m02",
+        "atMs": 1790008260000,
+        "label": "Loud.",
+        "messageIds": [
+          "bubble-effects-macos-dark-m01",
+          "bubble-effects-macos-dark-m02"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-dark__bubble-effects-macos-dark-m03",
+        "atMs": 1790008320000,
+        "label": "Gentle.",
+        "messageIds": [
+          "bubble-effects-macos-dark-m01",
+          "bubble-effects-macos-dark-m02",
+          "bubble-effects-macos-dark-m03"
+        ]
+      },
+      {
+        "id": "bubble-effects-macos-dark__bubble-effects-macos-dark-m04",
+        "atMs": 1790008380000,
+        "label": "Hidden until you swipe.",
+        "messageIds": [
+          "bubble-effects-macos-dark-m01",
+          "bubble-effects-macos-dark-m02",
+          "bubble-effects-macos-dark-m03",
+          "bubble-effects-macos-dark-m04"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "emoji-ios-light",
+    "checkpoints": [
+      {
+        "id": "emoji-ios-light__emoji-ios-light-m01",
+        "atMs": 1790008740000,
+        "label": "🎉",
+        "messageIds": [
+          "emoji-ios-light-m01"
+        ]
+      },
+      {
+        "id": "emoji-ios-light__emoji-ios-light-m02",
+        "atMs": 1790008800000,
+        "label": "👍",
+        "messageIds": [
+          "emoji-ios-light-m01",
+          "emoji-ios-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "emoji-ios-dark",
+    "checkpoints": [
+      {
+        "id": "emoji-ios-dark__emoji-ios-dark-m01",
+        "atMs": 1790008740000,
+        "label": "🎉",
+        "messageIds": [
+          "emoji-ios-dark-m01"
+        ]
+      },
+      {
+        "id": "emoji-ios-dark__emoji-ios-dark-m02",
+        "atMs": 1790008800000,
+        "label": "👍",
+        "messageIds": [
+          "emoji-ios-dark-m01",
+          "emoji-ios-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "emoji-macos-light",
+    "checkpoints": [
+      {
+        "id": "emoji-macos-light__emoji-macos-light-m01",
+        "atMs": 1790008740000,
+        "label": "🎉",
+        "messageIds": [
+          "emoji-macos-light-m01"
+        ]
+      },
+      {
+        "id": "emoji-macos-light__emoji-macos-light-m02",
+        "atMs": 1790008800000,
+        "label": "👍",
+        "messageIds": [
+          "emoji-macos-light-m01",
+          "emoji-macos-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "emoji-macos-dark",
+    "checkpoints": [
+      {
+        "id": "emoji-macos-dark__emoji-macos-dark-m01",
+        "atMs": 1790008740000,
+        "label": "🎉",
+        "messageIds": [
+          "emoji-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "emoji-macos-dark__emoji-macos-dark-m02",
+        "atMs": 1790008800000,
+        "label": "👍",
+        "messageIds": [
+          "emoji-macos-dark-m01",
+          "emoji-macos-dark-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "ios-list-ios-light",
+    "checkpoints": [
+      {
+        "id": "ios-list-ios-light__ios-list-ios-light-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "ios-list-ios-light-m01"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "ios-list-ios-dark",
+    "checkpoints": [
+      {
+        "id": "ios-list-ios-dark__ios-list-ios-dark-m01",
+        "atMs": 1790008740000,
+        "label": "Are you close?",
+        "messageIds": [
+          "ios-list-ios-dark-m01"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "ios-new-message-ios-light",
+    "checkpoints": [
+      {
+        "id": "ios-new-message-ios-light__draft",
+        "atMs": 1790008860000,
+        "label": "Hi Jordan",
+        "messageIds": []
+      }
+    ]
+  },
+  {
+    "scenarioId": "ios-new-message-ios-dark",
+    "checkpoints": [
+      {
+        "id": "ios-new-message-ios-dark__draft",
+        "atMs": 1790008860000,
+        "label": "Hi Jordan",
+        "messageIds": []
+      }
+    ]
+  },
+  {
+    "scenarioId": "macos-jordan-macos-light",
+    "checkpoints": [
+      {
+        "id": "macos-jordan-macos-light__macos-jordan-macos-light-m01",
+        "atMs": 1790008740000,
+        "label": "Jordan, the export finished.",
+        "messageIds": [
+          "macos-jordan-macos-light-m01"
+        ]
+      },
+      {
+        "id": "macos-jordan-macos-light__macos-jordan-macos-light-m02",
+        "atMs": 1790008800000,
+        "label": "Sending the cut now.",
+        "messageIds": [
+          "macos-jordan-macos-light-m01",
+          "macos-jordan-macos-light-m02"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "macos-jordan-macos-dark",
+    "checkpoints": [
+      {
+        "id": "macos-jordan-macos-dark__macos-jordan-macos-dark-m01",
+        "atMs": 1790008740000,
+        "label": "Jordan, the export finished.",
+        "messageIds": [
+          "macos-jordan-macos-dark-m01"
+        ]
+      },
+      {
+        "id": "macos-jordan-macos-dark__macos-jordan-macos-dark-m02",
+        "atMs": 1790008800000,
+        "label": "Sending the cut now.",
+        "messageIds": [
+          "macos-jordan-macos-dark-m01",
+          "macos-jordan-macos-dark-m02"
+        ]
+      }
+    ]
+  }
+]

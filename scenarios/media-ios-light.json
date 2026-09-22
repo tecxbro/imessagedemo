@@ -1,0 +1,79 @@
+{
+  "id": "media-ios-light",
+  "title": "Link, file, photo, and voice message",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "media-ios-light-m01",
+      "text": "https://example.com/notes",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "kind": "link",
+      "link": {
+        "url": "https://example.com/notes",
+        "title": "Field notes",
+        "host": "example.com"
+      }
+    },
+    {
+      "id": "media-ios-light-m02",
+      "text": "",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "kind": "attachment",
+      "attachments": [
+        {
+          "name": "field-notes.pdf",
+          "size": "24 KB"
+        }
+      ]
+    },
+    {
+      "id": "media-ios-light-m03",
+      "text": "",
+      "direction": "incoming",
+      "atMs": 1790008860000,
+      "kind": "image",
+      "images": [
+        {
+          "src": "/demo-assets/park-64x48.png",
+          "alt": "Park, 64 by 48",
+          "width": 64,
+          "height": 48
+        },
+        {
+          "src": "/demo-assets/night-32x32.png",
+          "alt": "Night, 32 by 32",
+          "width": 32,
+          "height": 32
+        }
+      ]
+    },
+    {
+      "id": "media-ios-light-m04",
+      "text": "",
+      "direction": "outgoing",
+      "atMs": 1790008920000,
+      "kind": "audio",
+      "audio": {
+        "duration": 8.5,
+        "peaks": [
+          0.2,
+          0.8,
+          0.4,
+          0.9,
+          0.3
+        ]
+      }
+    }
+  ]
+}

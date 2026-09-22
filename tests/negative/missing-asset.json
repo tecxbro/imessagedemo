@@ -1,0 +1,41 @@
+{
+  "id": "missing-asset",
+  "silentOnFrozenDouble": true,
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "",
+        "direction": "incoming",
+        "atMs": 1000,
+        "kind": "image",
+        "images": [
+          {
+            "src": "/demo-assets/missing.png",
+            "alt": "Missing",
+            "width": 64,
+            "height": 48
+          }
+        ]
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.images.0.src",
+      "message": "local asset is missing"
+    }
+  ]
+}

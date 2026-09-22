@@ -1,0 +1,44 @@
+{
+  "id": "group-chat",
+  "silentOnFrozenDouble": true,
+  "note": "MessageList can show sender names, and group-avatar/group-details are absent from the pin. This object must not be stored as a 1:1 chat.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Who is bringing plates?",
+        "direction": "incoming",
+        "atMs": 1000,
+        "sender": "Jordan Lee"
+      }
+    ],
+    "group": {
+      "participants": [
+        "Alex Morgan",
+        "Jordan Lee"
+      ]
+    }
+  },
+  "issues": [
+    {
+      "path": "group",
+      "message": "Unrecognized key: \"group\""
+    },
+    {
+      "path": "messages.0.sender",
+      "message": "Unrecognized key: \"sender\""
+    }
+  ]
+}

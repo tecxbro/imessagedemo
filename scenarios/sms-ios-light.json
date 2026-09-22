@@ -1,0 +1,32 @@
+{
+  "id": "sms-ios-light",
+  "title": "SMS conversation",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Sam Rivera",
+    "initials": "SR"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "sms-ios-light-m01",
+      "text": "The gate changed to B12.",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "service": "sms",
+      "status": "read"
+    },
+    {
+      "id": "sms-ios-light-m02",
+      "text": "I will text when I land.",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "service": "sms",
+      "status": "sent"
+    }
+  ]
+}

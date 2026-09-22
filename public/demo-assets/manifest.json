@@ -1,0 +1,16 @@
+{
+  "assets": [
+    {
+      "src": "/demo-assets/park-64x48.png",
+      "width": 64,
+      "height": 48,
+      "sha256": "6e1320a861e9b7d3e9ce9f3dc3276cd79527a65eeb11e607e19e32bf9a056c61"
+    },
+    {
+      "src": "/demo-assets/night-32x32.png",
+      "width": 32,
+      "height": 32,
+      "sha256": "603599839c9e4bd37276a8274d23ffb26c56ac3a3b740ed68cdf8cd043123ca3"
+    }
+  ]
+}

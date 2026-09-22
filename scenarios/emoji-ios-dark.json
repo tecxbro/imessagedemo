@@ -1,0 +1,30 @@
+{
+  "id": "emoji-ios-dark",
+  "title": "Emoji-only messages",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "emoji-ios-dark-m01",
+      "text": "🎉",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "emoji-ios-dark-m02",
+      "text": "👍",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "status": "delivered"
+    }
+  ]
+}
