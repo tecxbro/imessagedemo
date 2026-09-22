@@ -1,0 +1,157 @@
+{
+  "extractedBy": "scripts/extract-motion-tokens.mjs",
+  "method": "literal-parse",
+  "tokens": [
+    {
+      "symbol": "messageMotion",
+      "file": "src/components/imessage/message-motion.tsx",
+      "confidence": "measured",
+      "value": {
+        "arrival": 420,
+        "delivery": 900,
+        "reaction": 320,
+        "press": 120,
+        "longPress": 500,
+        "send": {
+          "morph": 17,
+          "liftoff": 33,
+          "shrink": 150,
+          "duration": 690,
+          "textReveal": 25,
+          "textVisible": 70,
+          "placeholderIn": 0,
+          "tint": 0.55,
+          "squash": 0.228,
+          "grow": 193,
+          "spring": {
+            "damping": 0.73,
+            "frequency": 11.9
+          },
+          "growSpring": {
+            "damping": 0.8,
+            "frequency": 13.1
+          }
+        },
+        "receive": {
+          "duration": 300,
+          "fade": 80,
+          "startScale": 0.5,
+          "spring": {
+            "damping": 0.7,
+            "frequency": 30
+          }
+        },
+        "reduced": {
+          "duration": 200
+        }
+      }
+    },
+    {
+      "symbol": "iosScreen",
+      "file": "src/components/imessage/ios-messages-app.tsx",
+      "confidence": "source-export",
+      "value": {
+        "width": 402,
+        "height": 874,
+        "statusBar": 54,
+        "navBar": 94,
+        "listTop": 169.5,
+        "composer": 68,
+        "listBottom": 96
+      }
+    },
+    {
+      "symbol": "iosScreenTransition",
+      "file": "src/components/imessage/ios-messages-app.tsx",
+      "confidence": "unverified",
+      "value": {
+        "push": 350,
+        "pop": 320,
+        "present": 400,
+        "dismiss": 280,
+        "parallax": 0.3,
+        "dim": 0.14,
+        "ease": "cubic-bezier(0.32, 0.72, 0, 1)"
+      }
+    },
+    {
+      "symbol": "macWindowMetrics",
+      "file": "src/components/imessage/macos-window.tsx",
+      "confidence": "unverified",
+      "value": {
+        "width": 960,
+        "height": 640,
+        "sidebarWidth": 330,
+        "cornerRadius": 25.5,
+        "continuousRadius": 31.75,
+        "trafficLight": {
+          "diameter": 14,
+          "centers": [
+            25.75,
+            48.75,
+            71.75
+          ],
+          "y": 25.75
+        }
+      }
+    },
+    {
+      "symbol": "macScreen",
+      "file": "src/components/imessage/macos-messages-app.tsx",
+      "confidence": "source-export",
+      "value": {
+        "width": 960,
+        "height": 640,
+        "sidebar": 330,
+        "listTop": 84.3,
+        "listBottom": 58.2
+      }
+    },
+    {
+      "symbol": "macTransitions",
+      "file": "src/components/imessage/macos-messages-app.tsx",
+      "confidence": "unverified",
+      "value": {
+        "conversation": {
+          "duration": 140,
+          "shift": 6,
+          "dissolve": 0.62
+        },
+        "selection": {
+          "duration": 140,
+          "text": 110
+        },
+        "menu": {
+          "open": 110,
+          "scale": 0.96
+        }
+      }
+    },
+    {
+      "symbol": "bubbleEffectDuration",
+      "file": "src/components/imessage/message-effects.tsx",
+      "confidence": "measured",
+      "value": {
+        "slam": 640,
+        "loud": 1230,
+        "gentle": 3000,
+        "invisible-ink": 0
+      }
+    },
+    {
+      "symbol": "screenEffectDuration",
+      "file": "src/components/imessage/screen-effects.tsx",
+      "confidence": "unverified",
+      "value": {
+        "echo": 2400,
+        "spotlight": 2600,
+        "balloons": 4200,
+        "confetti": 4200,
+        "love": 2600,
+        "lasers": 3000,
+        "fireworks": 3600,
+        "celebration": 3600
+      }
+    }
+  ]
+}

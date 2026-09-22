@@ -1,0 +1,14 @@
+{
+  "ios": {
+    "width": 402,
+    "height": 874,
+    "source": "src/components/imessage/ios-messages-app.tsx",
+    "symbol": "iosScreen"
+  },
+  "macos": {
+    "width": 960,
+    "height": 640,
+    "source": "src/components/imessage/macos-messages-app.tsx",
+    "symbol": "macScreen"
+  }
+}

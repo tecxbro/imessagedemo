@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-09-21T18:58:00-07:00",
+  "node": "25.6.0",
+  "npm": "11.8.0",
+  "selection": "Vite 7.3.6 matches Node 25 (engines ^20.19.0 || >=22.12.0). Vitest 5 does not list Node 25, so Vitest 4.1.11 is installed. @vitejs/plugin-react 5.1.1 peers Vite 7. TypeScript 5.9.3 typechecks the pinned source under strict.",
+  "dependencies": {
+    "clsx": "2.1.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "25.9.8",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "5.1.1",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  }
+}

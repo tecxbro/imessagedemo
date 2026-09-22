@@ -1,0 +1,18 @@
+{
+  "scenes": [
+    { "id": "ios-text", "title": "iOS text conversation", "platform": "ios", "tier": "supported", "sourceAnchors": ["IosMessagesApp", "MessageList"], "summary": "Incoming and outgoing text on the iOS shell." },
+    { "id": "macos-text", "title": "macOS text conversation", "platform": "macos", "tier": "supported", "sourceAnchors": ["MacMessagesApp", "MessageList"], "summary": "Incoming and outgoing text in the macOS window." },
+    { "id": "link", "title": "Link preview", "platform": "both", "tier": "supported", "sourceAnchors": ["MessageKind", "LinkPreview"], "summary": "kind link renders LinkPreview." },
+    { "id": "image", "title": "Photo group", "platform": "both", "tier": "supported", "sourceAnchors": ["MessageImages"], "summary": "kind image renders MessageImages." },
+    { "id": "audio", "title": "Voice message", "platform": "both", "tier": "supported", "sourceAnchors": ["MessageAudio"], "summary": "kind audio renders MessageAudio." },
+    { "id": "attachment", "title": "File attachment", "platform": "both", "tier": "supported", "sourceAnchors": ["MessageAttachment"], "summary": "kind attachment renders MessageAttachment." },
+    { "id": "typing", "title": "Typing indicator", "platform": "both", "tier": "supported", "sourceAnchors": ["TypingIndicator"], "summary": "MessageList typing prop." },
+    { "id": "tapback", "title": "Tapback", "platform": "both", "tier": "supported", "sourceAnchors": ["Tapback", "MessageReaction"], "summary": "Reactions on a message." },
+    { "id": "bubble-effect", "title": "Bubble effect", "platform": "both", "tier": "supported", "sourceAnchors": ["BubbleEffectKind"], "summary": "Message.effect is slam, loud, gentle, or invisible-ink." },
+    { "id": "screen-effect", "title": "Screen effect", "platform": "both", "tier": "catalogue-only", "sourceAnchors": ["ScreenEffect"], "summary": "ScreenEffect is pinned and not compiled by the foundation." },
+    { "id": "facetime", "title": "FaceTime card", "platform": "both", "tier": "catalogue-only", "sourceAnchors": ["FaceTimeCard"], "summary": "Standalone FaceTimeCard." },
+    { "id": "system", "title": "System line", "platform": "both", "tier": "catalogue-only", "sourceAnchors": ["SystemMessage"], "summary": "Standalone SystemMessage. Not a pinned MessageKind." },
+    { "id": "image-viewer", "title": "Image viewer", "platform": "both", "tier": "catalogue-only", "sourceAnchors": ["ImageViewer"], "summary": "Full-screen ImageViewer." },
+    { "id": "effects-picker", "title": "Effects picker", "platform": "ios", "tier": "catalogue-only", "sourceAnchors": ["IosEffectsPicker"], "summary": "Caller-owned iOS effects screen." }
+  ]
+}

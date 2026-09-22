@@ -1,0 +1,46 @@
+{
+  "pin": "vendor/upstream/lock.json",
+  "registryUrl": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
+  "supported": [
+    { "id": "text", "anchors": ["MessageKind", "Message", "MessageList"] },
+    { "id": "link", "anchors": ["MessageKind", "LinkPreview"] },
+    { "id": "attachment", "anchors": ["MessageKind", "MessageAttachment"] },
+    { "id": "image", "anchors": ["MessageKind", "MessageImages"] },
+    { "id": "audio", "anchors": ["MessageKind", "MessageAudio"] },
+    { "id": "typing", "anchors": ["MessageListProps", "TypingIndicator"] },
+    { "id": "emoji-only", "anchors": ["isEmojiOnly", "MessageList"] },
+    { "id": "status", "anchors": ["MessageStatus"] },
+    { "id": "service-color", "anchors": ["Service", "bubbleMetrics"] },
+    { "id": "tapback", "anchors": ["MessageReaction", "Tapback"] },
+    { "id": "bubble-effect", "anchors": ["BubbleEffectKind", "bubbleEffectDuration"] },
+    { "id": "reply", "anchors": ["ReplyStub", "ReplyCount"] },
+    { "id": "edited", "anchors": ["EditedLabel", "Message"] },
+    { "id": "ios-shell", "anchors": ["IosMessagesApp", "iosScreen"] },
+    { "id": "macos-shell", "anchors": ["MacMessagesApp", "macScreen"] }
+  ],
+  "catalogueOnly": [
+    { "id": "screen-effect", "anchors": ["ScreenEffect", "ScreenEffectKind"], "reason": "Component is pinned. The foundation compiler does not drive it." },
+    { "id": "facetime-card", "anchors": ["FaceTimeCard"], "reason": "Standalone component. It is not a MessageKind in the pin." },
+    { "id": "system-message", "anchors": ["SystemMessage", "SystemMessageEvent"], "reason": "Standalone component. The pinned MessageKind has no system variant." },
+    { "id": "image-viewer", "anchors": ["ImageViewer"], "reason": "Present, not wired into the foundation shell fixture." },
+    { "id": "effects-picker", "anchors": ["IosEffectsPicker"], "reason": "Caller-owned overlay. Not part of the frozen compile path." },
+    { "id": "long-press", "anchors": ["MessageActions", "useLongPress"], "reason": "Caller-owned overlay." },
+    { "id": "ios-list", "anchors": ["IosScreen", "IosConversationList"], "reason": "Shell screen exists. The foundation fixture stays on conversation." },
+    { "id": "mac-context-menu", "anchors": ["ContextMenu"], "reason": "Caller-owned." },
+    { "id": "mac-plus-menu", "anchors": ["MacPlusMenu"], "reason": "Caller-owned." }
+  ],
+  "unsupported": [
+    { "id": "polls", "reason": "No poll symbol in the pinned registry or its docs. Not added because a human mentioned polls." },
+    { "id": "mini-apps", "reason": "No Photon or mini-app package is installed, and the pin has no mini-app module." }
+  ],
+  "absentFromPin": [
+    { "id": "audio-recorder", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "group-avatar", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "group-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "ios-search", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "macos-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "sticker-picker", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "tapback-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
+    { "id": "system-message-kind", "reason": "imessage.swerdlow.dev MessageKind includes system. The pinned MessageKind does not." }
+  ]
+}

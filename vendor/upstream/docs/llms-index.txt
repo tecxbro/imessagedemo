@@ -1,0 +1,61 @@
+# iMessage UI
+
+A shadcn registry of Messages components for the web, measured against iOS 26 and macOS 26.
+
+Registry: https://imessage.swerdlow.dev/r/registry.json
+Namespace: @imessage → https://imessage.swerdlow.dev/r/{name}.json
+
+- [Platform context](https://imessage.swerdlow.dev/llms/platform.txt): Tells every iMessage component whether to render iOS 26 or macOS 26 metrics.
+- [Design tokens](https://imessage.swerdlow.dev/llms/tokens.txt): Measured colors, screen-space bubble gradients, type scale, and spacing for iOS and macOS.
+- [Bubble shape](https://imessage.swerdlow.dev/llms/bubble-shape.txt): The traced native bubble outline and tail as SVG path and clip-path generators.
+- [Screen-space fill hook](https://imessage.swerdlow.dev/llms/use-screen-space.txt): Keeps bubble fills aligned to the screen-space gradient while a list scrolls.
+- [Message bubble](https://imessage.swerdlow.dev/llms/message-bubble.txt): Native iOS 26 and macOS 26 bubbles: traced outline and tail, screen-space gradient fill, status, edited, reactions, and emoji-only messages.
+- [Tapback](https://imessage.swerdlow.dev/llms/tapback.txt): The native reaction balloon: six classic Tapbacks and custom emoji, own and others' colors, counts, and the selected state.
+- [Tapback details](https://imessage.swerdlow.dev/llms/tapback-details.txt): The surface "Tapback Details…" opens: who reacted and with what, as a sheet on iOS and an anchored popover on macOS, with your own reaction removable.
+- [Typing indicator](https://imessage.swerdlow.dev/llms/typing-indicator.txt): The native typing bubble with its three staggered dots and trailing circles.
+- [Date separator](https://imessage.swerdlow.dev/llms/date-separator.txt): Date headers: the iOS two-line header with its service line, the mid-list one-liner, and the macOS variant.
+- [Link preview](https://imessage.swerdlow.dev/llms/link-preview.txt): The measured compact link card, plus a rich variant with an image, title and host.
+- [Attachment](https://imessage.swerdlow.dev/llms/message-attachment.txt): The document card Messages draws instead of a text bubble, with the file icon, name and size, in the bubble's own shape.
+- [Conversation](https://imessage.swerdlow.dev/llms/conversation.txt): A complete, composable conversation for either platform: header, scrolling log with clusters and reactions, typing state, and a composer. Bring your own data and send handler.
+- [Message motion](https://imessage.swerdlow.dev/llms/message-motion.txt): The measured send and receive animations, seekable so a harness can scrub them.
+- [FaceTime card](https://imessage.swerdlow.dev/llms/facetime-card.txt): A FaceTime link card in the native card style, plus the call states an application may want to show around it.
+- [Avatar](https://imessage.swerdlow.dev/llms/avatar.txt): Initials on the measured Messages gradient, a photo, or the generic silhouette, at native sizes.
+- [macOS window](https://imessage.swerdlow.dev/llms/macos-window.txt): The Messages window frame: traffic lights, sidebar and content slots, active and inactive states.
+- [macOS sidebar](https://imessage.swerdlow.dev/llms/macos-sidebar.txt): The conversation list sidebar with search, pinned conversations, rows, and selection states.
+- [macOS header](https://imessage.swerdlow.dev/llms/macos-header.txt): The translucent conversation header with compose, contact, and video controls.
+- [macOS composer](https://imessage.swerdlow.dev/llms/macos-composer.txt): The message field with the plus, audio, and emoji controls; Return sends.
+- [Tapback bar](https://imessage.swerdlow.dev/llms/tapback-bar.txt): The iOS Tapback picker pill with recent emoji and the emoji-picker bubble, plus the macOS two-row layout.
+- [Context menu](https://imessage.swerdlow.dev/llms/context-menu.txt): iOS tinted message menu and the macOS NSMenu-style menu with Tapback rows.
+- [Message actions](https://imessage.swerdlow.dev/llms/message-actions.txt): The iOS long-press overlay: dim and blur, lifted bubble, Tapback bar, and menu, with the measured transition.
+- [Long press hook](https://imessage.swerdlow.dev/llms/use-long-press.txt): A cancelable 500 ms hold with keyboard, double-click, and right-click alternatives.
+- [Message list](https://imessage.swerdlow.dev/llms/message-list.txt): The scrolling log: clusters and tails, date headers, status labels, sender names, emoji-only rows, link cards, attachments, and the typing indicator.
+- [iOS status bar](https://imessage.swerdlow.dev/llms/ios-status-bar.txt): Time, Dynamic Island, cellular, Wi-Fi, and battery exactly as iOS 26 draws them.
+- [iOS nav bar](https://imessage.swerdlow.dev/llms/ios-nav-bar.txt): The conversation nav bar with the glass back button, large avatar, and name pill, plus the list's large title.
+- [iOS composer](https://imessage.swerdlow.dev/llms/ios-composer.txt): The glass message field with the plus button, microphone, auto-growing text, and the send pill.
+- [iOS conversation list](https://imessage.swerdlow.dev/llms/ios-conversation-list.txt): The Messages list screen: large title, rows with avatars and previews, search pill, and compose button.
+- [iOS new message sheet](https://imessage.swerdlow.dev/llms/ios-new-message-sheet.txt): The New Message sheet with its close button and To field.
+- [Palette](https://imessage.swerdlow.dev/llms/palette.txt): Emits the measured light and dark palette as CSS variables for one platform.
+- [iOS Messages app](https://imessage.swerdlow.dev/llms/ios-messages-app.txt): The complete iOS 26 Messages app: list, conversation, New Message sheet, and the long-press overlay.
+- [macOS Messages app](https://imessage.swerdlow.dev/llms/macos-messages-app.txt): The complete macOS 26 Messages window: sidebar, header, message log, composer, and the right-click menu.
+- [macOS plus menu](https://imessage.swerdlow.dev/llms/macos-plus-menu.txt): The popover that opens from the composer's plus button: Photos, Stickers, Genmoji, Image Playground, #images, Message Effects.
+- [macOS conversation details](https://imessage.swerdlow.dev/llms/macos-details.txt): The inspector pane that slides in from the right of the window: contact, call actions, shared photos, links and documents, and the conversation options.
+- [Message effects](https://imessage.swerdlow.dev/llms/message-effects.txt): Send with effect on a bubble: the slam, loud and gentle animations and the Invisible Ink reveal, replayable on demand.
+- [Screen effects](https://imessage.swerdlow.dev/llms/screen-effects.txt): The full-screen send effects, drawn deterministically on a canvas so they can be scrubbed and screenshotted.
+- [iOS effects picker](https://imessage.swerdlow.dev/llms/ios-effects-picker.txt): The iOS "Send with effect" screen: the Bubble/Screen tabs, the effect rail, the preview bubble and its caption.
+- [Inline reply](https://imessage.swerdlow.dev/llms/message-reply.txt): The quoted stub above a reply, the reply-count affordance, and the focused thread view.
+- [Photo message](https://imessage.swerdlow.dev/llms/message-image.txt): Photos and videos in the bubble's shape, tail included, with the native multi-photo grid.
+- [Photo viewer](https://imessage.swerdlow.dev/llms/image-viewer.txt): The full-screen viewer a photo opens into: zoom out of the tile, swipe between the message's photos, pinch and pan, react, and drag down to close.
+- [Audio message](https://imessage.swerdlow.dev/llms/message-audio.txt): A voice message bubble with a waveform, play control, and a seekable position.
+- [Edit and undo send](https://imessage.swerdlow.dev/llms/message-edit.txt): Edit a sent message in place, the Edited label, and the undo-send removal.
+- [iOS conversation details](https://imessage.swerdlow.dev/llms/ios-details.txt): The details screen: contact, call actions, and the grouped settings cells.
+- [iOS group details](https://imessage.swerdlow.dev/llms/group-details.txt): A group conversation's details screen: the stacked group photo, an editable name, the members, and the shared photos and links.
+- [iOS plus menu](https://imessage.swerdlow.dev/llms/ios-plus-menu.txt): The attachment sheet with its app rows and the embedded photo grid.
+- [iOS photo picker](https://imessage.swerdlow.dev/llms/photo-picker.txt): The Photos panel under the composer: a scrolling three-column grid with the sheet grabber and tile selection.
+- [iOS sticker picker](https://imessage.swerdlow.dev/llms/sticker-picker.txt): The sheet the plus menu's Stickers row opens: category tabs, a search field, the sticker grid, and drag to place a sticker on a message.
+- [iOS selection mode](https://imessage.swerdlow.dev/llms/ios-select-mode.txt): Selection circles beside messages, the close button, and the bottom toolbar.
+- [iOS search](https://imessage.swerdlow.dev/llms/ios-search.txt): The search state of the conversation list: the field rising under the nav, a Cancel button, and results grouped into Conversations, Messages, Photos and Links.
+- [Swipe for times](https://imessage.swerdlow.dev/llms/ios-swipe-times.txt): The drag that shifts the conversation left to reveal per-message times.
+- [Conversation notices](https://imessage.swerdlow.dev/llms/ios-notices.txt): The unknown-sender notice, the failed-send badge, and the Not Delivered label.
+- [System message](https://imessage.swerdlow.dev/llms/system-message.txt): The centred grey lines that are not bubbles: group renames, joins and leaves, the group photo, a missed call, a reaction summary, and the unknown-sender sentence.
+- [Group avatar](https://imessage.swerdlow.dev/llms/group-avatar.txt): The stacked faces a group conversation shows in the list, the nav bar, the details header and the macOS sidebar.
+- [Audio recorder](https://imessage.swerdlow.dev/llms/audio-recorder.txt): The composer turning into a voice-message recorder: live waveform, running timer, and the send, stop and cancel controls.

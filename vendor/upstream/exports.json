@@ -1,0 +1,588 @@
+[
+  {
+    "item": "platform",
+    "target": "components/imessage/platform.tsx",
+    "exports": [
+      "Platform",
+      "PlatformProvider",
+      "usePlatform"
+    ]
+  },
+  {
+    "item": "tokens",
+    "target": "components/imessage/tokens.ts",
+    "exports": [
+      "Service",
+      "Direction",
+      "BubbleMetrics",
+      "bubbleMetrics",
+      "ScreenGradient",
+      "Palette",
+      "palettes",
+      "paletteVars",
+      "fontStack",
+      "emojiFontStack"
+    ]
+  },
+  {
+    "item": "bubble-shape",
+    "target": "components/imessage/bubble-shape.ts",
+    "exports": [
+      "TailSide",
+      "tailBox",
+      "tailPath",
+      "tailSeamOverlap",
+      "bodyClipPath",
+      "bubblePath"
+    ]
+  },
+  {
+    "item": "use-screen-space",
+    "target": "components/imessage/use-screen-space.ts",
+    "exports": [
+      "useBubbleScreenSpace"
+    ]
+  },
+  {
+    "item": "message-bubble",
+    "target": "components/imessage/message-bubble.tsx",
+    "exports": [
+      "MessageBubbleProps",
+      "isEmojiOnly",
+      "reactionOffsets",
+      "selectionOverlayClass",
+      "MessageBubble"
+    ]
+  },
+  {
+    "item": "tapback",
+    "target": "components/imessage/tapback.tsx",
+    "exports": [
+      "tapbackLabels",
+      "TapbackType",
+      "tapbackTypes",
+      "tapbackColors",
+      "macosBalloonFill",
+      "macosBalloonRim",
+      "tapbackVars",
+      "BalloonGeometry",
+      "balloonGeometry",
+      "balloonSlot",
+      "pickerBalloonGeometry",
+      "BalloonTrail",
+      "TapbackGlyph",
+      "TapbackProps",
+      "tapbackAppear",
+      "Tapback"
+    ]
+  },
+  {
+    "item": "typing-indicator",
+    "target": "components/imessage/typing-indicator.tsx",
+    "exports": [
+      "TypingIndicatorMetrics",
+      "typingIndicatorMetrics",
+      "typingLoopMs",
+      "typingStaggerMs",
+      "TypingIndicatorProps",
+      "TypingIndicator"
+    ]
+  },
+  {
+    "item": "date-separator",
+    "target": "components/imessage/date-separator.tsx",
+    "exports": [
+      "DateSeparatorVariant",
+      "DateSeparatorMetrics",
+      "dateSeparatorMetrics",
+      "DateLabel",
+      "formatClockTime",
+      "formatDateLabel",
+      "DateSeparatorProps",
+      "DateSeparator"
+    ]
+  },
+  {
+    "item": "link-preview",
+    "target": "components/imessage/link-preview.tsx",
+    "exports": [
+      "LinkPreviewMetrics",
+      "linkPreviewMetrics",
+      "LinkPreviewProps",
+      "LinkPreview"
+    ]
+  },
+  {
+    "item": "message-attachment",
+    "target": "components/imessage/message-attachment.tsx",
+    "exports": [
+      "attachmentMetrics",
+      "MessageAttachmentProps",
+      "MessageAttachment"
+    ]
+  },
+  {
+    "item": "conversation",
+    "target": "components/imessage/conversation.tsx",
+    "exports": [
+      "ConversationProps",
+      "Conversation"
+    ]
+  },
+  {
+    "item": "message-motion",
+    "target": "components/imessage/message-motion.tsx",
+    "exports": [
+      "messageMotion",
+      "MotionHandle",
+      "prefersReducedMotion",
+      "springOffset",
+      "SendAnimationOptions",
+      "playSendAnimation",
+      "ReceiveAnimationOptions",
+      "playReceiveAnimation",
+      "useSendAnimation",
+      "useReceiveAnimation",
+      "ArrivalAnimation",
+      "ArrivalAnimationOptions",
+      "useArrivalAnimation",
+      "MessageMotion"
+    ]
+  },
+  {
+    "item": "facetime-card",
+    "target": "components/imessage/facetime-card.tsx",
+    "exports": [
+      "FaceTimeState",
+      "FaceTimeCardProps",
+      "FaceTimeCard"
+    ]
+  },
+  {
+    "item": "avatar",
+    "target": "components/imessage/avatar.tsx",
+    "exports": [
+      "AvatarSize",
+      "AvatarProps",
+      "avatarFontSize",
+      "Avatar"
+    ]
+  },
+  {
+    "item": "macos-window",
+    "target": "components/imessage/macos-window.tsx",
+    "exports": [
+      "macWindowMetrics",
+      "MacWindowProps",
+      "MacWindow"
+    ]
+  },
+  {
+    "item": "macos-sidebar",
+    "target": "components/imessage/macos-sidebar.tsx",
+    "exports": [
+      "SidebarConversation",
+      "MacSidebarProps",
+      "macSidebarMetrics",
+      "MacSidebar"
+    ]
+  },
+  {
+    "item": "macos-header",
+    "target": "components/imessage/macos-header.tsx",
+    "exports": [
+      "macHeaderMetrics",
+      "MacHeaderProps",
+      "MacHeader"
+    ]
+  },
+  {
+    "item": "macos-composer",
+    "target": "components/imessage/macos-composer.tsx",
+    "exports": [
+      "macComposerMetrics",
+      "macComposerFieldHeight",
+      "MacComposerProps",
+      "MacComposer"
+    ]
+  },
+  {
+    "item": "tapback-bar",
+    "target": "components/imessage/tapback-bar.tsx",
+    "exports": [
+      "tapbackBarMetrics",
+      "TapbackSelection",
+      "TapbackBarProps",
+      "SmileyIcon",
+      "EmojiPickerBubble",
+      "TapbackBar"
+    ]
+  },
+  {
+    "item": "context-menu",
+    "target": "components/imessage/context-menu.tsx",
+    "exports": [
+      "contextMenuMetrics",
+      "continuousRoundedRectPath",
+      "iosContextMenuHeight",
+      "ContextMenuItem",
+      "MenuIconName",
+      "iosMessageMenu",
+      "macosMessageMenu",
+      "MenuIcon",
+      "ContextMenuProps",
+      "ContextMenu"
+    ]
+  },
+  {
+    "item": "message-actions",
+    "target": "components/imessage/message-actions.tsx",
+    "exports": [
+      "messageActionsTiming",
+      "messageActionsMetrics",
+      "Rect",
+      "liftScale",
+      "MessageActionsProps",
+      "layoutMessageActions",
+      "MessageActions",
+      "tapbackDetailsMetrics",
+      "TapbackDetails"
+    ]
+  },
+  {
+    "item": "use-long-press",
+    "target": "components/imessage/use-long-press.ts",
+    "exports": [
+      "useReducedMotion",
+      "LongPressOptions",
+      "useLongPress"
+    ]
+  },
+  {
+    "item": "message-list",
+    "target": "components/imessage/message-list.tsx",
+    "exports": [
+      "MessageStatus",
+      "MessageReaction",
+      "MessageKind",
+      "MessageLink",
+      "MessageAttachmentInfo",
+      "Message",
+      "MessageListHandle",
+      "MessageListMetrics",
+      "messageListMetrics",
+      "clusterWindowMs",
+      "dateHeaderGapMs",
+      "threadGesture",
+      "messageFlash",
+      "MessageListProps",
+      "ThreadOpenSource",
+      "statusLabel",
+      "buildRows",
+      "MessageList"
+    ]
+  },
+  {
+    "item": "ios-status-bar",
+    "target": "components/imessage/ios-status-bar.tsx",
+    "exports": [
+      "IosStatusBarProps",
+      "IosStatusBar"
+    ]
+  },
+  {
+    "item": "ios-nav-bar",
+    "target": "components/imessage/ios-nav-bar.tsx",
+    "exports": [
+      "IosNavBarProps",
+      "initialsOf",
+      "IosNavBar",
+      "IosLargeTitle"
+    ]
+  },
+  {
+    "item": "ios-composer",
+    "target": "components/imessage/ios-composer.tsx",
+    "exports": [
+      "IosComposerProps",
+      "IosMicIcon",
+      "IosComposer"
+    ]
+  },
+  {
+    "item": "ios-conversation-list",
+    "target": "components/imessage/ios-conversation-list.tsx",
+    "exports": [
+      "IosConversation",
+      "IosConversationListProps",
+      "IosConversationList"
+    ]
+  },
+  {
+    "item": "ios-new-message-sheet",
+    "target": "components/imessage/ios-new-message-sheet.tsx",
+    "exports": [
+      "IosNewMessageSheetProps",
+      "IosNewMessageSheet"
+    ]
+  },
+  {
+    "item": "palette",
+    "target": "components/imessage/palette.tsx",
+    "exports": [
+      "PaletteStyle"
+    ]
+  },
+  {
+    "item": "ios-messages-app",
+    "target": "components/imessage/ios-messages-app.tsx",
+    "exports": [
+      "iosScreen",
+      "IosScreen",
+      "iosScreenTransition",
+      "IosScreenTransitionKind",
+      "screenTransitionKind",
+      "IosMessagesAppProps",
+      "defaultReactions",
+      "IosMessagesApp"
+    ]
+  },
+  {
+    "item": "macos-messages-app",
+    "target": "components/imessage/macos-messages-app.tsx",
+    "exports": [
+      "macScreen",
+      "macTransitions",
+      "nextMessageSelection",
+      "MacMessagesAppProps",
+      "MacMessagesApp"
+    ]
+  },
+  {
+    "item": "macos-plus-menu",
+    "target": "components/imessage/macos-plus-menu.tsx",
+    "exports": [
+      "macPlusMenuMetrics",
+      "PlusMenuItem",
+      "defaultPlusMenuItems",
+      "MacPlusMenuProps",
+      "MacPlusMenu",
+      "PlusMenuIcon"
+    ]
+  },
+  {
+    "item": "message-effects",
+    "target": "components/imessage/message-effects.tsx",
+    "exports": [
+      "BubbleEffectKind",
+      "bubbleEffects",
+      "bubbleEffectDuration",
+      "prefersReducedMotion",
+      "BubbleEffectHandle",
+      "playBubbleEffect",
+      "BubbleEffect",
+      "ScreenEffectKind",
+      "screenEffects",
+      "InvisibleInk",
+      "useBubbleEffectOnMessage"
+    ]
+  },
+  {
+    "item": "screen-effects",
+    "target": "components/imessage/screen-effects.tsx",
+    "exports": [
+      "screenEffectDuration",
+      "Anchor",
+      "ScreenEffectProps",
+      "ScreenEffect"
+    ]
+  },
+  {
+    "item": "ios-effects-picker",
+    "target": "components/imessage/ios-effects-picker.tsx",
+    "exports": [
+      "effectsPickerMetrics",
+      "EffectsPickerSelection",
+      "IosEffectsPickerProps",
+      "IosEffectsPicker"
+    ]
+  },
+  {
+    "item": "message-reply",
+    "target": "components/imessage/message-reply.tsx",
+    "exports": [
+      "ReplyQuote",
+      "replyMetrics",
+      "replyStubMetrics",
+      "replyStubHeight",
+      "ReplyStub",
+      "ReplyMessage",
+      "replyCountHit",
+      "ReplyCount",
+      "replyThreadMotion",
+      "replyThreadMetrics",
+      "ReplyThread",
+      "ThreadInfo",
+      "ReplyStyle"
+    ]
+  },
+  {
+    "item": "message-image",
+    "target": "components/imessage/message-image.tsx",
+    "exports": [
+      "MessageImage",
+      "MessageImagesProps",
+      "photoBox",
+      "MessageImages",
+      "photoTailFill"
+    ]
+  },
+  {
+    "item": "image-viewer",
+    "target": "components/imessage/image-viewer.tsx",
+    "exports": [
+      "imageViewerMetrics",
+      "ImageViewerRect",
+      "ImageViewerPhoto",
+      "ImageViewerSize",
+      "ImageViewerProps",
+      "fitPhotoRect",
+      "rubberBand",
+      "zoomPose",
+      "ImageViewer"
+    ]
+  },
+  {
+    "item": "message-audio",
+    "target": "components/imessage/message-audio.tsx",
+    "exports": [
+      "MessageAudioProps",
+      "MessageAudio",
+      "useAudioProgress"
+    ]
+  },
+  {
+    "item": "message-edit",
+    "target": "components/imessage/message-edit.tsx",
+    "exports": [
+      "editWindowMs",
+      "undoSendWindowMs",
+      "maxEdits",
+      "canEdit",
+      "canUndoSend",
+      "editSelectionClass",
+      "EditableBubbleProps",
+      "EditableBubble",
+      "EditedLabel",
+      "undoSendPoof",
+      "UndoSendPoofProps",
+      "UndoSendPoof",
+      "undoSendRemaining"
+    ]
+  },
+  {
+    "item": "ios-details",
+    "target": "components/imessage/ios-details.tsx",
+    "exports": [
+      "IosDetailsAction",
+      "IosDetailsProps",
+      "iosDetailsMotion",
+      "iosDetailsMorph",
+      "IosSwitchProps",
+      "IosSwitch",
+      "subpixel",
+      "IosDetails"
+    ]
+  },
+  {
+    "item": "ios-plus-menu",
+    "target": "components/imessage/ios-plus-menu.tsx",
+    "exports": [
+      "plusMenuMotion",
+      "PlusMenuIcon",
+      "PlusMenuItem",
+      "defaultPlusMenuItems",
+      "plusMenuMetrics",
+      "photoPickerMetrics",
+      "usePlusMenuSpring",
+      "IosPlusMenuProps",
+      "IosPlusMenu",
+      "PhotoPickerGridProps",
+      "photoPickerPlaceholders",
+      "PhotoPickerGrid"
+    ]
+  },
+  {
+    "item": "photo-picker",
+    "target": "components/imessage/photo-picker.tsx",
+    "exports": [
+      "photoPickerMetrics",
+      "PhotoPickerPhoto",
+      "photoPickerSamples",
+      "PhotoPickerProps",
+      "PhotoPicker"
+    ]
+  },
+  {
+    "item": "ios-select-mode",
+    "target": "components/imessage/ios-select-mode.tsx",
+    "exports": [
+      "selectionMetrics",
+      "selectModeMotion",
+      "SelectModeMotionProps",
+      "SelectModeTransition",
+      "useSelectModeTransition",
+      "IosSelectMode",
+      "SelectionCircleProps",
+      "SelectionCircle",
+      "MessageSelectionRowProps",
+      "MessageSelectionRow",
+      "IosSelectionCloseButtonProps",
+      "IosSelectionCloseButton",
+      "IosSelectionToolbarProps",
+      "IosSelectionToolbar"
+    ]
+  },
+  {
+    "item": "ios-swipe-times",
+    "target": "components/imessage/ios-swipe-times.tsx",
+    "exports": [
+      "swipeTimesMetrics",
+      "SwipeToRevealOptions",
+      "SwipeToRevealTimes",
+      "useSwipeToRevealTimes",
+      "SwipeTimesProps",
+      "SwipeTimes"
+    ]
+  },
+  {
+    "item": "ios-notices",
+    "target": "components/imessage/ios-notices.tsx",
+    "exports": [
+      "unknownSenderMetrics",
+      "UnknownSenderNoticeProps",
+      "UnknownSenderNotice",
+      "FailedSendBadgeProps",
+      "FailedSendBadge",
+      "NotDeliveredProps",
+      "NotDelivered"
+    ]
+  },
+  {
+    "item": "system-message",
+    "target": "components/imessage/system-message.tsx",
+    "exports": [
+      "SystemMessageMetrics",
+      "systemMessageMetrics",
+      "unknownSenderText",
+      "reactionVerbs",
+      "MissedCallKind",
+      "SystemMessageEvent",
+      "SystemMessageSegment",
+      "formatSystemMessage",
+      "systemMessageText",
+      "SystemMessageProps",
+      "SystemMessage"
+    ]
+  }
+]

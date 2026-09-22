@@ -1,0 +1,647 @@
+{
+  "source": "live",
+  "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
+  "retrievedAt": "2026-09-22T01:51:21.810Z",
+  "sha256": "0e502db26098cd3227c62bca8f1bf22629a682ede3b36a87b79829404d7914ef",
+  "bytes": 827416,
+  "encoding": "utf-8",
+  "encodingCheck": "fatal-utf8",
+  "itemCount": 48,
+  "fileCount": 47,
+  "replacementCharacterCount": 0,
+  "importClosure": "passed",
+  "externalImportsAllowed": [
+    "react",
+    "@/lib/utils"
+  ],
+  "alternateRegistry": {
+    "url": "https://imessage.swerdlow.dev/r/registry.json",
+    "status": 200,
+    "installed": false,
+    "sha256": "a5d67edf561f04d431e1ae03af879554ac75e27b0265063b7a461049e0356391",
+    "bytes": 1484029,
+    "itemCount": 55,
+    "fileCount": 54,
+    "identicalToPin": false,
+    "onlyInAlternate": [
+      "audio-recorder",
+      "group-avatar",
+      "group-details",
+      "ios-search",
+      "macos-details",
+      "sticker-picker",
+      "tapback-details"
+    ],
+    "onlyInPin": []
+  },
+  "docs": [
+    {
+      "id": "harness",
+      "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/harness",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 57504,
+      "archived": true,
+      "file": "vendor/upstream/docs/harness.txt",
+      "sha256": "da9b7f26cf6d265ea6d555637fae04e095dead08a2c3fef8a583199c63ccb347"
+    },
+    {
+      "id": "workers-llms",
+      "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/llms.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "bytes": 8365,
+      "archived": true,
+      "file": "vendor/upstream/docs/workers-llms.txt",
+      "sha256": "546a34aaf9bcd70ea9dfc456820b980bb309fd175b4dd7dbe396b2900b32fdbf"
+    },
+    {
+      "id": "llms-index",
+      "url": "https://imessage.swerdlow.dev/llms.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 9863,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-index.txt",
+      "sha256": "43ed7facf3979018571ba296d306abeb85ded2252dddad81566fdd2858925455"
+    },
+    {
+      "id": "ios-messages-app",
+      "url": "https://imessage.swerdlow.dev/llms/ios-messages-app.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 746,
+      "archived": true,
+      "file": "vendor/upstream/docs/ios-messages-app.txt",
+      "sha256": "6b1e28e001ee2d9d940b7454d8ca2e3e8fa276bc67edba1b745715c0b0b68463"
+    },
+    {
+      "id": "macos-messages-app",
+      "url": "https://imessage.swerdlow.dev/llms/macos-messages-app.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 808,
+      "archived": true,
+      "file": "vendor/upstream/docs/macos-messages-app.txt",
+      "sha256": "8d7aea5e9443ebf6b6dff99c2e2ac4cec50117db3e215ec943a6b0a69c8f6a62"
+    },
+    {
+      "id": "message-motion",
+      "url": "https://imessage.swerdlow.dev/llms/message-motion.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 627,
+      "archived": true,
+      "file": "vendor/upstream/docs/message-motion.txt",
+      "sha256": "f902a92c312007b7684206e265a037a36b02728af9baf88923171285de78f0ce"
+    },
+    {
+      "id": "llms-platform",
+      "url": "https://imessage.swerdlow.dev/llms/platform.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 620,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-platform.txt",
+      "sha256": "61893425ddf9bd9f2fdca52c8b2a695fda1c9ef15933a92c0576dcee2d5b1d06"
+    },
+    {
+      "id": "llms-tokens",
+      "url": "https://imessage.swerdlow.dev/llms/tokens.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 629,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-tokens.txt",
+      "sha256": "cd710489dbffb7c72df011553988e7dba5f464789d26496676b98ed478390970"
+    },
+    {
+      "id": "llms-bubble-shape",
+      "url": "https://imessage.swerdlow.dev/llms/bubble-shape.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 623,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-bubble-shape.txt",
+      "sha256": "7eccaa651e46ed5ea799d071011bdbeac5dff43ea12578e23c560957f22f6491"
+    },
+    {
+      "id": "llms-use-screen-space",
+      "url": "https://imessage.swerdlow.dev/llms/use-screen-space.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 635,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-use-screen-space.txt",
+      "sha256": "3b7a152d97bcb2df32209e4c504ee74395b92f73036b4435ed5253befd1741f9"
+    },
+    {
+      "id": "llms-message-bubble",
+      "url": "https://imessage.swerdlow.dev/llms/message-bubble.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 763,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-bubble.txt",
+      "sha256": "8f93315742de78b60c52dba3429d98927e1e6f7ab284fbfbd52e1e5b7feaa0e1"
+    },
+    {
+      "id": "llms-tapback",
+      "url": "https://imessage.swerdlow.dev/llms/tapback.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 729,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-tapback.txt",
+      "sha256": "f441d995ed655585c82b72549b4e0106d7c6bf620d545e023ebc145e01cdefd2"
+    },
+    {
+      "id": "llms-tapback-details",
+      "url": "https://imessage.swerdlow.dev/llms/tapback-details.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 702,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-tapback-details.txt",
+      "sha256": "df36eb9933afc99a0ef1d7084037eb388dfd55d441120dbc0edcc51cc4076b6b"
+    },
+    {
+      "id": "llms-typing-indicator",
+      "url": "https://imessage.swerdlow.dev/llms/typing-indicator.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 652,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-typing-indicator.txt",
+      "sha256": "8a73865bcc4d76d49fcb828f89b02e55da34a3f41c2a067244fa0b8ba809fcc1"
+    },
+    {
+      "id": "llms-date-separator",
+      "url": "https://imessage.swerdlow.dev/llms/date-separator.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 718,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-date-separator.txt",
+      "sha256": "6d3feff0905673dfc3fcfa46d47915d3b779dc60fa4b35e06f512112b353b802"
+    },
+    {
+      "id": "llms-link-preview",
+      "url": "https://imessage.swerdlow.dev/llms/link-preview.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 753,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-link-preview.txt",
+      "sha256": "3adca3a454dd4bea2313206e0cb6a4f02608bb04df43130d68b878a9d26f2594"
+    },
+    {
+      "id": "llms-message-attachment",
+      "url": "https://imessage.swerdlow.dev/llms/message-attachment.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 770,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-attachment.txt",
+      "sha256": "fe017c59041ce42ec0bdb648bfcd7826b5fe9d4b1875450eab81c3bdc45c4e4a"
+    },
+    {
+      "id": "llms-conversation",
+      "url": "https://imessage.swerdlow.dev/llms/conversation.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 1278,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-conversation.txt",
+      "sha256": "087fb73059aaf73cfae9bd881fe6eb159afd790e67a3597938fd6837ad4eccff"
+    },
+    {
+      "id": "llms-facetime-card",
+      "url": "https://imessage.swerdlow.dev/llms/facetime-card.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 656,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-facetime-card.txt",
+      "sha256": "25697e68b2fc2e64006db8ca7ecb8798b7c2f56d927c022ef283413fd36a2646"
+    },
+    {
+      "id": "llms-avatar",
+      "url": "https://imessage.swerdlow.dev/llms/avatar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 628,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-avatar.txt",
+      "sha256": "b4f52c15279157d2a759cb247755543fbdffa0adcf06f121cb0c3d5c52b9f6d7"
+    },
+    {
+      "id": "llms-macos-window",
+      "url": "https://imessage.swerdlow.dev/llms/macos-window.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 641,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-window.txt",
+      "sha256": "6fcd378cd4a3577e1ee080f1d1c753912db241b65f923fec9f6ae7d493582633"
+    },
+    {
+      "id": "llms-macos-sidebar",
+      "url": "https://imessage.swerdlow.dev/llms/macos-sidebar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 638,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-sidebar.txt",
+      "sha256": "504f1b1b2de4fd38dbcb2f3fc3851ad84c995d7f5787adbf89022c74e028e4f8"
+    },
+    {
+      "id": "llms-macos-header",
+      "url": "https://imessage.swerdlow.dev/llms/macos-header.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 622,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-header.txt",
+      "sha256": "4166d57cbc37a5153861799a8c051fdfb7c540646c309ce9bbbaf0f6234fa738"
+    },
+    {
+      "id": "llms-macos-composer",
+      "url": "https://imessage.swerdlow.dev/llms/macos-composer.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 621,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-composer.txt",
+      "sha256": "fb286e4fecd14959bdf9497d47a8c3cf0061a72a2cdf75b9736eb15f98e5d030"
+    },
+    {
+      "id": "llms-tapback-bar",
+      "url": "https://imessage.swerdlow.dev/llms/tapback-bar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 647,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-tapback-bar.txt",
+      "sha256": "06032ff22c8a89d172b244631975e8c265e76a11573d534a129bd08093011ac3"
+    },
+    {
+      "id": "llms-context-menu",
+      "url": "https://imessage.swerdlow.dev/llms/context-menu.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 618,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-context-menu.txt",
+      "sha256": "6b668e8d5aecdad39a221ee3429ee86042dd87450fcfaad7f97d7c6b678de6ee"
+    },
+    {
+      "id": "llms-message-actions",
+      "url": "https://imessage.swerdlow.dev/llms/message-actions.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 659,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-actions.txt",
+      "sha256": "41c18bebb4c5177fb253938cb7f4d39f059ba8212d0dacb13c79f8e40ff3605b"
+    },
+    {
+      "id": "llms-use-long-press",
+      "url": "https://imessage.swerdlow.dev/llms/use-long-press.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 632,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-use-long-press.txt",
+      "sha256": "0508ca7fc3c0b43b07f35a0ca9c55793e426b0f4cb974ec5bdff5914a7ccd0ad"
+    },
+    {
+      "id": "llms-message-list",
+      "url": "https://imessage.swerdlow.dev/llms/message-list.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 693,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-list.txt",
+      "sha256": "b59b4aa13ab7b21758453559aac134e9a42f6536c86da2800857af52489dcc3a"
+    },
+    {
+      "id": "llms-ios-status-bar",
+      "url": "https://imessage.swerdlow.dev/llms/ios-status-bar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 628,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-status-bar.txt",
+      "sha256": "1174a68542ac96cfefe72b1fdd075b60c586923b03d9e7ac534c8cec78084691"
+    },
+    {
+      "id": "llms-ios-nav-bar",
+      "url": "https://imessage.swerdlow.dev/llms/ios-nav-bar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 685,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-nav-bar.txt",
+      "sha256": "df668614155a1187053d8bffb7cbca997e1792f8e2f559bf405ca18586d0c291"
+    },
+    {
+      "id": "llms-ios-composer",
+      "url": "https://imessage.swerdlow.dev/llms/ios-composer.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 690,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-composer.txt",
+      "sha256": "c04f53236dcd010fefa8d0d806cf5408b1cf4de5af3ca0a4a454e4f232c5df0d"
+    },
+    {
+      "id": "llms-ios-conversation-list",
+      "url": "https://imessage.swerdlow.dev/llms/ios-conversation-list.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 665,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-conversation-list.txt",
+      "sha256": "51ed517142a65696ce5e5abdba16da60b8dab78ca7df3ebfeaadec459cb1a8de"
+    },
+    {
+      "id": "llms-ios-new-message-sheet",
+      "url": "https://imessage.swerdlow.dev/llms/ios-new-message-sheet.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 619,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-new-message-sheet.txt",
+      "sha256": "a9f97b3ecc00a228119c159b52cb64b04e388f56c016ee49aa47e7d5dfdc711d"
+    },
+    {
+      "id": "llms-palette",
+      "url": "https://imessage.swerdlow.dev/llms/palette.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 610,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-palette.txt",
+      "sha256": "2b382fa8a4eacf2ae941d89089a21e4f764f0718a12017d5e49e8b93c814ea9c"
+    },
+    {
+      "id": "llms-macos-plus-menu",
+      "url": "https://imessage.swerdlow.dev/llms/macos-plus-menu.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 676,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-plus-menu.txt",
+      "sha256": "4e45712c14b19241d4c36c082d209683fba902401e02440780a13a25af601b3a"
+    },
+    {
+      "id": "llms-macos-details",
+      "url": "https://imessage.swerdlow.dev/llms/macos-details.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 711,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-macos-details.txt",
+      "sha256": "946c6c94da5c64b8545e5f689a302905b448273e52f79144060412394070b712"
+    },
+    {
+      "id": "llms-message-effects",
+      "url": "https://imessage.swerdlow.dev/llms/message-effects.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 668,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-effects.txt",
+      "sha256": "f4f402526034fac28de6e618935e6897cc9ec9999f808411e197dda5d806ad5a"
+    },
+    {
+      "id": "llms-screen-effects",
+      "url": "https://imessage.swerdlow.dev/llms/screen-effects.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 656,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-screen-effects.txt",
+      "sha256": "e53fa4897b084a6dd3e9d74fa4d4fd7af05da8f8823fa26ef45513aa88385910"
+    },
+    {
+      "id": "llms-ios-effects-picker",
+      "url": "https://imessage.swerdlow.dev/llms/ios-effects-picker.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 667,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-effects-picker.txt",
+      "sha256": "09c6a504a98f3e3454d772e98141af01b1c189d685a2769f3eda49842e6708f5"
+    },
+    {
+      "id": "llms-message-reply",
+      "url": "https://imessage.swerdlow.dev/llms/message-reply.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 632,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-reply.txt",
+      "sha256": "c1b2b186c0128db8a8c5231ce08c852e1f7c9e81ca8308df2e10d478358863dc"
+    },
+    {
+      "id": "llms-message-image",
+      "url": "https://imessage.swerdlow.dev/llms/message-image.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 635,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-image.txt",
+      "sha256": "e4a49ef6fcaa15eac85a595cff615a52d7b1fef2c8cfc8916af83c47be42845a"
+    },
+    {
+      "id": "llms-image-viewer",
+      "url": "https://imessage.swerdlow.dev/llms/image-viewer.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 690,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-image-viewer.txt",
+      "sha256": "00f16123f39167de85f421d22352be83a026e7c59ff416e452c945c544cd7f99"
+    },
+    {
+      "id": "llms-message-audio",
+      "url": "https://imessage.swerdlow.dev/llms/message-audio.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 624,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-audio.txt",
+      "sha256": "300234d455ca10596a66be50aab828ff1c858d3ac02b590f37e6e77d168ce668"
+    },
+    {
+      "id": "llms-message-edit",
+      "url": "https://imessage.swerdlow.dev/llms/message-edit.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 624,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-message-edit.txt",
+      "sha256": "da493573812c2e619fabae9dd8cbc48d32260a47c285a08eddeddcb7a5847cb1"
+    },
+    {
+      "id": "llms-ios-details",
+      "url": "https://imessage.swerdlow.dev/llms/ios-details.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 629,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-details.txt",
+      "sha256": "c8389eadc29efcdd32758c5c908667636cc7256a864d09e65e7457ded70a00a6"
+    },
+    {
+      "id": "llms-group-details",
+      "url": "https://imessage.swerdlow.dev/llms/group-details.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 677,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-group-details.txt",
+      "sha256": "c8ba43a92e7c7213d5964c13df0f7db85c6505d566a3841b4c9b897ab040a4f4"
+    },
+    {
+      "id": "llms-ios-plus-menu",
+      "url": "https://imessage.swerdlow.dev/llms/ios-plus-menu.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 613,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-plus-menu.txt",
+      "sha256": "e97ce1b51406aa25ea29c9a6cea238d8903157bb23502cd7aa9d3274c899b596"
+    },
+    {
+      "id": "llms-photo-picker",
+      "url": "https://imessage.swerdlow.dev/llms/photo-picker.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 657,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-photo-picker.txt",
+      "sha256": "961278397c778f183de55a78180946a00feacdfa94e83cf1e5ca9934179fea6e"
+    },
+    {
+      "id": "llms-sticker-picker",
+      "url": "https://imessage.swerdlow.dev/llms/sticker-picker.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 688,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-sticker-picker.txt",
+      "sha256": "aecd068c965cf01c04089ff015e78d8a3ec980abbbae55d426ac776c035d04b8"
+    },
+    {
+      "id": "llms-ios-select-mode",
+      "url": "https://imessage.swerdlow.dev/llms/ios-select-mode.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 629,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-select-mode.txt",
+      "sha256": "2e713e1bcfad5b5edd1fcb6966d048fb532290a649f148b96d142e73b5323bae"
+    },
+    {
+      "id": "llms-ios-search",
+      "url": "https://imessage.swerdlow.dev/llms/ios-search.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 699,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-search.txt",
+      "sha256": "29f287f54d23c3fb989815eb98eea590b7d8f0c609f698d69163842554179cfc"
+    },
+    {
+      "id": "llms-ios-swipe-times",
+      "url": "https://imessage.swerdlow.dev/llms/ios-swipe-times.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 621,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-swipe-times.txt",
+      "sha256": "c4ddefc1a043d4586420b41549ea7bb37f74b4046bca2baad528ad62898fddf6"
+    },
+    {
+      "id": "llms-ios-notices",
+      "url": "https://imessage.swerdlow.dev/llms/ios-notices.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 629,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-ios-notices.txt",
+      "sha256": "0466ff33792527edc933b7da7f11cea003993e091052878cbaf9e50ec3d211ac"
+    },
+    {
+      "id": "llms-system-message",
+      "url": "https://imessage.swerdlow.dev/llms/system-message.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 710,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-system-message.txt",
+      "sha256": "a77a88d11179f4e9ba037b7567f93a993626ec1fa91a4a3d3e012f74470f956c"
+    },
+    {
+      "id": "llms-group-avatar",
+      "url": "https://imessage.swerdlow.dev/llms/group-avatar.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 656,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-group-avatar.txt",
+      "sha256": "b23627ce98ac23d2b0a36a580aa9953cea5258fce00b568bf2feb7a51bde7954"
+    },
+    {
+      "id": "llms-audio-recorder",
+      "url": "https://imessage.swerdlow.dev/llms/audio-recorder.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 669,
+      "archived": true,
+      "file": "vendor/upstream/docs/llms-audio-recorder.txt",
+      "sha256": "d5bbe0ced82a445bb58c353230e19874cd837a1ba38acaf6be38cb67723a59b7"
+    }
+  ],
+  "unavailable": [
+    {
+      "url": "https://imessage.swerdlow.dev/references/SPEC.md",
+      "status": 404,
+      "archived": false,
+      "reason": "not present at this URL"
+    },
+    {
+      "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/references/SPEC.md",
+      "status": 404,
+      "archived": false,
+      "reason": "not present at this URL"
+    },
+    {
+      "url": "https://imessage.swerdlow.dev/llms/polls.txt",
+      "status": 404,
+      "archived": false,
+      "reason": "not present at this URL"
+    },
+    {
+      "url": "https://imessage.swerdlow.dev/llms/mini-apps.txt",
+      "status": 404,
+      "archived": false,
+      "reason": "not present at this URL"
+    },
+    {
+      "url": null,
+      "id": "native-captures",
+      "archived": false,
+      "reason": "No native capture set was supplied. None is claimed."
+    },
+    {
+      "url": null,
+      "id": "references/SPEC.md",
+      "archived": false,
+      "reason": "references/SPEC.md is not part of the registry response and the probed URLs did not serve it."
+    }
+  ]
+}

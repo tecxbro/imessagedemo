@@ -1,0 +1,66 @@
+{
+  "readyForParallel": true,
+  "sourceDigest": "0e502db26098cd3227c62bca8f1bf22629a682ede3b36a87b79829404d7914ef",
+  "checks": {
+    "typecheck": "passed",
+    "build": "passed",
+    "upstreamIntegrity": "passed",
+    "iosShellSmoke": "passed",
+    "macosShellSmoke": "passed"
+  },
+  "evidence": {
+    "commands": [
+      {
+        "command": "node scripts/pin-upstream.mjs",
+        "result": "passed",
+        "detail": "sha256 0e502db26098cd3227c62bca8f1bf22629a682ede3b36a87b79829404d7914ef, 48 items, 47 files, 57 docs archived"
+      },
+      {
+        "command": "node scripts/extract-motion-tokens.mjs",
+        "result": "passed",
+        "detail": "wrote 8 tokens to src/contracts/motion-tokens.json"
+      },
+      {
+        "command": "node scripts/check-upstream.mjs",
+        "result": "passed",
+        "detail": "source live"
+      },
+      {
+        "command": "npm run typecheck",
+        "result": "passed",
+        "detail": "tsc 5.9.3 --noEmit, strict, includes src/components/imessage. Re-run after the final tsconfig types edit."
+      },
+      {
+        "command": "npm run build",
+        "result": "passed",
+        "detail": "vite 7.3.6 production build, 69 modules"
+      },
+      {
+        "command": "npm run test:unit",
+        "result": "passed",
+        "detail": "vitest 4.1.11, 1 file, 4 tests"
+      },
+      {
+        "command": "npm run test:e2e",
+        "result": "passed",
+        "detail": "playwright 1.63.0, 8 passed: chromium and webkit, ios and macos, light and dark"
+      },
+      {
+        "command": "npm run verify:upstream",
+        "result": "passed",
+        "detail": "same live digest"
+      }
+    ],
+    "artifacts": [
+      "artifacts/foundation/chromium-ios-light/shell.png",
+      "artifacts/foundation/chromium-ios-dark/shell.png",
+      "artifacts/foundation/chromium-macos-light/shell.png",
+      "artifacts/foundation/chromium-macos-dark/shell.png",
+      "artifacts/foundation/webkit-ios-light/shell.png",
+      "artifacts/foundation/webkit-ios-dark/shell.png",
+      "artifacts/foundation/webkit-macos-light/shell.png",
+      "artifacts/foundation/webkit-macos-dark/shell.png",
+      "artifacts/playwright/report.json"
+    ]
+  }
+}
