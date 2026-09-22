@@ -1,0 +1,9 @@
+{
+  "locale": "en-US",
+  "timeZone": "UTC",
+  "reducedMotion": "reduce",
+  "dpr": {
+    "ios": 2,
+    "macos": 2
+  }
+}

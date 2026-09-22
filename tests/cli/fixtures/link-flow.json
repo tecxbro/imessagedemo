@@ -1,0 +1,21 @@
+{
+  "id": "link-demo",
+  "title": "Link demo",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "link-1",
+      "text": "",
+      "kind": "link",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "link": { "url": "https://example.com/article", "title": "Example", "host": "example.com" }
+    }
+  ]
+}

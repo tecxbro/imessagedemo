@@ -1,0 +1,21 @@
+{
+  "id": "photo-demo",
+  "title": "Photo demo",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "img-1",
+      "text": "",
+      "kind": "image",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "images": [{ "src": "/demo-assets/photo.png", "alt": "Photo", "width": 2, "height": 2 }]
+    }
+  ]
+}

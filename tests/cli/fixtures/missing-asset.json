@@ -1,0 +1,21 @@
+{
+  "id": "missing-asset",
+  "title": "Missing asset",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "img-1",
+      "text": "",
+      "kind": "image",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "images": [{ "src": "/demo-assets/missing.png", "alt": "Missing", "width": 2, "height": 2 }]
+    }
+  ]
+}
