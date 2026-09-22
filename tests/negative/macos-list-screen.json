@@ -1,0 +1,33 @@
+{
+  "id": "macos-list-screen",
+  "silentOnFrozenDouble": true,
+  "note": "screen list is an iOS surface. The frozen schema still accepts it on macos and would strip nothing.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "macos",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "list",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Hello",
+        "direction": "incoming",
+        "atMs": 1000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "screen",
+      "message": "iOS screen value is not a macOS surface"
+    }
+  ]
+}

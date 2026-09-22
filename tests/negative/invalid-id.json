@@ -1,0 +1,32 @@
+{
+  "id": "invalid-id",
+  "silentOnFrozenDouble": false,
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "",
+        "text": "Hello",
+        "direction": "incoming",
+        "atMs": 1000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.id",
+      "message": "Too small: expected string to have >=1 characters"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "screen-effect-as-bubble",
+  "silentOnFrozenDouble": false,
+  "note": "Screen effects are catalogue-only. They are not a message.effect value.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Balloons",
+        "direction": "outgoing",
+        "atMs": 1000,
+        "effect": "balloons"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.effect",
+      "message": "Invalid option: expected one of \"slam\"|\"loud\"|\"gentle\"|\"invisible-ink\""
+    }
+  ]
+}

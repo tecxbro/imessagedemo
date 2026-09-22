@@ -1,0 +1,34 @@
+{
+  "id": "unknown-kind",
+  "silentOnFrozenDouble": false,
+  "note": "An unknown kind is a diagnostic, not a text bubble fallback.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Sticker",
+        "direction": "incoming",
+        "atMs": 1000,
+        "kind": "sticker"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.kind",
+      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\""
+    }
+  ]
+}

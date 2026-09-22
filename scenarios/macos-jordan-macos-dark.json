@@ -1,0 +1,30 @@
+{
+  "id": "macos-jordan-macos-dark",
+  "title": "macOS second conversation",
+  "platform": "macos",
+  "theme": "dark",
+  "contact": {
+    "name": "Jordan Lee",
+    "initials": "JL"
+  },
+  "nowMs": 1790008860000,
+  "draft": "Export looks right.",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "macos-jordan-macos-dark-m01",
+      "text": "Jordan, the export finished.",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "macos-jordan-macos-dark-m02",
+      "text": "Sending the cut now.",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "status": "delivered"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "negative-timestamp",
+  "silentOnFrozenDouble": true,
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Hello",
+        "direction": "incoming",
+        "atMs": -1
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.atMs",
+      "message": "timestamp is negative"
+    }
+  ]
+}

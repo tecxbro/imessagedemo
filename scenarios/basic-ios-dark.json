@@ -1,0 +1,30 @@
+{
+  "id": "basic-ios-dark",
+  "title": "Basic conversation",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "On my way over.",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "basic-ios-dark-m01",
+      "text": "Are you close?",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "basic-ios-dark-m02",
+      "text": "See you there.",
+      "direction": "outgoing",
+      "atMs": 1790008800000,
+      "status": "delivered"
+    }
+  ]
+}

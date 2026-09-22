@@ -1,0 +1,44 @@
+{
+  "id": "link-unfurl",
+  "silentOnFrozenDouble": true,
+  "note": "A displayed URL may be stored. A remote preview image must not be fetched.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "https://example.com/notes",
+        "direction": "incoming",
+        "atMs": 1000,
+        "kind": "link",
+        "link": {
+          "url": "https://example.com/notes",
+          "title": "Field notes",
+          "host": "example.com",
+          "image": "https://example.com/og.png"
+        }
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.link.image",
+      "message": "Unrecognized key: \"image\""
+    },
+    {
+      "path": "messages.0.link.image",
+      "message": "link images are not unfurled"
+    }
+  ]
+}

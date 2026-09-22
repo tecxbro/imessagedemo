@@ -1,0 +1,33 @@
+{
+  "id": "unsupported-platform",
+  "silentOnFrozenDouble": false,
+  "note": "Only ios and macos are target platforms.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "android",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Hello",
+        "direction": "incoming",
+        "atMs": 1000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "platform",
+      "message": "Invalid option: expected one of \"ios\"|\"macos\""
+    }
+  ]
+}

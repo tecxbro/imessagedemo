@@ -1,0 +1,33 @@
+{
+  "id": "all-platform-screen",
+  "silentOnFrozenDouble": false,
+  "note": "An iOS screen value needs an explicit ios platform. There is no all-platform flow.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "all",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "list",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Hello",
+        "direction": "incoming",
+        "atMs": 1000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "platform",
+      "message": "Invalid option: expected one of \"ios\"|\"macos\""
+    }
+  ]
+}

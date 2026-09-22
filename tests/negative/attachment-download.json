@@ -1,0 +1,45 @@
+{
+  "id": "attachment-download",
+  "silentOnFrozenDouble": true,
+  "note": "A file card may show a name and size. An href would navigate or download.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "",
+        "direction": "outgoing",
+        "atMs": 1000,
+        "kind": "attachment",
+        "attachments": [
+          {
+            "name": "secret.pdf",
+            "size": "12 KB",
+            "href": "https://example.com/secret.pdf"
+          }
+        ]
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.attachments.0.href",
+      "message": "Unrecognized key: \"href\""
+    },
+    {
+      "path": "messages.0.attachments.0.href",
+      "message": "attachment href is not allowed"
+    }
+  ]
+}

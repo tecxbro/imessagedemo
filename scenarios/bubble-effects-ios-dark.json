@@ -1,0 +1,48 @@
+{
+  "id": "bubble-effects-ios-dark",
+  "title": "Bubble effects",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "bubble-effects-ios-dark-m01",
+      "text": "Slam.",
+      "direction": "outgoing",
+      "atMs": 1790008200000,
+      "effect": "slam",
+      "status": "delivered"
+    },
+    {
+      "id": "bubble-effects-ios-dark-m02",
+      "text": "Loud.",
+      "direction": "outgoing",
+      "atMs": 1790008260000,
+      "effect": "loud",
+      "status": "delivered"
+    },
+    {
+      "id": "bubble-effects-ios-dark-m03",
+      "text": "Gentle.",
+      "direction": "outgoing",
+      "atMs": 1790008320000,
+      "effect": "gentle",
+      "status": "delivered"
+    },
+    {
+      "id": "bubble-effects-ios-dark-m04",
+      "text": "Hidden until you swipe.",
+      "direction": "outgoing",
+      "atMs": 1790008380000,
+      "effect": "invisible-ink",
+      "status": "delivered"
+    }
+  ]
+}

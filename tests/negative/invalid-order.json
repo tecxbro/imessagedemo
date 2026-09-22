@@ -1,0 +1,38 @@
+{
+  "id": "invalid-order",
+  "silentOnFrozenDouble": true,
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Later",
+        "direction": "incoming",
+        "atMs": 5000
+      },
+      {
+        "id": "m2",
+        "text": "Earlier",
+        "direction": "outgoing",
+        "atMs": 4000
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.1.atMs",
+      "message": "arrives before the previous message"
+    }
+  ]
+}

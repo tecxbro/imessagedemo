@@ -1,0 +1,58 @@
+{
+  "id": "typing-status-macos-light",
+  "title": "Typing and delivery statuses including failure",
+  "platform": "macos",
+  "theme": "light",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "Trying again.",
+  "typing": true,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "typing-status-macos-light-m01",
+      "text": "Did it send?",
+      "direction": "incoming",
+      "atMs": 1790008200000,
+      "status": "read"
+    },
+    {
+      "id": "typing-status-macos-light-m02",
+      "text": "Sending the photo.",
+      "direction": "outgoing",
+      "atMs": 1790008260000,
+      "status": "sending"
+    },
+    {
+      "id": "typing-status-macos-light-m03",
+      "text": "Sent the address.",
+      "direction": "outgoing",
+      "atMs": 1790008320000,
+      "status": "sent"
+    },
+    {
+      "id": "typing-status-macos-light-m04",
+      "text": "It says delivered.",
+      "direction": "outgoing",
+      "atMs": 1790008380000,
+      "status": "delivered"
+    },
+    {
+      "id": "typing-status-macos-light-m05",
+      "text": "Marked read.",
+      "direction": "outgoing",
+      "atMs": 1790008440000,
+      "status": "read"
+    },
+    {
+      "id": "typing-status-macos-light-m06",
+      "text": "This one failed.",
+      "direction": "outgoing",
+      "atMs": 1790008500000,
+      "status": "failed"
+    }
+  ]
+}

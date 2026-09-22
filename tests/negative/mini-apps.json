@@ -1,0 +1,41 @@
+{
+  "id": "mini-apps",
+  "silentOnFrozenDouble": false,
+  "note": "Photon and mini apps are not installed on this pin.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Open the app",
+        "direction": "incoming",
+        "atMs": 1000,
+        "kind": "mini-app"
+      }
+    ],
+    "photon": {
+      "app": "spectrum"
+    }
+  },
+  "issues": [
+    {
+      "path": "messages.0.kind",
+      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\""
+    },
+    {
+      "path": "photon",
+      "message": "Unrecognized key: \"photon\""
+    }
+  ]
+}

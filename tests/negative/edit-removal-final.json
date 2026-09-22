@@ -1,0 +1,45 @@
+{
+  "id": "edit-removal-final",
+  "silentOnFrozenDouble": true,
+  "note": "Settled edit text and a removed message are not EditableBubble or UndoSendPoof. The freeze cannot store either final state.",
+  "input": {
+    "id": "negative",
+    "title": "Negative",
+    "platform": "ios",
+    "theme": "light",
+    "contact": {
+      "name": "Alex Morgan",
+      "initials": "AM"
+    },
+    "nowMs": 1790008860000,
+    "draft": "",
+    "typing": false,
+    "screen": "conversation",
+    "messages": [
+      {
+        "id": "m1",
+        "text": "Final wording",
+        "direction": "outgoing",
+        "atMs": 1000,
+        "edited": true
+      },
+      {
+        "id": "m2",
+        "text": "Gone",
+        "direction": "outgoing",
+        "atMs": 2000,
+        "removedAtMs": 2500
+      }
+    ]
+  },
+  "issues": [
+    {
+      "path": "messages.0.edited",
+      "message": "Unrecognized key: \"edited\""
+    },
+    {
+      "path": "messages.1.removedAtMs",
+      "message": "Unrecognized key: \"removedAtMs\""
+    }
+  ]
+}

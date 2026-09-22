@@ -1,0 +1,15 @@
+{
+  "id": "ios-new-message-ios-light",
+  "title": "iOS new message sheet",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Jordan Lee",
+    "initials": "JL"
+  },
+  "nowMs": 1790008860000,
+  "draft": "Hi Jordan",
+  "typing": false,
+  "screen": "new-message",
+  "messages": []
+}
