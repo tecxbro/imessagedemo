@@ -1,10 +1,9 @@
-import { forwardRef } from "react";
-import { notImplemented, type CatalogueSceneProps, type RendererHandle, type RendererProps } from "@/contracts";
-
-export const IosDemoRenderer = forwardRef<RendererHandle, RendererProps>(function IosDemoRenderer() {
-  return notImplemented("IosDemoRenderer");
-});
-
-export function IosCatalogueScene(_props: CatalogueSceneProps): never {
-  return notImplemented("IosCatalogueScene");
-}
+export { IosCatalogueScene, confidenceText } from "./catalogue";
+export { toUpstreamMessage } from "./adapt";
+export { statusClock } from "./clock";
+export { deriveCues, supportsArrival, typingFreezeDelay } from "./cues";
+export { viewportRectToFrame } from "./geometry";
+export { compileFrame, frameKey, projectFrame } from "./project";
+export { digestText } from "./readiness";
+export { IosDemoRenderer, IosFrame, IosInspectSession, bindIosHandle } from "./scene";
+export type { IosRendererHandle, IosSettleReceipt } from "./scene";
