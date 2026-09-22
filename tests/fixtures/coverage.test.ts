@@ -144,7 +144,7 @@ describe("catalogue expectations", () => {
     expect(scene).toBeDefined();
     expect(mac).toBeDefined();
     const props = { scene: scene as CatalogueSceneDefinition, theme: "light" } satisfies CatalogueSceneProps;
-    expect(() => IosCatalogueScene(props)).toThrow(/NOT_IMPLEMENTED: IosCatalogueScene/);
-    expect(() => MacCatalogueScene({ scene: mac as CatalogueSceneDefinition, theme: "dark" })).toThrow(/NOT_IMPLEMENTED: MacCatalogueScene/);
+    expect(IosCatalogueScene(props)).toMatchObject({ props: expect.anything() });
+    expect(MacCatalogueScene({ scene: mac as CatalogueSceneDefinition, theme: "dark" })).toMatchObject({ props: expect.anything() });
   });
 });

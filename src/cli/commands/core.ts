@@ -40,11 +40,17 @@ export function loadAuthoring(args: ParsedArgs, deps: CliDeps): LoadedDocument {
     throw new CliError("Demo file failed schema validation", EXIT_VALIDATION, { issues });
   }
   preflightAssets(parsed.data, deps.repoRoot);
+  const targets = declaredTargets(parsed.data, args.platform);
+  if (targets.length === 0) {
+    throw new CliError("Requested platform is not a declared target", EXIT_VALIDATION, {
+      issues: [{ path: "/targets", message: `PLATFORM_MISMATCH: ${args.platform ?? "requested"} is not declared` }],
+    });
+  }
   return {
     file,
     raw,
     document: parsed.data,
-    targets: declaredTargets(parsed.data, args.platform),
+    targets,
   };
 }
 

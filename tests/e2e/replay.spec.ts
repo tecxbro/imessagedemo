@@ -38,13 +38,14 @@ test.describe("replay determinism", () => {
       expect(Buffer.compare(reset, fresh)).toBe(0);
 
       const row = page.locator(`[data-slot="message-row"][data-message-id="${target.messageIds.at(-1) ?? ""}"]`);
-      if (target.messageIds.length > 0) await expect(row).toBeVisible();
+      if (scenario.screen === "conversation" && target.messageIds.length > 0) await expect(row).toBeVisible();
       if (scenario.id.startsWith("long-thread-")) {
         const tail = checkpoints[checkpoints.length - 1];
         await seek(page, tail.atMs);
         await expect(page.locator(`[data-slot="message-row"][data-message-id="${tail.messageIds.at(-1)}"]`)).toBeInViewport();
       }
       if (scenario.id.startsWith("bubble-effects-")) {
+        await seek(page, last.atMs);
         await expect(page.locator('[data-slot="message-row"][data-effect="slam"]')).toBeVisible();
         await expect(page.locator('[data-slot="message-row"][data-effect="invisible-ink"]')).toBeVisible();
       }
@@ -54,6 +55,7 @@ test.describe("replay determinism", () => {
         await expect(page.locator('[data-slot="failed-send-badge"]')).toBeVisible();
       }
       if (scenario.id.startsWith("media-")) {
+        await seek(page, last.atMs);
         const image = page.locator('[data-slot="message-images"] img').first();
         await expect(image).toHaveAttribute("src", /\/demo-assets\/.+\.png$/);
       }

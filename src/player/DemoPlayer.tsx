@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DemoPlayerProps, DemoPlatform, DemoTheme, RendererHandle } from "@/contracts";
 import profiles from "@/contracts/render-profiles.json";
 import { createPlayer } from "@/runtime";
 import { IosDemoRenderer } from "@/renderers/ios";
-import { MacDemoRenderer } from "@/renderers/macos";
+import { MacDemoRenderer, type MacRendererHandle } from "@/renderers/macos";
 import { CatalogueRoute, CatalogueSceneById, isCatalogueSceneId } from "@/player/catalogue";
 import { checkpointAt, createRuntimeSession } from "@/player/controller";
 import type { DemoRunManifest, NamedCheckpoint } from "@/player/types";
@@ -14,15 +14,34 @@ export type DemoPlayerViewProps = DemoPlayerProps & {
   scenarioId?: string;
   onScenario?: (id: string) => void;
   scenarios?: { id: string; title: string }[];
+  initialTimeMs?: number;
+  playbackBaseline?: number;
 };
 
-export function DemoPlayer({ compiled, ref, clean = false, checkpoints = [], scenarioId, onScenario, scenarios }: DemoPlayerViewProps) {
+export function DemoPlayer({
+  compiled,
+  ref,
+  clean = false,
+  checkpoints = [],
+  scenarioId,
+  onScenario,
+  scenarios,
+  initialTimeMs = 0,
+  playbackBaseline = 0,
+}: DemoPlayerViewProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<RendererHandle>(null);
+  const bindMacRenderer = useCallback((handle: MacRendererHandle | null) => {
+    rendererRef.current = handle;
+  }, []);
   const [platform, setPlatform] = useState<DemoPlatform>(compiled.platform);
   const [theme, setTheme] = useState<DemoTheme>(compiled.theme);
   const [tick, setTick] = useState(0);
-  const player = useMemo(() => createPlayer(compiled), [compiled]);
+  const player = useMemo(() => {
+    const created = createPlayer(compiled);
+    if (initialTimeMs !== 0) created.seek(initialTimeMs);
+    return created;
+  }, [compiled, initialTimeMs]);
   const session = useMemo(
     () =>
       createRuntimeSession({
@@ -56,12 +75,21 @@ export function DemoPlayer({ compiled, ref, clean = false, checkpoints = [], sce
     };
   }, [ref, session]);
 
+  if (typeof window !== "undefined") {
+    window.IMESSAGE_DEMO = session;
+    window.__demoPlayer = session;
+  }
+
   useEffect(() => {
     window.IMESSAGE_DEMO = session;
+    window.__demoPlayer = session;
     return () => {
       if (window.IMESSAGE_DEMO === session) delete window.IMESSAGE_DEMO;
+      if (window.__demoPlayer === session) delete window.__demoPlayer;
     };
   }, [session]);
+
+  useEffect(() => player.subscribe(() => setTick((value) => value + 1)), [player]);
 
   useEffect(() => {
     let frameId = 0;
@@ -76,7 +104,7 @@ export function DemoPlayer({ compiled, ref, clean = false, checkpoints = [], sce
   const state = player.state();
   const frame = { ...session.frame(), platform, theme };
   const profile = profiles[platform];
-  const Renderer = platform === "macos" ? MacDemoRenderer : IosDemoRenderer;
+  const compiledView = { ...compiled, platform, theme };
 
   return (
     <div data-demo-player="" data-clean={clean ? "true" : "false"} data-tick={tick}>
@@ -118,10 +146,15 @@ export function DemoPlayer({ compiled, ref, clean = false, checkpoints = [], sce
         data-demo-frame=""
         data-platform={platform}
         data-theme={theme}
+        data-playback-baseline={playbackBaseline}
         className={theme === "dark" ? "dark" : undefined}
         style={{ width: profile.width, height: profile.height }}
       >
-        <Renderer ref={rendererRef} compiled={{ ...compiled, platform, theme }} frame={frame} />
+        {platform === "macos" ? (
+          <MacDemoRenderer ref={bindMacRenderer} compiled={compiledView} frame={frame} />
+        ) : (
+          <IosDemoRenderer ref={rendererRef} compiled={compiledView} frame={frame} />
+        )}
       </div>
     </div>
   );

@@ -28,18 +28,34 @@ export default defineConfig({
     timeout: 120_000,
   },
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
-  projects: engines.flatMap((engine) =>
-    platforms.flatMap((platform) =>
-      themes.map((theme) => ({
-        name: `${engine}-${platform}-${theme}`,
-        testMatch: /foundation\/shell-smoke\.spec\.ts/,
-        use: {
-          browserName: engine,
-          viewport: { width: profiles[platform].width, height: profiles[platform].height },
-          deviceScaleFactor: 1,
-          colorScheme: theme === "dark" ? "dark" as const : "light" as const,
-        },
-      })),
+  projects: [
+    ...engines.flatMap((engine) =>
+      platforms.flatMap((platform) =>
+        themes.map((theme) => ({
+          name: `${engine}-${platform}-${theme}`,
+          testMatch: /foundation\/shell-smoke\.spec\.ts/,
+          use: {
+            browserName: engine,
+            viewport: { width: profiles[platform].width, height: profiles[platform].height },
+            deviceScaleFactor: 1,
+            colorScheme: theme === "dark" ? "dark" as const : "light" as const,
+          },
+        })),
+      ),
     ),
-  ),
+    ...engines.flatMap((engine) =>
+      platforms.flatMap((platform) =>
+        themes.map((theme) => ({
+          name: `${engine}-${platform}-${theme}-e2e`,
+          testMatch: /e2e\/.*\.spec\.ts/,
+          use: {
+            browserName: engine,
+            viewport: { width: profiles[platform].width, height: profiles[platform].height },
+            deviceScaleFactor: 1,
+            colorScheme: theme === "dark" ? "dark" as const : "light" as const,
+          },
+        })),
+      ),
+    ),
+  ],
 });

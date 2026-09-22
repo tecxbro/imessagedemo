@@ -26,6 +26,19 @@ describe("validate and compile", () => {
     expect(parseStdoutJson(io.stdout())).toMatchObject({ targets: ["ios"] });
   });
 
+  it("rejects a platform that is not a declared target", async () => {
+    const dir = mkdtempSync(path.join(os.tmpdir(), "imessage-target-"));
+    tempDirs.push(dir);
+    const raw = JSON.parse(readFileSync(fixturePath("valid-flow.json"), "utf8")) as { targets: string[] };
+    raw.targets = ["ios"];
+    const file = path.join(dir, "ios-only.json");
+    writeFileSync(file, JSON.stringify(raw));
+    const { deps, io } = makeDeps();
+    const code = await runCli(["validate", file, "--platform", "macos", "--json"], deps);
+    expect(code).toBe(2);
+    expect(JSON.stringify(parseStdoutJson(io.stdout()))).toContain("/targets");
+  });
+
   it("returns exit 2 for polls without launching capture", async () => {
     let engineCalls = 0;
     const { deps, io } = makeDeps({

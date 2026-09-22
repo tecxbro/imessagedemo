@@ -106,7 +106,8 @@ export async function runCaptureEngine(input: CaptureEngineInput): Promise<Captu
       await frame.waitFor({ state: "visible", timeout: 15_000 });
       const pngName = times.length === 1 ? "frame.png" : `frame-${String(sample.atMs).padStart(6, "0")}.png`;
       const pngPath = path.join(input.outputDir, pngName);
-      await frame.screenshot({ path: pngPath, animations: "disabled" });
+      // Leave paused Web Animations at the seeked time. "disabled" finishes them and erases a mid-flight pose.
+      await frame.screenshot({ path: pngPath, animations: "allow" });
       if (!existsSync(pngPath)) throw new CliError(`Capture did not write ${pngPath}`, EXIT_ENVIRONMENT);
       const pngBytes = readFileSync(pngPath);
       if (sniffImage(pngBytes) !== "png") throw new CliError("Capture output is not a PNG", EXIT_ENVIRONMENT);

@@ -1,6 +1,15 @@
 import type { ReadinessReceipt } from "@/renderers/macos/types";
 
-const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+const nextFrame = () => new Promise<void>((resolve) => {
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    resolve();
+  };
+  requestAnimationFrame(() => finish());
+  setTimeout(finish, 50);
+});
 
 export async function waitForMacReady(
   root: HTMLElement,
@@ -20,11 +29,21 @@ export async function waitForMacReady(
   if (document.fonts?.ready) await document.fonts.ready;
   failIfStale();
 
-  const images = [...root.querySelectorAll("img")];
-  try {
-    await Promise.all(images.map((img) => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode())));
-  } catch (error) {
-    throw new Error(`asset decode failed: ${error instanceof Error ? error.message : String(error)}`);
+  const decodeDeadline = performance.now() + 2500;
+  while (performance.now() < decodeDeadline) {
+    failIfStale();
+    const pending = [...root.querySelectorAll("img")].filter((img) => img.isConnected && (!img.complete || img.naturalWidth === 0));
+    if (pending.length === 0) break;
+    await Promise.race([
+      Promise.all(pending.map((img) => img.decode().catch(() => undefined))),
+      new Promise((resolve) => setTimeout(resolve, 50)),
+    ]);
+    await nextFrame();
+  }
+  const stuck = [...root.querySelectorAll("img")].filter((img) => img.isConnected && (!img.complete || img.naturalWidth === 0));
+  if (stuck.length > 0) {
+    const src = stuck[0]?.currentSrc || stuck[0]?.getAttribute("src") || "image";
+    throw new Error(`asset decode failed: ${src}`);
   }
   failIfStale();
 

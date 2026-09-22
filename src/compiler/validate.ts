@@ -980,7 +980,7 @@ function readImages(
       invalid = true;
       return;
     }
-    if (typeof item.src !== "string" || !isConfinedRelativePath(item.src)) {
+    if (typeof item.src !== "string" || !isDemoImageSrc(item.src)) {
       issues.push(issue(`${path}/src`, "INVALID_ASSET", "images must be local paths inside the asset root"));
       invalid = true;
     }
@@ -1001,7 +1001,7 @@ function readImages(
       issues.push(issue(`${path}/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
       invalid = true;
     }
-    if (typeof item.src === "string" && isConfinedRelativePath(item.src) && typeof item.alt === "string") {
+    if (typeof item.src === "string" && isDemoImageSrc(item.src) && typeof item.alt === "string") {
       const copy: NonNullable<DemoMessage["images"]>[number] = { src: item.src, alt: item.alt };
       if (typeof item.width === "number" && Number.isSafeInteger(item.width) && item.width > 0) copy.width = item.width;
       if (typeof item.height === "number" && Number.isSafeInteger(item.height) && item.height > 0) copy.height = item.height;
@@ -1206,6 +1206,11 @@ function isDisplayedHttpUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+function isDemoImageSrc(value: string): boolean {
+  if (value.startsWith("/demo-assets/")) return isConfinedRelativePath(value.slice("/demo-assets/".length));
+  return isConfinedRelativePath(value);
 }
 
 function isConfinedRelativePath(value: string): boolean {

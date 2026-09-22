@@ -409,6 +409,41 @@ describe("node boundary", () => {
     }
   });
 
+  it("accepts public demo-asset image paths and rejects a parent escape", () => {
+    const local = validateDemo(
+      flow({
+        messages: [
+          {
+            id: "img",
+            text: "",
+            direction: "incoming",
+            atMs: firstAt,
+            kind: "image",
+            images: [{ src: "/demo-assets/park-64x48.png", alt: "Park" }],
+          },
+        ],
+      }),
+    );
+    const escaped = validateDemo(
+      flow({
+        messages: [
+          {
+            id: "img",
+            text: "",
+            direction: "incoming",
+            atMs: firstAt,
+            kind: "image",
+            images: [{ src: "/demo-assets/../package.json", alt: "Escape" }],
+          },
+        ],
+      }),
+    );
+    expect(local.ok).toBe(true);
+    expect(escaped.ok).toBe(false);
+    if (escaped.ok) return;
+    expect(escaped.issues.some((entry) => entry.path === "/messages/0/images/0/src")).toBe(true);
+  });
+
   it("does not import the pinned browser components", () => {
     const directory = path.resolve("src/compiler");
     const source = readdirSync(directory)

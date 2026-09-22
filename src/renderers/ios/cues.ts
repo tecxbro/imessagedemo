@@ -48,7 +48,7 @@ export function deriveCues(compiled: CompiledDemo, frame: RenderFrame): CueState
   if (latest && supportsArrival(latest.message) && !latest.message.effect) {
     const duration = latest.message.direction === "outgoing" ? messageMotion.send.duration : messageMotion.receive.duration;
     const elapsed = frame.timeMs - latest.atMs;
-    if (elapsed >= 0 && elapsed < duration) {
+    if (elapsed > 0 && elapsed < duration) {
       const pose = { id: latest.message.id, progress: elapsed / duration };
       if (latest.message.direction === "outgoing") send = pose;
       else receive = pose;

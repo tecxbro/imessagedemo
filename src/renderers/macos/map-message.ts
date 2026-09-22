@@ -1,10 +1,10 @@
-import type { DemoMessage, RenderFrame } from "@/contracts";
+import type { CompiledDemo, DemoMessage, RenderFrame } from "@/contracts";
 import { formatClockTime } from "@/components/imessage/date-separator";
+import { messageMotion } from "@/components/imessage/message-motion";
 import type { Message } from "@/components/imessage/message-list";
 import type { SidebarConversation } from "@/components/imessage/macos-sidebar";
 import { macTransitions } from "@/components/imessage/macos-messages-app";
-import { messageMotion } from "@/components/imessage/message-motion";
-import type { MacConversationInput, MacMessageExtras, MacSceneInput } from "@/renderers/macos/types";
+import type { MacArrival, MacConversationInput, MacMessageExtras, MacSceneInput } from "@/renderers/macos/types";
 
 type CarriedMessage = DemoMessage & MacMessageExtras;
 
@@ -241,6 +241,25 @@ export function toSidebarConversation(conversation: ResolvedConversation, nowMs:
     muted: conversation.muted,
     unread: conversation.unread,
     photo: conversation.contact.photo,
+  };
+}
+
+export function playbackArrival(compiled: CompiledDemo, frame: RenderFrame): MacArrival | null {
+  let latest: { atMs: number; message: CompiledDemo["events"][number] & { type: "message" } } | null = null;
+  for (const event of compiled.events) {
+    if (event.type !== "message" || event.atMs > frame.timeMs) continue;
+    if (!latest || event.atMs >= latest.atMs) latest = { atMs: event.atMs, message: event };
+  }
+  if (!latest) return null;
+  const message = latest.message.message;
+  if (message.effect || (message.kind && message.kind !== "text")) return null;
+  const duration = message.direction === "outgoing" ? messageMotion.send.duration : messageMotion.receive.duration;
+  const elapsed = frame.timeMs - latest.atMs;
+  if (elapsed <= 0 || elapsed >= duration) return null;
+  return {
+    id: message.id,
+    kind: message.direction === "outgoing" ? "send" : "receive",
+    progress: elapsed / duration,
   };
 }
 

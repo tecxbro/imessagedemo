@@ -57,5 +57,6 @@ export type IMessageDemoApi = {
 declare global {
   interface Window {
     IMESSAGE_DEMO?: IMessageDemoApi;
+    __demoPlayer?: IMessageDemoApi;
   }
 }

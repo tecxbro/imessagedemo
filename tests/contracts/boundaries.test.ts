@@ -10,12 +10,25 @@ import { compileDemoDouble, createPlayerDouble, frameAtDouble, validateDemoDoubl
 import { renderFrameFixture } from "./render-frame.fixture";
 
 describe("production boundaries", () => {
-  it("rejects calls instead of returning an empty success", () => {
-    expect(() => validateDemo({})).toThrow(/NOT_IMPLEMENTED: validateDemo/);
-    expect(() => compileDemo(renderFrameToFlow())).toThrow(/NOT_IMPLEMENTED: compileDemo/);
-    expect(() => stateAt(compiledFixture, 0)).toThrow(/NOT_IMPLEMENTED: stateAt/);
-    expect(() => frameAt(compiledFixture, 0)).toThrow(/NOT_IMPLEMENTED: frameAt/);
-    expect(() => createPlayer(compiledFixture)).toThrow(/NOT_IMPLEMENTED: createPlayer/);
+  it("validates, compiles, and seeks instead of returning an empty success", () => {
+    const rejected = validateDemo({});
+    expect(rejected.ok).toBe(false);
+    if (rejected.ok) return;
+    expect(rejected.issues.length).toBeGreaterThan(0);
+
+    const validated = validateDemo(renderFrameToFlow());
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    const compiled = compileDemo(validated.demo);
+    expect(compiled.events.some((event) => event.type === "message" && event.message.text === validated.demo.messages[0]?.text)).toBe(true);
+    const frame = frameAt(compiled, compiled.durationMs);
+    expect(frame.messages.map((message) => message.text)).toEqual(validated.demo.messages.map((message) => message.text));
+    const player = createPlayer(compiled);
+    player.seek(0);
+    expect(player.state().timeMs).toBe(0);
+    player.seek(compiled.durationMs);
+    expect(player.frame().messages).toHaveLength(frame.messages.length);
+    expect(stateAt(compiledFixture, 0).messages.length).toBeGreaterThan(0);
   });
 });
 
@@ -48,11 +61,13 @@ describe("pinned profiles", () => {
 });
 
 describe("foundation shell boundary", () => {
-  it("does not import unfinished lanes", () => {
+  it("keeps the stock shell on the pin and routes flows through the player", () => {
     const app = readFileSync(new URL("../../src/App.tsx", import.meta.url), "utf8");
     const preview = readFileSync(new URL("../../src/foundation/ShellPreview.tsx", import.meta.url), "utf8");
-    const combined = `${app}\n${preview}`;
-    expect(combined).not.toMatch(/@\/compiler|@\/runtime|@\/renderers|@\/player|@\/cli/);
+    expect(preview).not.toMatch(/@\/compiler|@\/runtime|@\/renderers|@\/player|@\/cli/);
+    expect(app).toContain("ShellPreview");
+    expect(app).toContain("@/compiler");
+    expect(app).toContain("@/player");
   });
 });
 

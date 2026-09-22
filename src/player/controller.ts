@@ -139,27 +139,33 @@ export function checkpointAt(checkpoints: NamedCheckpoint[], id: string): NamedC
 
 function nextTick(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof requestAnimationFrame === "function") {
-      requestAnimationFrame(() => resolve());
-      return;
-    }
     setTimeout(resolve, 0);
   });
 }
 
 async function waitForAssets(element: HTMLElement): Promise<void> {
   const fonts = (element.ownerDocument as Document | undefined)?.fonts;
-  if (fonts?.ready) await fonts.ready;
-  const images = [...element.querySelectorAll("img")];
-  await Promise.all(
-    images.map((image) => {
-      if (image.complete) return Promise.resolve();
-      return new Promise<void>((resolve, reject) => {
+  if (fonts?.ready) {
+    await Promise.race([fonts.ready, sleep(2000)]);
+  }
+  const deadline = Date.now() + 2500;
+  while (Date.now() < deadline) {
+    const pending = [...element.querySelectorAll("img")].filter((image) => image.isConnected && !image.complete);
+    if (pending.length === 0) return;
+    await Promise.race([
+      Promise.all(pending.map((image) => new Promise<void>((resolve) => {
         image.addEventListener("load", () => resolve(), { once: true });
-        image.addEventListener("error", () => reject(new Error(`Image failed: ${image.src}`)), { once: true });
-      });
-    }),
-  );
+        image.addEventListener("error", () => resolve(), { once: true });
+      }))),
+      sleep(50),
+    ]);
+  }
+  const stuck = [...element.querySelectorAll("img")].filter((image) => image.isConnected && !image.complete);
+  if (stuck.length > 0) throw new Error(`Image failed: ${stuck[0]?.currentSrc || stuck[0]?.src || "image"}`);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function assertReceiptRevision(receipt: ReadyReceipt, revision: number): void {

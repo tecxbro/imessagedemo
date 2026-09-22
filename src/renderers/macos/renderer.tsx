@@ -4,7 +4,8 @@ import { MacMessagesApp, macScreen } from "@/components/imessage/macos-messages-
 import { ReplyThread } from "@/components/imessage/message-reply";
 import { ScreenEffect } from "@/components/imessage/screen-effects";
 import { useBubbleEffectOnMessage } from "@/components/imessage/message-effects";
-import { arrivalFor, mapDemoMessage, resolveMacScene, toSidebarConversation, type ResolvedConversation } from "@/renderers/macos/map-message";
+import { typingFreezeDelay } from "@/renderers/ios/cues";
+import { arrivalFor, mapDemoMessage, playbackArrival, resolveMacScene, toSidebarConversation, type ResolvedConversation } from "@/renderers/macos/map-message";
 import { macSourceLimitations, rejectMacFrame } from "@/renderers/macos/limits";
 import { waitForMacReady } from "@/renderers/macos/readiness";
 import { initialSwitchPhase, isSwitchAligned, nextSwitchPhase, type SwitchPhase } from "@/renderers/macos/switch-phase";
@@ -46,12 +47,23 @@ export const MacDemoRenderer = forwardRef<MacRendererHandle, MacDemoRendererProp
     setPhase((current) => nextSwitchPhase(current, modelRef.current.checkpoint, Boolean(modelRef.current.switchFrom)));
   }, [model.checkpoint, phase.kind, phase.checkpoint]);
 
+  useLayoutEffect(() => {
+    const root = windowRef.current;
+    if (!root || !frame.typing) return;
+    root.querySelectorAll<HTMLElement>('[data-slot="typing-indicator"] > span[data-dot]').forEach((dot) => {
+      const index = Number(dot.dataset.dot ?? 0);
+      dot.style.animationDelay = typingFreezeDelay(index, Math.max(0, frame.timeMs));
+      dot.style.animationPlayState = "paused";
+    });
+  }, [frame.typing, frame.timeMs, model.checkpoint]);
+
   const aligned = isSwitchAligned(phase, model.checkpoint, Boolean(model.switchFrom));
   const presentingFrom = Boolean(model.switchFrom) && !aligned;
   const presented = presentingFrom && model.switchFrom ? model.switchFrom : model.selected;
   const presentedMessages = messagesFor(presented);
-  const arrivalTarget = model.arrival ? presentedMessages.find((message) => message.id === model.arrival?.id) : undefined;
-  const arrival = presentingFrom ? { send: null, receive: null } : arrivalFor(arrivalTarget, model.arrival);
+  const timedArrival = model.arrival ?? playbackArrival(compiled, frame);
+  const arrivalTarget = timedArrival ? presentedMessages.find((message) => message.id === timedArrival.id) : undefined;
+  const arrival = presentingFrom ? { send: null, receive: null } : arrivalFor(arrivalTarget, timedArrival);
   const bubbleEffect = useMemo(() => {
     if (presentingFrom || !model.bubbleEffect) return null;
     return model.bubbleEffect;
@@ -62,7 +74,9 @@ export const MacDemoRenderer = forwardRef<MacRendererHandle, MacDemoRendererProp
   const conversationTransition = aligned && model.switchFrom
     ? model.conversationProgress === undefined ? {} : { progress: model.conversationProgress }
     : null;
-  const shellKey = model.switchFrom ? "switching" : `settled:${model.selected.id}`;
+  const shellKey = model.switchFrom
+    ? "switching"
+    : `settled:${model.selected.id}:${presented.messages.length}:${presented.messages.at(-1)?.id ?? ""}`;
   const inspect = inspectCleared ? null : model.inspect;
   const flightRef = useRef({ arrival: false, switching: false });
   const rejectionRef = useRef(rejection);
@@ -113,6 +127,13 @@ export const MacDemoRenderer = forwardRef<MacRendererHandle, MacDemoRendererProp
         data-context-message-id={model.contextMenu?.id}
         className={frame.theme === "dark" ? "dark" : undefined}
         style={{ width: macScreen.width, height: macScreen.height, position: "relative" }}
+        onClickCapture={(event) => {
+          const target = event.target instanceof Element ? event.target : null;
+          if (target?.closest("a")) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
       >
         {!rejection && (
           <MacMessagesApp
@@ -154,7 +175,11 @@ export const MacDemoRenderer = forwardRef<MacRendererHandle, MacDemoRendererProp
           />
         )}
       </div>
-      <aside data-developer-metadata data-confidence="mixed">
+      <aside
+        data-developer-metadata
+        data-confidence="mixed"
+        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }}
+      >
         {macSourceLimitations.map((item) => (
           <span key={item.id} data-limitation={item.id} data-confidence={item.confidence}>{item.summary}</span>
         ))}

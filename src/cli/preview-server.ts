@@ -45,7 +45,7 @@ export async function startPreviewServer(options: {
   try {
     server = await createServer({
       configFile: false,
-      root: path.join(options.repoRoot, "src/player/host"),
+      root: options.repoRoot,
       publicDir: path.join(options.repoRoot, "public"),
       appType: "spa",
       plugins: [react(), tailwindcss(), demoManifestPlugin(options.manifestPath)],

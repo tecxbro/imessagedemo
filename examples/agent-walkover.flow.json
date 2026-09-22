@@ -1,0 +1,32 @@
+{
+  "id": "agent-walkover",
+  "title": "Agent walk over",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan", "initials": "AM" },
+  "nowMs": 1790008860000,
+  "draft": "On my way over.",
+  "typing": false,
+  "screen": "conversation",
+  "targets": ["ios", "macos"],
+  "checkpoints": [
+    { "id": "after-question", "atMs": 0 },
+    { "id": "after-reply", "atMs": 1000 }
+  ],
+  "messages": [
+    {
+      "id": "in-1",
+      "text": "Are you close? The gate is on the south side of the park, past the fountain.",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "out-1",
+      "text": "See you there.",
+      "direction": "outgoing",
+      "atMs": 1790008741000,
+      "status": "delivered"
+    }
+  ]
+}

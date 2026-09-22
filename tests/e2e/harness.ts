@@ -81,12 +81,22 @@ export async function installObservers(page: Page) {
   return { pageErrors, consoleErrors, external, downloads };
 }
 
+export function playbackMs(scenario: Scenario, atMs: number): number {
+  const baseline = scenario.messages[0]?.atMs ?? 0;
+  if (baseline > 0 && atMs >= baseline) return atMs - baseline;
+  return atMs;
+}
+
 export async function openFlow(page: Page, scenario: Scenario, atMs: number) {
+  await page.addInitScript((payload) => {
+    window.sessionStorage.setItem("imessage-demo-inline", JSON.stringify(payload));
+  }, scenario);
   await page.setViewportSize({ width: profiles[scenario.platform].width, height: profiles[scenario.platform].height });
   await page.emulateMedia({ colorScheme: scenario.theme === "dark" ? "dark" : "light" });
-  await page.goto(`/?flow=${scenario.id}&t=${atMs}`);
+  await page.goto(`/?flow=${scenario.id}&t=${playbackMs(scenario, atMs)}`);
   const shell = page.locator(`[data-slot="${shellSlot(scenario.platform)}"]`);
   await expect(shell).toBeVisible();
+  await seek(page, atMs);
   const box = await shell.boundingBox();
   expect(box?.width).toBe(profiles[scenario.platform].width);
   expect(box?.height).toBe(profiles[scenario.platform].height);
@@ -95,10 +105,16 @@ export async function openFlow(page: Page, scenario: Scenario, atMs: number) {
 }
 
 export async function seek(page: Page, atMs: number) {
-  await page.evaluate((time) => {
-    const player = (window as Window & { __demoPlayer?: { seek(ms: number): void } }).__demoPlayer;
+  await page.evaluate(async (time) => {
+    const frame = document.querySelector("[data-demo-frame]");
+    const baseline = Number(frame?.getAttribute("data-playback-baseline") ?? "0");
+    const playback = baseline > 0 && time >= baseline ? time - baseline : time;
+    const player = (window as Window & {
+      __demoPlayer?: { seek(ms: number): Promise<{ revision: number }>; ready(revision: number): Promise<unknown> };
+    }).__demoPlayer;
     if (!player) throw new Error("demo player seek hook is missing");
-    player.seek(time);
+    const result = await player.seek(playback);
+    await player.ready(result.revision);
   }, atMs);
 }
 

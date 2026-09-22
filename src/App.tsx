@@ -1,4 +1,18 @@
+import { useEffect, useState } from "react";
+import { compileDemo, validateDemo } from "@/compiler";
+import type { DemoFlow, ValidationIssue } from "@/contracts";
 import { ShellPreview } from "@/foundation/ShellPreview";
+import { PlayerHost, isCatalogueSceneId } from "@/player";
+import { DemoPlayer } from "@/player/DemoPlayer";
+import type { DemoRunManifest } from "@/player/types";
+
+const scenarioModules = import.meta.glob("../scenarios/*.json", { eager: true, import: "default" }) as Record<string, DemoFlow>;
+const negativeModules = import.meta.glob("../tests/negative/*.json", { eager: true, import: "default" }) as Record<
+  string,
+  { id: string; input: unknown; issues?: Array<{ path: string }> }
+>;
+
+const INLINE_KEY = "imessage-demo-inline";
 
 export function App() {
   const params = new URLSearchParams(window.location.search);
@@ -7,16 +21,125 @@ export function App() {
   if (foundation === "ios" || foundation === "macos") {
     return <ShellPreview platform={foundation} theme={theme} />;
   }
+
+  const flow = params.get("flow");
+  if (flow === "negative") return <NegativeCase id={params.get("case")} />;
+  if (flow) return <FlowRoute id={flow} atMs={readTime(params.get("t"))} />;
+  return <ManifestRoute />;
+}
+
+function FlowRoute({ id, atMs }: { id: string; atMs: number }) {
+  const flow = resolveFlow(id);
+  if (!flow) {
+    return <ScenarioError issues={[{ path: "/id", message: `UNKNOWN_FLOW: no scenario named ${id}` }]} />;
+  }
+  const validated = validateDemo(flow);
+  if (!validated.ok) return <ScenarioError issues={validated.issues} />;
+  const compiled = compileDemo(validated.demo);
+  const baseline = validated.demo.messages[0]?.atMs ?? 0;
+  return (
+    <DemoPlayer
+      compiled={compiled}
+      clean
+      initialTimeMs={atMs}
+      playbackBaseline={baseline}
+      scenarioId={compiled.id}
+    />
+  );
+}
+
+function NegativeCase({ id }: { id: string | null }) {
+  const file = Object.values(negativeModules).find((entry) => entry.id === id);
+  if (!file) {
+    return <ScenarioError issues={[{ path: "/case", message: `UNKNOWN_CASE: ${id ?? ""}` }]} />;
+  }
+  const validated = validateDemo(file.input);
+  const issues = validated.ok
+    ? [{ path: "/", message: "INVALID_VALUE: negative case was accepted" }]
+    : validated.issues;
+  return <ScenarioError issues={issues} />;
+}
+
+function ManifestRoute() {
+  const [state, setState] = useState<"loading" | "missing" | DemoRunManifest>("loading");
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/__demo/manifest.json")
+      .then(async (response) => {
+        if (!response.ok) {
+          if (!cancelled) setState("missing");
+          return;
+        }
+        const manifest = (await response.json()) as DemoRunManifest;
+        if (!cancelled) setState(manifest);
+      })
+      .catch(() => {
+        if (!cancelled) setState("missing");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state === "loading") return null;
+  if (state === "missing") return <Home />;
+  const requested = new URLSearchParams(window.location.search).get("scenario");
+  if (requested && requested !== state.approvedScenarioId && !isCatalogueSceneId(requested)) {
+    return <p>Scenario is not approved for this run.</p>;
+  }
+  return <PlayerHost manifest={state} />;
+}
+
+function Home() {
   return (
     <main style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif", padding: 24 }}>
       <h1>iMessage demo maker</h1>
-      <p>Foundation shells mount the pinned components directly. Lane entry points are not implemented.</p>
+      <p>Write a flow, validate it, then preview or capture it. This page does not send messages.</p>
       <ul>
-        <li><a href="/?foundation=ios">iOS shell</a></li>
-        <li><a href="/?foundation=macos">macOS shell</a></li>
-        <li><a href="/?foundation=ios&theme=dark">iOS shell, dark</a></li>
-        <li><a href="/?foundation=macos&theme=dark">macOS shell, dark</a></li>
+        <li><a href="/?foundation=ios">Foundation iOS shell</a></li>
+        <li><a href="/?foundation=macos">Foundation macOS shell</a></li>
+        <li><a href="/?flow=basic-ios-light&t=0">Basic iOS flow</a></li>
+        <li><a href="/?flow=basic-macos-dark&t=0">Basic macOS flow</a></li>
       </ul>
     </main>
   );
+}
+
+function ScenarioError({ issues }: { issues: ValidationIssue[] }) {
+  return (
+    <main data-slot="scenario-error" style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif", padding: 24 }}>
+      {issues.map((issue) => (
+        <p key={`${issue.path}:${issue.message}`}>
+          {dotted(issue.path)} {issue.path} {issue.message}
+        </p>
+      ))}
+    </main>
+  );
+}
+
+function resolveFlow(id: string): DemoFlow | null {
+  const inline = readInline();
+  if (inline?.id === id) return inline;
+  return Object.values(scenarioModules).find((flow) => flow.id === id) ?? null;
+}
+
+function readInline(): DemoFlow | null {
+  try {
+    const raw = window.sessionStorage.getItem(INLINE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DemoFlow;
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function readTime(value: string | null): number {
+  if (value === null || value === "") return 0;
+  const time = Number(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function dotted(path: string): string {
+  return path.replace(/^\//, "").replace(/\/(\d+)(?=\/|$)/g, ".$1").replaceAll("/", ".");
 }

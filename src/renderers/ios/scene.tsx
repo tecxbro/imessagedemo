@@ -170,7 +170,7 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         sendAnimation={view.sendAnimation}
         receiveAnimation={view.receiveAnimation}
         overlay={overlay ?? shell?.overlay}
-        style={{ ...shell?.style, pointerEvents: interactive ? undefined : "none" }}
+        style={shell?.style}
       />
     </div>
   );

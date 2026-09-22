@@ -1,0 +1,20 @@
+{
+  "id": "unsupported-poll",
+  "title": "Unsupported poll",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan", "initials": "AM" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "poll-1",
+      "text": "Lunch?",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "kind": "poll"
+    }
+  ]
+}

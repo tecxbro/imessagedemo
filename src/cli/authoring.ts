@@ -30,9 +30,7 @@ export function toDemoFlow(document: AuthoringDocument, platform: DemoPlatform):
 
 export function declaredTargets(document: AuthoringDocument, constraint?: DemoPlatform): DemoPlatform[] {
   const declared = document.targets ?? [document.platform];
-  if (!constraint) return declared;
-  if (!declared.includes(constraint)) {
-    return [constraint];
-  }
+  if (!constraint) return [...declared];
+  if (!declared.includes(constraint)) return [];
   return [constraint];
 }

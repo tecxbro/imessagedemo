@@ -28,8 +28,8 @@ describe("source integrity", () => {
   });
 });
 
-describe("unfinished application lanes", () => {
-  it("still throws NOT_IMPLEMENTED, so assembled capture is blocked", () => {
+describe("assembled application lanes", () => {
+  it("compiles a flow and seeks it", () => {
     const flow: DemoFlow = {
       id: "gate",
       title: "Gate",
@@ -40,18 +40,25 @@ describe("unfinished application lanes", () => {
       draft: "",
       typing: false,
       screen: "conversation",
-      messages: [],
+      messages: [
+        { id: "m1", text: "Are you close?", direction: "incoming", atMs: 0 },
+      ],
     };
-    expect(() => validateDemo(flow)).toThrow(/NOT_IMPLEMENTED: validateDemo/);
-    expect(() => compileDemo(flow)).toThrow(/NOT_IMPLEMENTED: compileDemo/);
-    expect(() => frameAt(compiledFixture, 0)).toThrow(/NOT_IMPLEMENTED: frameAt/);
-    expect(() => createPlayer(compiledFixture)).toThrow(/NOT_IMPLEMENTED: createPlayer/);
+    const validated = validateDemo(flow);
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    const compiled = compileDemo(validated.demo);
+    expect(compiled.events.some((event) => event.type === "message")).toBe(true);
+    expect(frameAt(compiled, 0).messages.map((message) => message.text)).toEqual(["Are you close?"]);
+    const player = createPlayer(compiledFixture);
+    player.seek(compiledFixture.durationMs);
+    expect(player.frame().timeMs).toBe(compiledFixture.durationMs);
     expect(() => notImplemented("demo")).toThrow(/NOT_IMPLEMENTED: demo/);
   });
 
-  it("leaves the root Playwright config on the foundation smoke project", () => {
+  it("keeps foundation smoke and adds the assembled e2e projects", () => {
     const config = readFileSync(path.join(root, "playwright.config.ts"), "utf8");
     expect(config).toContain("foundation\\/shell-smoke\\.spec\\.ts");
-    expect(config).not.toContain("tests/e2e");
+    expect(config).toContain("e2e\\/.*\\.spec\\.ts");
   });
 });

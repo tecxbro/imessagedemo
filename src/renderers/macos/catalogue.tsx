@@ -111,7 +111,11 @@ export function MacCatalogueScene({ scene, theme }: CatalogueSceneProps) {
   return (
     <div data-mac-catalogue={scene.id}>
       <div data-slot="captured-scene" data-tier={scene.tier}>{captured}</div>
-      <aside data-developer-metadata data-confidence={scene.tier}>
+      <aside
+        data-developer-metadata
+        data-confidence={scene.tier}
+        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }}
+      >
         <span>{scene.summary}</span>
         {notes.map((item) => (
           <span key={item.id} data-limitation={item.id} data-confidence={item.confidence}>{item.summary}</span>
