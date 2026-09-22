@@ -1,0 +1,20 @@
+{
+  "id": "poll-demo",
+  "title": "Poll demo",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "polls": [{ "question": "Lunch?", "options": ["Yes", "No"] }],
+  "messages": [
+    {
+      "id": "in-1",
+      "text": "Lunch?",
+      "direction": "incoming",
+      "atMs": 1790008740000
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Capture fixture</title>
+    <style>
+      html, body { margin: 0; }
+      [data-demo-frame] { width: 402px; height: 874px; background: #ffffff; }
+    </style>
+  </head>
+  <body>
+    <a href="https://example.com/article">example.com</a>
+    <div data-demo-frame data-platform="ios" data-theme="light"></div>
+    <script>
+      let revision = 0;
+      let timeMs = 0;
+      window.IMESSAGE_DEMO = {
+        async seek(next) {
+          revision += 1;
+          timeMs = next;
+          return { revision, timeMs };
+        },
+        async reset() {
+          revision += 1;
+          timeMs = 0;
+          return { revision, timeMs: 0 };
+        },
+        async ready(requested) {
+          const current = requested ?? revision;
+          return {
+            revision: current,
+            timeMs,
+            platform: "ios",
+            theme: "light",
+            digest: "fixture",
+            renderer: { timeMs, platform: "ios", theme: "light", width: 402, height: 874 },
+          };
+        },
+        async play() {},
+        async pause() {},
+        state() { return { timeMs, playing: false, durationMs: 2000 }; },
+        frame() {
+          return {
+            timeMs,
+            platform: "ios",
+            theme: "light",
+            screen: "conversation",
+            contact: { name: "Alex Morgan" },
+            nowMs: 0,
+            messages: [],
+            typing: false,
+            draft: "",
+          };
+        },
+      };
+    </script>
+  </body>
+</html>
