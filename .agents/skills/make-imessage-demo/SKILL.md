@@ -9,6 +9,8 @@ This is the renderer executor for a **local visual demo maker**. Produce one JSO
 
 ## Skill handoff and source of truth
 
+For project setup without a company, follow [Agent bootstrap](../../../docs/agent-bootstrap.md) first. Load the included skills, verify the supplied example, and start a usable preview before asking for a company name. Do not treat the repository URL as a company brief or start research during setup. Read-only review stays read-only; an already supplied company/transcript continues after setup without another question.
+
 If the user supplies only a company name or URL, read [Photon Demo Creator](../photon-demo-creator/SKILL.md) and its HTML workflow to prepare the brief, assets, and conversations first. If a brief, exact transcript, or flow already exists, execute it here without restarting research or routing back. Either skill can be the user's only tag.
 
 Photon Demo Creator owns research, conversation count/defaults, story selection, asset provenance, and visual review. This skill owns the current renderer contract and commands. Code and capability output control actual support; neither skill adds capabilities. The repository copies are canonical in this checkout.

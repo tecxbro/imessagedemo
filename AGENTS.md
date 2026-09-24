@@ -2,6 +2,12 @@
 
 This is an assembled, agent-operated **local visual demo maker**, not a messaging provider. The app entry is `src/main.tsx` -> `src/App.tsx`. Use the pinned source in `src/components/imessage` and `vendor/upstream`; do not replace or silently patch it to make a demo work.
 
+## First-run setup
+
+For a request to set up, install, clone, or get this project running for demo creation, follow [Agent bootstrap](docs/agent-bootstrap.md) before company research. A request that supplies this repository for setup is not a request to make a demo about this repository. Do not ask for a company name before setup is verified. Load both existing skills; do not generate another skill or overwrite personal/global skill folders.
+
+A repository link plus a read-only review/question remains read-only. If the user already supplied a company or transcript along with setup, finish the necessary setup and continue that task without asking again. Otherwise, after the required checks pass, report the loaded skills and real preview/capture paths, then end with `hit me with a company name.` Missing tools, access, dependency downloads, capture, or preview reachability are blockers/partial results, not permission to claim readiness.
+
 ## Skills and ordinary demo work
 
 The canonical skills are versioned together in this repository:
@@ -30,6 +36,6 @@ Historical lane ownership:
 | WT-05 | codex/wt-05-player | `src/player/**` |
 | WT-06 | codex/wt-06-cli | `src/cli/**` |
 
-Run checks appropriate to the changed surface. For skill/docs alignment, run `node scripts/check-demo-skills.mjs`; this is not a substitute for flow validation, browser review, or application tests. Preserve test doubles in tests, not production source.
+Run checks appropriate to the changed surface. For skill/docs alignment, run `node scripts/check-demo-skills.mjs` and `node scripts/check-agent-bootstrap.mjs`; this is not a substitute for flow validation, browser review, or application tests. Preserve test doubles in tests, not production source.
 
 Polls, Photon mini apps, and provider accounts remain out of scope. The public `imessage.swerdlow.dev` registry is larger than the pin; do not install it over `vendor/upstream`. Historical release/handoff reports are evidence from their recorded run, not fresh test results.

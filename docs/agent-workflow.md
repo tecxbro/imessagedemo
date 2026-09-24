@@ -2,6 +2,12 @@
 
 The agent supplies the company research and conversation. The existing renderer draws it. No additional AI service, provider account, custom Messages UI, or renderer rebuild is required for supported flows.
 
+## Start from the GitHub link
+
+A new user can give the repository link to a coding agent and ask it to set up the project. Follow [Agent bootstrap](agent-bootstrap.md): load the two included skills, install the locked environment, verify the supplied example, and leave a usable local preview running. Only then ask for the company name. Do not replace setup with a list of commands for the user to run when the agent can execute them.
+
+The ready handoff lists both loaded skills and actual output paths, and ends with `hit me with a company name.` A company-only reply in that session enters the normal workflow below without another setup ceremony. If a company or transcript arrived with the setup request, proceed directly after verification. Loading repository skills is not a global installation, and local startup is not public publication.
+
 ## Two aligned skills, one user invocation
 
 [Photon Demo Creator](../.agents/skills/photon-demo-creator/SKILL.md) is the high-level workflow. Its [HTML adapter](../.agents/skills/photon-demo-creator/references/html-renderer.md) owns research, assets, distinct stories, defaults, and review. [Make an iMessage demo](../.agents/skills/make-imessage-demo/SKILL.md) is the executor and sole command cookbook.
@@ -38,6 +44,7 @@ The eight supplied Spectrum reference files are preserved for the high-level ski
 
 ```sh
 node scripts/check-demo-skills.mjs
+node scripts/check-agent-bootstrap.mjs
 ```
 
-This dependency-free check verifies local documentation links, routing ownership, metadata, CLI command/flag alignment, and the checked-in example's checkpoint clock. It does not execute the renderer, prove visual fidelity, provision anything, or publish a demo. Application changes still require the repository's normal tests; company-demo creation still requires actual validation and visual review.
+These dependency-free checks verify bootstrap routing and handoff requirements as well as local documentation links, routing ownership, metadata, CLI command/flag alignment, and the checked-in example's checkpoint clock. They do not execute the renderer, prove visual fidelity, provision anything, or publish a demo. Application changes still require the repository's normal tests; company-demo creation still requires actual validation and visual review.

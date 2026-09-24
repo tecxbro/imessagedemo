@@ -4,6 +4,42 @@ Local studio for authoring a Messages conversation as JSON and previewing or cap
 
 The assembled app entry is `src/main.tsx` -> `src/App.tsx`. Flows live in `scenarios/`. Two repository skills work together: [Photon Demo Creator](.agents/skills/photon-demo-creator/SKILL.md) handles company research, story selection, and review; [Make an iMessage demo](.agents/skills/make-imessage-demo/SKILL.md) handles the renderer's schema and commands.
 
+## Give this repo to your agent
+
+Copy this into a coding agent with terminal/filesystem access and access to this repository:
+
+```text
+Set up https://github.com/tecxbro/imessagedemo for me.
+Follow the README's agent bootstrap instructions, load the included skills,
+verify a sample render, and start the local preview.
+When ready, tell me which skills are available and ask for a company name.
+```
+
+The agent does the setup; you do not have to install the skills individually, write JSON, or run the commands yourself. This requires repository access, a compatible Node/npm environment, and permission to download dependencies and the capture browser. A link cannot grant access to a private repo.
+
+**Agents: follow [Agent bootstrap](docs/agent-bootstrap.md) before asking for a company.** Clone or safely reuse the checkout, load both repository skills, install the locked dependencies/browser, build, validate and capture the supplied example, and keep its local preview running. Do not research a company during setup. A review-only request is not a setup request.
+
+The included skills are `$make-imessage-demo` (rendering) and `$photon-demo-creator` (company research and conversation design). They are available from `.agents/skills/` in this checkout; personal/global skill folders are not overwritten. Agents without a skill picker can read the files directly.
+
+After successful verification, the agent's handoff ends like this (real paths/URLs replace the placeholders):
+
+```text
+Local setup is ready.
+
+Skills loaded from this project:
+$make-imessage-demo — render, preview, and capture conversations
+$photon-demo-creator — research companies and design the demos
+
+Preview: <actual running URL>
+Sample capture: <actual inspected PNG path>
+
+hit me with a company name.
+```
+
+Reply with a company name or URL in the same agent session. The agent then uses the included skills; no second setup prompt or second skill tag is required. A supplied company/transcript can also go directly through setup into demo creation without being requested again.
+
+**This is local setup, not public hosting.** No Photon account, texting number, public site, or global skill installation is created. A remote agent must provide an actually reachable preview route or explain its access limitation; remote loopback is not automatically reachable on your computer.
+
 ## Start with a company
 
 From this checkout, tell your agent:
@@ -59,6 +95,7 @@ npm run demo -- capabilities --json
 ```sh
 npm ci
 node scripts/check-demo-skills.mjs
+node scripts/check-agent-bootstrap.mjs
 npm run verify:upstream
 npm run typecheck
 npm run test:unit
@@ -66,7 +103,7 @@ npm run build
 npm run test:e2e
 ```
 
-`check-demo-skills` checks instructions and example timing, not browser output. `npm run dev -- --host 127.0.0.1 --port 4173` serves the app. `/?foundation=ios` and `/?foundation=macos` are stock shell smoke routes. `/?flow=basic-ios-light&t=0` plays a corpus scenario; `t` is playback milliseconds.
+`check-demo-skills` checks instructions and example timing; `check-agent-bootstrap` checks setup routing and handoff requirements. Neither executes the renderer or proves browser output. `npm run dev -- --host 127.0.0.1 --port 4173` serves the app. `/?foundation=ios` and `/?foundation=macos` are stock shell smoke routes. `/?flow=basic-ios-light&t=0` plays a corpus scenario; `t` is playback milliseconds.
 
 ## Current boundaries
 

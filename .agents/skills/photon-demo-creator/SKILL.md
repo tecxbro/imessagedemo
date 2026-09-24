@@ -15,6 +15,8 @@ Keep the visible demo conversation product-like. Do not insert â€œdemo preview,â
 
 ## Repository alignment
 
+For project setup without a company, follow [Agent bootstrap](../../../docs/agent-bootstrap.md) first. Load the included skills, verify the supplied example, and start a usable preview before asking for a company name. Do not treat the repository URL as a company brief or start research during setup. Read-only review stays read-only; an already supplied company/transcript continues after setup without another question.
+
 In `tecxbro/imessagedemo`, this repository copy is the canonical Photon Demo Creator. Prefer it over an older globally installed copy. The renderer executor is [Make an iMessage demo](../make-imessage-demo/SKILL.md); do not duplicate its CLI instructions here.
 
 A company-only request passed to either skill enters the research workflow once. Once a brief or exact transcript exists, call the renderer workflow directly; never bounce between the skills. The HTML defaults and review policy live in [HTML renderer workflow](references/html-renderer.md).
