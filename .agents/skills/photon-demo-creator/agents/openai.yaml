@@ -1,0 +1,4 @@
+interface:
+  display_name: "Photon Demo Creator"
+  short_description: "Research, write, and render product-led demos"
+  default_prompt: "Use $photon-demo-creator from this repository. In imessagedemo, research the company and prepare the conversations, then follow the repository make-imessage-demo skill to validate, preview, capture, and inspect them. Keep live Spectrum work in a separate authorized checkout."

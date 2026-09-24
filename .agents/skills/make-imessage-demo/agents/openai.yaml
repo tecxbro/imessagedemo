@@ -1,0 +1,4 @@
+interface:
+  display_name: "Make iMessage Demo"
+  short_description: "Validate, preview, and capture local demo flows"
+  default_prompt: "Use $make-imessage-demo from this repository. For a company-only request, prepare the brief once with the repository Photon Demo Creator, then validate, preview, capture, and visually inspect each flow with the existing renderer."

@@ -1,10 +1,25 @@
 # Agent notes
 
-This repository is the foundation for an agent-operated visual demo maker. The pinned iMessage UI source is `src/components/imessage` and `vendor/upstream`. Do not fork it to make a lane compile.
+This is an assembled, agent-operated **local visual demo maker**, not a messaging provider. The app entry is `src/main.tsx` -> `src/App.tsx`. Use the pinned source in `src/components/imessage` and `vendor/upstream`; do not replace or silently patch it to make a demo work.
 
-Frozen files: `src/contracts/**`, root configs, `package.json`, and `scripts/check-upstream.mjs`. A lane that needs a contract change stops and reports it.
+## Skills and ordinary demo work
 
-Lane ownership after the foundation tag:
+The canonical skills are versioned together in this repository:
+
+- [Photon Demo Creator](.agents/skills/photon-demo-creator/SKILL.md) owns company research, story selection, asset preparation, conversation defaults, and visual review.
+- [Make an iMessage demo](.agents/skills/make-imessage-demo/SKILL.md) owns schema/capabilities and the validate, compile, preview, and capture commands.
+
+Either tag is sufficient. Company-only requests enter research once, then render. Exact transcripts and existing flows go straight to rendering; do not loop between skills. Prefer repository copies over stale globally installed copies. [Agent workflow](docs/agent-workflow.md) explains usage and synchronization.
+
+A request to make a company demo authorizes flow data, local assets, and the preview/capture work needed to inspect them. It does not authorize changing application code, contracts, dependencies, upstream components, provider resources, or publishing. Preserve unrelated files and demos. Use only supported capabilities; do not disguise unsupported interactions as images or text. This repo stays render-only even if a global skill also documents Spectrum.
+
+Create one flow per conversation with unique IDs and run outputs. Use the existing commands repeatedly, not a new generator service or multi-player framework. Follow the high-level skill's HTML defaults only when the user has not supplied a count, transcript, or style. Do not claim logo/background placement without a supported field and inspected output.
+
+## Implementation work
+
+For explicitly requested implementation or skill-maintenance tasks, inspect the branch/base, working tree, and current source first. Scope changes to the request and preserve unrelated work. Foundation-era frozen-contract and lane instructions describe the original build; they do not mean the assembled application still throws `NOT_IMPLEMENTED`. Ordinary demo authoring still must not change those contracts. Any later contract or upstream change requires explicit implementation scope and matching tests/docs.
+
+Historical lane ownership:
 
 | Worktree | Branch | Owns |
 | --- | --- | --- |
@@ -15,6 +30,6 @@ Lane ownership after the foundation tag:
 | WT-05 | codex/wt-05-player | `src/player/**` |
 | WT-06 | codex/wt-06-cli | `src/cli/**` |
 
-Production entry points throw `NOT_IMPLEMENTED`. Test doubles belong in `tests/contracts`, not in `src`.
+Run checks appropriate to the changed surface. For skill/docs alignment, run `node scripts/check-demo-skills.mjs`; this is not a substitute for flow validation, browser review, or application tests. Preserve test doubles in tests, not production source.
 
-Polls, Photon mini apps, and provider accounts are out of scope. The public `imessage.swerdlow.dev` registry is larger than the pin; do not install it over `vendor/upstream`.
+Polls, Photon mini apps, and provider accounts remain out of scope. The public `imessage.swerdlow.dev` registry is larger than the pin; do not install it over `vendor/upstream`. Historical release/handoff reports are evidence from their recorded run, not fresh test results.
