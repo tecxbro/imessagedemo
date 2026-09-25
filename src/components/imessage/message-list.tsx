@@ -195,6 +195,11 @@ export type MessageListProps = Omit<ComponentProps<"div">, "children" | "ref"> &
    * flash rather than playing it, which is what makes a scenario checkpoint reproducible.
    */
   flash?: { id: string; progress?: number } | null;
+  /**
+   * Deterministic waveform state for one audio row. When `messageId` matches, `MessageAudio` receives
+   * `position` / `playing` instead of its idle defaults. No HTML media element is driven here.
+   */
+  audioControl?: { messageId: string; position: number; playing: boolean } | null;
   /** Where a short conversation sits: under the header ("top", native iOS) or against the composer ("bottom"). */
   anchor?: "top" | "bottom";
   insetTop?: number;
@@ -285,7 +290,7 @@ function EmojiMessage({ message, platform }: { message: Message; platform: Platf
 
 export function MessageList({
   messages, typing = false, group = false, now, frameRef, platform: platformProp, serviceLabel, renderReactions, autoScroll = true,
-  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
+  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, audioControl = null, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
 }: MessageListProps) {
   const contextPlatform = usePlatform();
   const platform = platformProp ?? contextPlatform;
@@ -458,7 +463,18 @@ export function MessageList({
           } else if (message.kind === "image" && message.images?.length) {
             content = <MessageImages images={message.images} direction={message.direction} tail={row.tail} platform={platform} />;
           } else if (message.kind === "audio" && message.audio) {
-            content = <MessageAudio duration={message.audio.duration} peaks={message.audio.peaks} direction={message.direction} tail={row.tail} platform={platform} />;
+            const controlled = audioControl?.messageId === message.id ? audioControl : null;
+            content = (
+              <MessageAudio
+                duration={message.audio.duration}
+                peaks={message.audio.peaks}
+                direction={message.direction}
+                tail={row.tail}
+                platform={platform}
+                position={controlled?.position}
+                playing={controlled?.playing}
+              />
+            );
           } else if (message.kind === "attachment" && message.attachments?.length) {
             content = (
               <>
