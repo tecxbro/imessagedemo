@@ -5,11 +5,12 @@ import { demoFlowSchema, demoMessageSchema, type ValidationIssue } from "@/contr
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-const FLOW_KEYS = ["id", "title", "platform", "theme", "contact", "nowMs", "draft", "typing", "screen", "messages"] as const;
+const FLOW_KEYS = ["id", "title", "platform", "theme", "contact", "nowMs", "draft", "typing", "screen", "messages", "events"] as const;
 const CONTACT_KEYS = ["name", "initials"] as const;
-const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio"] as const;
-const LINK_KEYS = ["url", "title", "host"] as const;
-const ATTACHMENT_KEYS = ["name", "size"] as const;
+const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio", "reactions", "replyTo", "edited", "readAt", "revealed", "removed"] as const;
+const LINK_KEYS = ["url", "title", "host", "image"] as const;
+const ATTACHMENT_KEYS = ["name", "size", "href"] as const;
+const REACTION_KEYS = ["id", "type", "byMe", "emoji", "messageId", "targetId"] as const;
 const IMAGE_KEYS = ["src", "alt", "width", "height"] as const;
 const AUDIO_KEYS = ["duration", "peaks"] as const;
 
@@ -104,6 +105,9 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
   messages.forEach((message, index) => {
     const base = `messages.${index}`;
     pushExtras(issues, base, message, MESSAGE_KEYS);
+    if (isRecord(message) && Array.isArray(message.reactions)) {
+      message.reactions.forEach((reaction, reactionIndex) => pushExtras(issues, `${base}.reactions.${reactionIndex}`, reaction, REACTION_KEYS));
+    }
     if (!isRecord(message)) return;
     pushExtras(issues, `${base}.link`, message.link, LINK_KEYS);
     if (Array.isArray(message.attachments)) {
@@ -151,12 +155,12 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
     if (message.audio !== undefined && kind !== "audio") issues.push({ path: `${base}.kind`, message: 'audio requires kind "audio"' });
     if (kind === "audio" && !isRecord(message.audio)) issues.push({ path: `${base}.audio`, message: "audio payload is required" });
 
-    if (isRecord(message.link) && "image" in message.link) {
+    if (isRecord(message.link) && typeof message.link.image === "string" && /^[a-z][a-z+.-]*:/i.test(message.link.image)) {
       issues.push({ path: `${base}.link.image`, message: "link images are not unfurled" });
     }
     if (Array.isArray(message.attachments)) {
       message.attachments.forEach((file, fileIndex) => {
-        if (isRecord(file) && "href" in file) {
+        if (isRecord(file) && typeof file.href === "string" && /^[a-z][a-z+.-]*:/i.test(file.href)) {
           issues.push({ path: `${base}.attachments.${fileIndex}.href`, message: "attachment href is not allowed" });
         }
       });

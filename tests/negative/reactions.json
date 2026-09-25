@@ -24,7 +24,8 @@
         "reactions": [
           {
             "type": "love",
-            "byMe": true
+            "byMe": true,
+            "tail": true
           }
         ]
       }
@@ -32,8 +33,8 @@
   },
   "issues": [
     {
-      "path": "messages.0.reactions",
-      "message": "Unrecognized key: \"reactions\""
+      "path": "messages.0.reactions.0.tail",
+      "message": "Unrecognized key: \"tail\""
     }
   ]
 }

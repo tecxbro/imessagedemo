@@ -1,4 +1,4 @@
-import type { DemoFlow } from "@/contracts";
+import type { AudioControlState, DemoFlow, SystemNotice } from "@/contracts";
 import {
   bubbleEffectDuration,
   cueProgress,
@@ -31,6 +31,9 @@ type Working = {
   selectedConversationId: string;
   conversations: ConversationState[];
   overlay: OverlayState;
+  audio: AudioControlState | null;
+  timeReveal: number;
+  notices: SystemNotice[];
 };
 
 type Prepared = {
@@ -119,6 +122,8 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
     if (message.replyTo.sender !== undefined) logical.replyTo.sender = message.replyTo.sender;
   }
   if (message.effect === "invisible-ink") logical.revealed = message.revealed ?? false;
+  if (message.readAt !== undefined) logical.readAt = message.readAt;
+  if (message.edited !== undefined) logical.edited = message.edited;
   return logical;
 }
 
@@ -154,6 +159,9 @@ function createWorking(compiled: DemoSource): Working {
     selectedConversationId,
     conversations,
     overlay: initial?.overlay ? copyOverlay(initial.overlay) : { kind: "closed" },
+    audio: null,
+    timeReveal: 0,
+    notices: [],
   };
 }
 
@@ -207,6 +215,9 @@ function finish(compiled: DemoSource, working: Working, timeMs: number): Logical
     typing: selected?.typing ?? false,
     draft: selected?.draft ?? "",
     scroll: selected?.scroll ?? 0,
+    audio: working.audio ? { ...working.audio } : null,
+    timeReveal: working.timeReveal,
+    notices: working.notices.map((notice) => ({ ...notice })),
   };
 }
 
@@ -325,6 +336,20 @@ function reduceEvent(working: Working, event: SceneEvent, fallbackContact: DemoF
       return { ...working, overlay: copyOverlay(event.overlay) };
     case "screen-effect":
       return working;
+    case "audio-control":
+      return {
+        ...working,
+        audio: {
+          messageId: event.messageId,
+          position: event.position,
+          playing: event.playing,
+          ...(event.seeking !== undefined ? { seeking: event.seeking } : {}),
+        },
+      };
+    case "time-reveal":
+      return { ...working, timeReveal: event.progress };
+    case "notice":
+      return { ...working, notices: [...working.notices, { ...event.notice }] };
     default:
       return working;
   }
@@ -352,6 +377,12 @@ function overlayMotion(overlay: OverlayState, phase: "enter" | "exit"): number {
       return phase === "enter" ? pendingCueDurations.effectsPickerEnter : pendingCueDurations.effectsPickerExit;
     case "image-viewer":
       return pendingCueDurations.imageViewer;
+    case "details":
+      return phase === "enter" ? pendingCueDurations.detailsEnter : pendingCueDurations.detailsExit;
+    case "photo-picker":
+      return phase === "enter" ? pendingCueDurations.photoPickerEnter : pendingCueDurations.photoPickerExit;
+    case "selection":
+      return phase === "enter" ? pendingCueDurations.selectionEnter : pendingCueDurations.selectionExit;
   }
 }
 
@@ -368,9 +399,20 @@ function copyOverlay(overlay: OverlayState): OverlayState {
     case "context-menu":
       return { kind: "context-menu", messageId: overlay.messageId, x: overlay.x, y: overlay.y };
     case "effects-picker":
-      return { kind: "effects-picker", tab: overlay.tab, draft: overlay.draft };
+      return {
+        kind: "effects-picker",
+        tab: overlay.tab,
+        draft: overlay.draft,
+        ...(overlay.effect !== undefined ? { effect: overlay.effect } : {}),
+      };
     case "image-viewer":
       return { kind: "image-viewer", messageId: overlay.messageId, index: overlay.index };
+    case "details":
+      return { kind: "details" };
+    case "photo-picker":
+      return overlay.selectedId !== undefined ? { kind: "photo-picker", selectedId: overlay.selectedId } : { kind: "photo-picker" };
+    case "selection":
+      return { kind: "selection", messageIds: [...overlay.messageIds] };
   }
 }
 

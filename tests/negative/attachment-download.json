@@ -35,10 +35,6 @@
   "issues": [
     {
       "path": "messages.0.attachments.0.href",
-      "message": "Unrecognized key: \"href\""
-    },
-    {
-      "path": "messages.0.attachments.0.href",
       "message": "attachment href is not allowed"
     }
   ]

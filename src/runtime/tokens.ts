@@ -62,6 +62,12 @@ export const pendingCueDurations = {
   effectsPickerEnter: 260,
   effectsPickerExit: 200,
   imageViewer: 300,
+  detailsEnter: 260,
+  detailsExit: 200,
+  photoPickerEnter: 260,
+  photoPickerExit: 200,
+  selectionEnter: 220,
+  selectionExit: 180,
 } as const;
 
 /** Active cue progress. Duration 0 never divides and never stays active. */

@@ -1,5 +1,6 @@
 import type {
   BubbleEffectName,
+  CompiledEvent,
   DemoFlow,
   DemoMessage,
   DemoPlatform,
@@ -8,7 +9,11 @@ import type {
   IosScreenName,
   MessageKind,
   MessageStatus,
+  OverlayState,
+  Reaction,
+  ScreenEffectName,
   Service,
+  SystemNotice,
   ValidationIssue,
   ValidationResult,
 } from "@/contracts";
@@ -24,7 +29,17 @@ const PLATFORMS = new Set<DemoPlatform>(["ios", "macos"]);
 const THEMES = new Set<DemoTheme>(["light", "dark"]);
 const SCREENS = new Set<IosScreenName>(["list", "conversation", "new-message"]);
 const EFFECTS = new Set<BubbleEffectName>(["slam", "loud", "gentle", "invisible-ink"]);
+const SCREEN_EFFECTS = new Set<ScreenEffectName>(["echo", "spotlight", "balloons", "confetti", "love", "lasers", "fireworks", "celebration"]);
 const IOS_ONLY_SCREENS = new Set<IosScreenName>(["list", "new-message"]);
+const IOS_ONLY_OVERLAYS = new Set<OverlayState["kind"]>([
+  "long-press",
+  "plus-menu",
+  "effects-picker",
+  "image-viewer",
+  "details",
+  "photo-picker",
+  "selection",
+]);
 
 const ROOT_FIELDS = new Set([
   "id",
@@ -37,6 +52,7 @@ const ROOT_FIELDS = new Set([
   "typing",
   "screen",
   "messages",
+  "events",
 ]);
 
 const MESSAGE_FIELDS = new Set([
@@ -58,6 +74,7 @@ const MESSAGE_FIELDS = new Set([
   "readAt",
   "sentAt",
   "removed",
+  "revealed",
   "replyCount",
   "platforms",
 ]);
@@ -81,10 +98,6 @@ const catalogueKinds = new Map<string, string>([
   ["facetime", "facetime-card"],
   ["face-time", "facetime-card"],
   ["facetime-card", "facetime-card"],
-  ["screen-effect", "screen-effect"],
-  ["image-viewer", "image-viewer"],
-  ["effects-picker", "effects-picker"],
-  ["long-press", "long-press"],
   ["ios-list", "ios-list"],
   ["mac-context-menu", "mac-context-menu"],
   ["mac-plus-menu", "mac-plus-menu"],
@@ -95,6 +108,16 @@ type ReplyRef = {
   conversationId?: string;
   text?: string;
   direction?: string;
+  service?: Service;
+  sender?: string;
+};
+
+type ParsedReaction = {
+  id?: string;
+  type: string;
+  byMe?: boolean;
+  emoji?: string;
+  target?: string;
 };
 
 type MessageMeta = {
@@ -111,8 +134,12 @@ type MessageMeta = {
   hasReactions: boolean;
   reactionTargets: string[];
   readAt?: "valid" | "invalid";
+  readAtValue?: number;
   sentAt?: "valid" | "invalid";
   kindBlocked: boolean;
+  reactionItems: ParsedReaction[];
+  imageCount: number;
+  audioDuration?: number;
 };
 
 export function validateDemo(input: unknown): ValidationResult {
@@ -213,7 +240,9 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
     );
   }
 
-  const messages = readMessages(input, issues, typeof id === "string" ? id : undefined, platform);
+  const derived: CompiledEvent[] = [];
+  const messages = readMessages(input, issues, typeof id === "string" ? id : undefined, platform, derived);
+  const events = readTimeline(input, issues, platform);
 
   for (const key of Object.keys(input)) {
     if (ROOT_FIELDS.has(key)) continue;
@@ -231,15 +260,16 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
     draft === undefined ||
     typing === undefined ||
     screen === undefined ||
-    messages === undefined
+    messages === undefined ||
+    events === undefined
   ) {
     return { issues };
   }
 
-  return {
-    issues,
-    demo: { id, title, platform, theme, contact, nowMs, draft, typing, screen, messages },
-  };
+  const demo: DemoFlow = { id, title, platform, theme, contact, nowMs, draft, typing, screen, messages };
+  const timeline = [...derived, ...events];
+  if (timeline.length > 0) demo.events = timeline;
+  return { issues, demo };
 }
 
 function readMessages(
@@ -247,6 +277,7 @@ function readMessages(
   issues: ValidationIssue[],
   flowId: string | undefined,
   flowPlatform: DemoPlatform | undefined,
+  derived: CompiledEvent[] = [],
 ): DemoMessage[] | undefined {
   if (!Object.hasOwn(input, "messages")) {
     issues.push(issue(pointer(["messages"]), "MISSING_FIELD", "missing messages"));
@@ -257,7 +288,7 @@ function readMessages(
     return undefined;
   }
 
-  const metas: MessageMeta[] = [];
+  const metas: ReadMessage[] = [];
   const normalized: DemoMessage[] = [];
   const seen = new Map<string, number>();
   let previousAt: number | undefined;
@@ -278,7 +309,7 @@ function readMessages(
     else if (meta.normalized) normalized.push(meta.normalized);
   });
 
-  semanticPass(metas, flowId, issues);
+  semanticPass(metas, flowId, issues, derived);
   if (issues.length > 0) messagesValid = false;
   return messagesValid ? normalized : undefined;
 }
@@ -349,6 +380,9 @@ function readMessage(
   const reactions = readReactions(value, base, issues);
   const edited = readEdited(value, base, issues);
   const removed = readRemoved(value, base, issues);
+  if (Object.hasOwn(value, "revealed") && typeof value.revealed !== "boolean") {
+    issues.push(issue(`${base}/revealed`, "INVALID_TYPE", "revealed must be a boolean"));
+  }
   const readAt = readOptionalMillis(value, "readAt", `${base}/readAt`, issues);
   const sentAt = readOptionalMillis(value, "sentAt", `${base}/sentAt`, issues);
   readReplyCount(value, base, issues);
@@ -372,9 +406,13 @@ function readMessage(
     edited,
     hasReactions: reactions.present,
     reactionTargets: reactions.targets,
-    readAt: readAt === "absent" ? undefined : readAt,
-    sentAt: sentAt === "absent" ? undefined : sentAt,
+    readAt: readAt === "absent" ? undefined : readAt === "invalid" ? "invalid" : "valid",
+    readAtValue: typeof readAt === "number" ? readAt : undefined,
+    sentAt: sentAt === "absent" ? undefined : sentAt === "invalid" ? "invalid" : "valid",
     kindBlocked,
+    reactionItems: reactions.items,
+    imageCount: Array.isArray(images) ? images.length : 0,
+    audioDuration: audio && audio !== "invalid" ? audio.duration : undefined,
   };
 
   if (
@@ -396,6 +434,7 @@ function readMessage(
     if (attachments) normalized.attachments = attachments;
     if (images) normalized.images = images;
     if (audio) normalized.audio = audio;
+    if (typeof value.revealed === "boolean") normalized.revealed = value.revealed;
     meta.normalized = normalized;
   }
   return meta;
@@ -430,7 +469,14 @@ function rejectForeignPayload(
   }
 }
 
-function semanticPass(messages: MessageMeta[], flowId: string | undefined, issues: ValidationIssue[]): void {
+function toReaction(reaction: ParsedReaction, messageId: string, index: number): Reaction {
+  const stored: Reaction = { id: reaction.id || `${messageId}:${index}`, type: reaction.type };
+  if (reaction.byMe !== undefined) stored.byMe = reaction.byMe;
+  if (reaction.emoji !== undefined) stored.emoji = reaction.emoji;
+  return stored;
+}
+
+function semanticPass(messages: ReadMessage[], flowId: string | undefined, issues: ValidationIssue[], derived: CompiledEvent[]): void {
   const byId = new Map<string, MessageMeta>();
   for (const message of messages) {
     if (message.id && !byId.has(message.id)) byId.set(message.id, message);
@@ -505,19 +551,23 @@ function semanticPass(messages: MessageMeta[], flowId: string | undefined, issue
             `reply quote direction does not match the target${idNote}`,
           ),
         );
-      } else if (target) {
-        issues.push(
-          issue(
-            `${base}/replyTo`,
-            "CONTRACT_GAP",
-            `reply quote snapshots are not representable on the frozen DemoMessage${idNote}`,
-          ),
-        );
+      } else if (target && message.normalized) {
+        const direction = (message.reply.direction ?? target.direction) as Direction | undefined;
+        if (direction) {
+          message.normalized.replyTo = {
+            id: message.reply.id,
+            text: message.reply.text ?? target.text,
+            direction,
+          };
+          if (message.reply.service) message.normalized.replyTo.service = message.reply.service;
+          if (message.reply.sender !== undefined) message.normalized.replyTo.sender = message.reply.sender;
+        }
       }
     }
 
     let reactionRefsOk = true;
     for (const targetId of message.reactionTargets) {
+      if (targetId === message.id) continue;
       const target = byId.get(targetId);
       if (!target || target.removed === true || target.index >= message.index) {
         reactionRefsOk = false;
@@ -530,14 +580,22 @@ function semanticPass(messages: MessageMeta[], flowId: string | undefined, issue
         );
       }
     }
-    if (message.hasReactions && message.removed !== true && reactionRefsOk) {
-      issues.push(
-        issue(
-          `${base}/reactions`,
-          "CONTRACT_GAP",
-          `reactions are not representable on the frozen DemoMessage${idNote}`,
-        ),
-      );
+    if (message.hasReactions && message.removed !== true && reactionRefsOk && message.normalized) {
+      const own = message.reactionItems.filter((reaction) => reaction.target === undefined || reaction.target === message.id);
+      if (own.length > 0) {
+        message.normalized.reactions = own.map((reaction, index) => toReaction(reaction, message.id ?? String(message.index), index));
+      }
+      message.reactionItems.forEach((reaction, index) => {
+        if (reaction.target === undefined || reaction.target === message.id || message.atMs === undefined) return;
+        const stored = toReaction(reaction, reaction.target, index);
+        derived.push({
+          type: "reaction",
+          atMs: message.atMs,
+          messageId: reaction.target,
+          reactionId: stored.id,
+          reaction: { type: stored.type, ...(stored.byMe !== undefined ? { byMe: stored.byMe } : {}), ...(stored.emoji !== undefined ? { emoji: stored.emoji } : {}) },
+        });
+      });
     }
 
     if (message.edited === true && message.removed !== true) {
@@ -550,23 +608,11 @@ function semanticPass(messages: MessageMeta[], flowId: string | undefined, issue
             `edit target must be outgoing text${idNote}`,
           ),
         );
-      } else {
-        issues.push(
-          issue(
-            `${base}/edited`,
-            "CONTRACT_GAP",
-            `edited is not representable on the frozen DemoMessage${idNote}`,
-          ),
-        );
+      } else if (message.normalized) {
+        message.normalized.edited = true;
       }
-    } else if (message.edited === false) {
-      issues.push(
-        issue(
-          `${base}/edited`,
-          "CONTRACT_GAP",
-          `edited is not representable on the frozen DemoMessage${idNote}`,
-        ),
-      );
+    } else if (message.edited === false && message.normalized) {
+      message.normalized.edited = false;
     }
 
     if (message.removed === true) {
@@ -582,27 +628,15 @@ function semanticPass(messages: MessageMeta[], flowId: string | undefined, issue
             `cannot remove ${JSON.stringify(message.id)} while live replies remain: ${ids}`,
           ),
         );
-      } else if (message.edited !== true && !message.hasReactions) {
-        issues.push(
-          issue(
-            `${base}/removed`,
-            "CONTRACT_GAP",
-            `removals are not representable on the frozen DemoMessage${idNote}`,
-          ),
-        );
+      } else if (message.normalized) {
+        message.normalized.removed = true;
       }
-    } else if (message.removed === false) {
-      issues.push(
-        issue(
-          `${base}/removed`,
-          "CONTRACT_GAP",
-          `removals are not representable on the frozen DemoMessage${idNote}`,
-        ),
-      );
+    } else if (message.removed === false && message.normalized) {
+      message.normalized.removed = false;
     }
 
-    if (message.readAt === "valid") {
-      issues.push(issue(`${base}/readAt`, "CONTRACT_GAP", `readAt is not representable on the frozen DemoMessage${idNote}`));
+    if (message.readAtValue !== undefined && message.normalized) {
+      message.normalized.readAt = message.readAtValue;
     }
     if (message.sentAt === "valid") {
       issues.push(issue(`${base}/sentAt`, "CONTRACT_GAP", `sentAt is not representable on the frozen DemoMessage${idNote}`));
@@ -691,11 +725,19 @@ function readReply(value: Record<string, unknown>, base: string, issues: Validat
     }
     issues.push(issue(`${base}/replyTo/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
   }
-  if (Object.hasOwn(reply, "service") && !SERVICES.has(reply.service as Service)) {
-    issues.push(issue(`${base}/replyTo/service`, "INVALID_VALUE", "reply quote service must be imessage or sms"));
+  if (Object.hasOwn(reply, "service")) {
+    if (!SERVICES.has(reply.service as Service)) {
+      issues.push(issue(`${base}/replyTo/service`, "INVALID_VALUE", "reply quote service must be imessage or sms"));
+    } else {
+      parsed.service = reply.service as Service;
+    }
   }
-  if (Object.hasOwn(reply, "sender") && typeof reply.sender !== "string") {
-    issues.push(issue(`${base}/replyTo/sender`, "INVALID_TYPE", "reply quote sender must be a string"));
+  if (Object.hasOwn(reply, "sender")) {
+    if (typeof reply.sender !== "string") {
+      issues.push(issue(`${base}/replyTo/sender`, "INVALID_TYPE", "reply quote sender must be a string"));
+    } else {
+      parsed.sender = reply.sender;
+    }
   }
   return parsed;
 }
@@ -704,14 +746,15 @@ function readReactions(
   value: Record<string, unknown>,
   base: string,
   issues: ValidationIssue[],
-): { present: boolean; targets: string[] } {
-  if (!Object.hasOwn(value, "reactions")) return { present: false, targets: [] };
+): { present: boolean; targets: string[]; items: ParsedReaction[] } {
+  if (!Object.hasOwn(value, "reactions")) return { present: false, targets: [], items: [] };
   const reactions = value.reactions;
   if (!Array.isArray(reactions)) {
     issues.push(issue(`${base}/reactions`, "INVALID_TYPE", "reactions must be an array"));
-    return { present: false, targets: [] };
+    return { present: false, targets: [], items: [] };
   }
   const targets: string[] = [];
+  const items: ParsedReaction[] = [];
   reactions.forEach((reaction, index) => {
     const path = `${base}/reactions/${index}`;
     if (!isPlainObject(reaction)) {
@@ -724,8 +767,11 @@ function readReactions(
     if (Object.hasOwn(reaction, "byMe") && typeof reaction.byMe !== "boolean") {
       issues.push(issue(`${path}/byMe`, "INVALID_TYPE", "reaction byMe must be a boolean"));
     }
-    if (Object.hasOwn(reaction, "emoji") && typeof reaction.emoji !== "string") {
-      issues.push(issue(`${path}/emoji`, "INVALID_TYPE", "reaction emoji must be a string"));
+    if (Object.hasOwn(reaction, "emoji") && (typeof reaction.emoji !== "string" || reaction.emoji.length === 0)) {
+      issues.push(issue(`${path}/emoji`, "INVALID_TYPE", "reaction emoji must be a non-empty string"));
+    }
+    if (Object.hasOwn(reaction, "id") && (typeof reaction.id !== "string" || reaction.id.length === 0)) {
+      issues.push(issue(`${path}/id`, "INVALID_VALUE", "reaction id must be a non-empty string"));
     }
     const target = reaction.messageId ?? reaction.targetId;
     if (target !== undefined && (typeof target !== "string" || target.length === 0)) {
@@ -734,11 +780,19 @@ function readReactions(
       targets.push(target);
     }
     for (const key of Object.keys(reaction)) {
-      if (key === "type" || key === "byMe" || key === "emoji" || key === "messageId" || key === "targetId") continue;
+      if (key === "id" || key === "type" || key === "byMe" || key === "emoji" || key === "messageId" || key === "targetId") continue;
       issues.push(issue(`${path}/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
     }
+    if (typeof reaction.type === "string" && reaction.type.length > 0) {
+      const parsed: ParsedReaction = { type: reaction.type };
+      if (typeof reaction.id === "string" && reaction.id.length > 0) parsed.id = reaction.id;
+      if (typeof reaction.byMe === "boolean") parsed.byMe = reaction.byMe;
+      if (typeof reaction.emoji === "string" && reaction.emoji.length > 0) parsed.emoji = reaction.emoji;
+      if (typeof target === "string" && target.length > 0) parsed.target = target;
+      items.push(parsed);
+    }
   });
-  return { present: true, targets };
+  return { present: true, targets, items };
 }
 
 function readEdited(value: Record<string, unknown>, base: string, issues: ValidationIssue[]): boolean | undefined {
@@ -806,14 +860,14 @@ function readOptionalMillis(
   key: "readAt" | "sentAt",
   path: string,
   issues: ValidationIssue[],
-): "absent" | "valid" | "invalid" {
+): number | "absent" | "invalid" {
   if (!Object.hasOwn(value, key)) return "absent";
   const stamp = value[key];
   if (typeof stamp !== "number" || !Number.isSafeInteger(stamp) || stamp < 0) {
     issues.push(issue(path, "INVALID_TIMESTAMP", `${key} must be an integer number of epoch milliseconds`));
     return "invalid";
   }
-  return "valid";
+  return stamp;
 }
 
 function readEffect(
@@ -892,8 +946,14 @@ function readLink(
     issues.push(issue(`${base}/link/host`, "INVALID_TYPE", "link.host must be a string"));
     invalid = true;
   }
+  if (Object.hasOwn(link, "image")) {
+    if (typeof link.image !== "string" || !isDemoImageSrc(link.image)) {
+      issues.push(issue(`${base}/link/image`, "INVALID_ASSET", "link images must be local paths inside the asset root"));
+      invalid = true;
+    }
+  }
   for (const key of Object.keys(link)) {
-    if (key === "url" || key === "title" || key === "host") continue;
+    if (key === "url" || key === "title" || key === "host" || key === "image") continue;
     issues.push(issue(`${base}/link/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
     invalid = true;
   }
@@ -901,6 +961,7 @@ function readLink(
   const copy: NonNullable<DemoMessage["link"]> = { url: link.url };
   if (typeof link.title === "string") copy.title = link.title;
   if (typeof link.host === "string") copy.host = link.host;
+  if (typeof link.image === "string" && isDemoImageSrc(link.image)) copy.image = link.image;
   return copy;
 }
 
@@ -939,14 +1000,19 @@ function readAttachments(
       issues.push(issue(`${path}/size`, "INVALID_TYPE", "attachment size must be a string"));
       invalid = true;
     }
+    if (Object.hasOwn(item, "href") && (typeof item.href !== "string" || !isDemoImageSrc(item.href))) {
+      issues.push(issue(`${path}/href`, "INVALID_ASSET", "attachment href must be a local path inside the asset root"));
+      invalid = true;
+    }
     for (const key of Object.keys(item)) {
-      if (key === "name" || key === "size") continue;
+      if (key === "name" || key === "size" || key === "href") continue;
       issues.push(issue(`${path}/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
       invalid = true;
     }
     if (typeof item.name === "string" && isConfinedName(item.name)) {
       const copy: NonNullable<DemoMessage["attachments"]>[number] = { name: item.name };
       if (typeof item.size === "string") copy.size = item.size;
+      if (typeof item.href === "string" && isDemoImageSrc(item.href)) copy.href = item.href;
       copies.push(copy);
     }
   });
@@ -1227,4 +1293,462 @@ function isConfinedName(value: string): boolean {
 
 function escapeSegment(segment: string): string {
   return segment.replaceAll("~", "~0").replaceAll("/", "~1");
+}
+
+const EVENT_TYPES = new Set([
+  "message",
+  "typing",
+  "draft",
+  "status",
+  "reaction",
+  "edit",
+  "remove",
+  "reveal",
+  "screen",
+  "select-conversation",
+  "scroll",
+  "window-active",
+  "overlay",
+  "screen-effect",
+  "audio-control",
+  "time-reveal",
+  "notice",
+]);
+
+const EVENT_FIELDS: Record<string, string[]> = {
+  message: ["type", "atMs", "sourceIndex", "conversationId", "message"],
+  typing: ["type", "atMs", "sourceIndex", "conversationId", "typing"],
+  draft: ["type", "atMs", "sourceIndex", "conversationId", "value"],
+  status: ["type", "atMs", "sourceIndex", "messageId", "status"],
+  reaction: ["type", "atMs", "sourceIndex", "messageId", "reactionId", "reaction"],
+  edit: ["type", "atMs", "sourceIndex", "messageId", "text"],
+  remove: ["type", "atMs", "sourceIndex", "messageId"],
+  reveal: ["type", "atMs", "sourceIndex", "messageId", "revealed"],
+  screen: ["type", "atMs", "sourceIndex", "screen"],
+  "select-conversation": ["type", "atMs", "sourceIndex", "conversationId", "contact"],
+  scroll: ["type", "atMs", "sourceIndex", "conversationId", "offset"],
+  "window-active": ["type", "atMs", "sourceIndex", "active"],
+  overlay: ["type", "atMs", "sourceIndex", "overlay"],
+  "screen-effect": ["type", "atMs", "sourceIndex", "effect", "messageId"],
+  "audio-control": ["type", "atMs", "sourceIndex", "messageId", "position", "playing", "seeking"],
+  "time-reveal": ["type", "atMs", "sourceIndex", "progress"],
+  notice: ["type", "atMs", "sourceIndex", "notice"],
+};
+
+type LiveMessage = {
+  id: string;
+  atMs: number;
+  direction?: Direction;
+  kind: MessageKind;
+  effect?: BubbleEffectName;
+  imageCount: number;
+  audioDuration?: number;
+};
+
+function readTimeline(
+  input: Record<string, unknown>,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+): CompiledEvent[] | undefined {
+  if (!Object.hasOwn(input, "events")) return [];
+  if (!Array.isArray(input.events)) {
+    issues.push(issue(pointer(["events"]), "INVALID_TYPE", "events must be an array"));
+    return undefined;
+  }
+  const live = liveMessages(input.messages);
+  const removed = new Set<string>();
+  for (const message of messageRecords(input.messages)) {
+    if (message.removed === true && typeof message.id === "string") removed.add(message.id);
+  }
+  const seen = new Set(live.keys());
+  let previousAt: number | undefined;
+  const baseline = firstMessageAt(input.messages);
+  const events: CompiledEvent[] = [];
+  let valid = true;
+  input.events.forEach((value, index) => {
+    const base = pointer(["events", index]);
+    if (!isPlainObject(value) || typeof value.type !== "string" || !EVENT_TYPES.has(value.type)) {
+      valid = false;
+      issues.push(issue(`${base}/type`, "INVALID_VALUE", "unknown timeline event"));
+      return;
+    }
+    const before = issues.length;
+    const atMs = readMillis(value, "atMs", `${base}/atMs`, issues, true);
+    if (atMs !== undefined && previousAt !== undefined && atMs < previousAt) {
+      issues.push(issue(`${base}/atMs`, "INVALID_TIMESTAMP", "timeline events must be in chronological order"));
+    }
+    if (atMs !== undefined && baseline !== undefined && atMs < baseline) {
+      issues.push(issue(`${base}/atMs`, "INVALID_TIMESTAMP", "timeline events use the message clock and cannot precede the first message"));
+    }
+    if (atMs !== undefined) previousAt = atMs;
+    rejectEventFields(value, value.type, base, issues);
+    const parsed = parseTimelineEvent(value, base, issues, platform, live, removed, seen, atMs);
+    if (!parsed && issues.length === before) {
+      issues.push(issue(base, "INVALID_VALUE", "timeline event is incomplete"));
+    }
+    if (issues.length !== before || !parsed) valid = false;
+    else events.push(parsed);
+  });
+  return valid ? events : undefined;
+}
+
+function messageRecords(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(isPlainObject);
+}
+
+function firstMessageAt(value: unknown): number | undefined {
+  const first = messageRecords(value)[0];
+  return first && typeof first.atMs === "number" ? first.atMs : undefined;
+}
+
+function liveMessages(value: unknown): Map<string, LiveMessage> {
+  const live = new Map<string, LiveMessage>();
+  messageRecords(value).forEach((message) => {
+    if (typeof message.id !== "string" || message.id.length === 0 || live.has(message.id)) return;
+    if (typeof message.atMs !== "number") return;
+    const kind = typeof message.kind === "string" && MESSAGE_KINDS.has(message.kind as MessageKind) ? (message.kind as MessageKind) : "text";
+    const entry: LiveMessage = { id: message.id, atMs: message.atMs, kind, imageCount: Array.isArray(message.images) ? message.images.length : 0 };
+    if (message.direction === "incoming" || message.direction === "outgoing") entry.direction = message.direction;
+    if (typeof message.effect === "string" && EFFECTS.has(message.effect as BubbleEffectName)) entry.effect = message.effect as BubbleEffectName;
+    if (isPlainObject(message.audio) && typeof message.audio.duration === "number") entry.audioDuration = message.audio.duration;
+    live.set(message.id, entry);
+  });
+  return live;
+}
+
+function rejectEventFields(value: Record<string, unknown>, type: string, base: string, issues: ValidationIssue[]): void {
+  const allowed = new Set(EVENT_FIELDS[type] ?? []);
+  for (const key of Object.keys(value)) {
+    if (allowed.has(key)) continue;
+    issues.push(issue(`${base}/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
+  }
+}
+
+function liveMessage(live: Map<string, LiveMessage>, removed: Set<string>, id: string, atMs: number | undefined): LiveMessage | undefined {
+  if (atMs === undefined) return undefined;
+  const message = live.get(id);
+  if (!message || message.atMs > atMs || removed.has(id)) return undefined;
+  return message;
+}
+
+function requireLive(
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  id: unknown,
+  atMs: number | undefined,
+  path: string,
+  issues: ValidationIssue[],
+  label: string,
+): LiveMessage | undefined {
+  if (typeof id !== "string" || id.length === 0) {
+    issues.push(issue(path, "INVALID_REFERENCE", `${label} target must be a message id`));
+    return undefined;
+  }
+  const message = liveMessage(live, removed, id, atMs);
+  if (!message) {
+    issues.push(issue(path, "INVALID_REFERENCE", `${label} target ${JSON.stringify(id)} is not a live message at this time`));
+    return undefined;
+  }
+  return message;
+}
+
+function parseTimelineEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  seen: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  switch (value.type) {
+    case "message":
+      return parseMessageEvent(value, base, issues, live, seen, atMs);
+    case "typing":
+      return typeof value.typing === "boolean" && atMs !== undefined ? { type: "typing", atMs, typing: value.typing } : undefined;
+    case "draft":
+      return typeof value.value === "string" && atMs !== undefined ? { type: "draft", atMs, value: value.value } : undefined;
+    case "status": {
+      const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "status");
+      if (!message || atMs === undefined || typeof value.messageId !== "string" || !STATUSES.has(value.status as MessageStatus)) {
+        if (value.status !== undefined && !STATUSES.has(value.status as MessageStatus)) {
+          issues.push(issue(`${base}/status`, "INVALID_VALUE", "status must be sending, sent, delivered, read, or failed"));
+        }
+        return undefined;
+      }
+      return { type: "status", atMs, messageId: value.messageId, status: value.status as MessageStatus };
+    }
+    case "reaction":
+      return parseReactionEvent(value, base, issues, live, removed, atMs);
+    case "edit": {
+      const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "edit");
+      if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.text !== "string") return undefined;
+      if (message.direction !== "outgoing" || message.kind !== "text") {
+        issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "edit target must be outgoing text"));
+        return undefined;
+      }
+      return { type: "edit", atMs, messageId: value.messageId, text: value.text };
+    }
+    case "remove": {
+      const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "remove");
+      if (!message || atMs === undefined || typeof value.messageId !== "string") return undefined;
+      removed.add(value.messageId);
+      return { type: "remove", atMs, messageId: value.messageId };
+    }
+    case "reveal": {
+      const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "reveal");
+      if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.revealed !== "boolean") return undefined;
+      if (message.effect !== "invisible-ink") {
+        issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "reveal target must be an invisible-ink message"));
+        return undefined;
+      }
+      return { type: "reveal", atMs, messageId: value.messageId, revealed: value.revealed };
+    }
+    case "screen": {
+      if (atMs === undefined || !SCREENS.has(value.screen as IosScreenName)) return undefined;
+      const screen = value.screen as IosScreenName;
+      if (platform === "macos" && IOS_ONLY_SCREENS.has(screen)) {
+        issues.push(issue(`${base}/screen`, "PLATFORM_MISMATCH", `${screen} is an iOS shell screen and is not a macOS target`));
+        return undefined;
+      }
+      return { type: "screen", atMs, screen };
+    }
+    case "select-conversation":
+      return typeof value.conversationId === "string" && value.conversationId.length > 0 && atMs !== undefined
+        ? { type: "select-conversation", atMs, conversationId: value.conversationId }
+        : undefined;
+    case "scroll":
+      return typeof value.offset === "number" && Number.isFinite(value.offset) && atMs !== undefined
+        ? { type: "scroll", atMs, offset: value.offset }
+        : undefined;
+    case "window-active":
+      return typeof value.active === "boolean" && atMs !== undefined ? { type: "window-active", atMs, active: value.active } : undefined;
+    case "overlay":
+      return parseOverlayEvent(value, base, issues, platform, live, removed, atMs);
+    case "screen-effect": {
+      if (atMs === undefined || !SCREEN_EFFECTS.has(value.effect as ScreenEffectName)) {
+        if (value.effect !== undefined && !SCREEN_EFFECTS.has(value.effect as ScreenEffectName)) {
+          issues.push(issue(`${base}/effect`, "INVALID_VALUE", "screen effect must be a pinned full-screen effect"));
+        }
+        return undefined;
+      }
+      if (value.messageId !== undefined) requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "screen-effect");
+      return { type: "screen-effect", atMs, effect: value.effect as ScreenEffectName, ...(typeof value.messageId === "string" ? { messageId: value.messageId } : {}) };
+    }
+    case "audio-control":
+      return parseAudioEvent(value, base, issues, live, removed, atMs);
+    case "time-reveal": {
+      if (platform === "macos") {
+        issues.push(issue(base, "PLATFORM_MISMATCH", "swipe-to-reveal timestamps are an iOS surface"));
+        return undefined;
+      }
+      if (atMs === undefined || typeof value.progress !== "number" || value.progress < 0 || value.progress > 1) {
+        issues.push(issue(`${base}/progress`, "INVALID_VALUE", "time reveal progress must be a number from 0 to 1"));
+        return undefined;
+      }
+      return { type: "time-reveal", atMs, progress: value.progress };
+    }
+    case "notice":
+      return parseNoticeEvent(value, base, issues, live, removed, atMs);
+    default:
+      return undefined;
+  }
+}
+
+function parseMessageEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  live: Map<string, LiveMessage>,
+  seen: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  if (!isPlainObject(value.message) || atMs === undefined) {
+    issues.push(issue(`${base}/message`, "INVALID_TYPE", "message events require a message"));
+    return undefined;
+  }
+  const id = value.message.id;
+  if (typeof id !== "string" || id.length === 0) return undefined;
+  if (seen.has(id)) {
+    issues.push(issue(`${base}/message/id`, "DUPLICATE_ID", `duplicate message id ${JSON.stringify(id)}`));
+    return undefined;
+  }
+  if (typeof value.message.text !== "string" || (value.message.direction !== "incoming" && value.message.direction !== "outgoing")) return undefined;
+  seen.add(id);
+  const kind = typeof value.message.kind === "string" && MESSAGE_KINDS.has(value.message.kind as MessageKind) ? (value.message.kind as MessageKind) : "text";
+  live.set(id, { id, atMs, kind, direction: value.message.direction, imageCount: Array.isArray(value.message.images) ? value.message.images.length : 0 });
+  const message: DemoMessage = { id, text: value.message.text, direction: value.message.direction, atMs };
+  if (kind !== "text" || value.message.kind !== undefined) message.kind = kind;
+  return { type: "message", atMs, message };
+}
+
+function parseReactionEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "reaction");
+  if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.reactionId !== "string" || value.reactionId.length === 0) {
+    return undefined;
+  }
+  if (value.reaction === null) return { type: "reaction", atMs, messageId: value.messageId, reactionId: value.reactionId, reaction: null };
+  if (!isPlainObject(value.reaction) || typeof value.reaction.type !== "string" || value.reaction.type.length === 0) {
+    issues.push(issue(`${base}/reaction`, "INVALID_TYPE", "reaction must be an object or null"));
+    return undefined;
+  }
+  for (const key of Object.keys(value.reaction)) {
+    if (key === "type" || key === "byMe" || key === "emoji") continue;
+    issues.push(issue(`${base}/reaction/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
+  }
+  const reaction: { type: string; byMe?: boolean; emoji?: string } = { type: value.reaction.type };
+  if (typeof value.reaction.byMe === "boolean") reaction.byMe = value.reaction.byMe;
+  if (typeof value.reaction.emoji === "string") reaction.emoji = value.reaction.emoji;
+  return { type: "reaction", atMs, messageId: value.messageId, reactionId: value.reactionId, reaction };
+}
+
+function parseOverlayEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  const overlay = value.overlay;
+  if (!isPlainObject(overlay) || typeof overlay.kind !== "string" || atMs === undefined) {
+    issues.push(issue(`${base}/overlay`, "INVALID_TYPE", "overlay must be an object"));
+    return undefined;
+  }
+  if (platform === "macos" && IOS_ONLY_OVERLAYS.has(overlay.kind as OverlayState["kind"])) {
+    issues.push(issue(`${base}/overlay/kind`, "PLATFORM_MISMATCH", `${overlay.kind} is an iOS overlay`));
+    return undefined;
+  }
+  switch (overlay.kind) {
+    case "closed":
+      return { type: "overlay", atMs, overlay: { kind: "closed" } };
+    case "thread":
+      if (!requireLive(live, removed, overlay.rootId, atMs, `${base}/overlay/rootId`, issues, "thread")) return undefined;
+      return { type: "overlay", atMs, overlay: { kind: "thread", rootId: String(overlay.rootId) } };
+    case "long-press":
+      if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "long-press")) return undefined;
+      return { type: "overlay", atMs, overlay: { kind: "long-press", messageId: String(overlay.messageId) } };
+    case "context-menu":
+      if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "context-menu")) return undefined;
+      if (typeof overlay.x !== "number" || typeof overlay.y !== "number") return undefined;
+      return { type: "overlay", atMs, overlay: { kind: "context-menu", messageId: String(overlay.messageId), x: overlay.x, y: overlay.y } };
+    case "plus-menu":
+      return { type: "overlay", atMs, overlay: { kind: "plus-menu" } };
+    case "effects-picker": {
+      if (overlay.tab !== "bubble" && overlay.tab !== "screen") {
+        issues.push(issue(`${base}/overlay/tab`, "INVALID_VALUE", "effects picker tab must be bubble or screen"));
+        return undefined;
+      }
+      if (typeof overlay.draft !== "string") return undefined;
+      const effect = typeof overlay.effect === "string" ? overlay.effect : undefined;
+      if (effect !== undefined) {
+        const allowed = overlay.tab === "bubble" ? EFFECTS : SCREEN_EFFECTS;
+        if (!allowed.has(effect as never)) {
+          issues.push(issue(`${base}/overlay/effect`, "INVALID_VALUE", "selected effect does not belong to the open picker tab"));
+          return undefined;
+        }
+      }
+      return { type: "overlay", atMs, overlay: { kind: "effects-picker", tab: overlay.tab, draft: overlay.draft, ...(effect ? { effect } : {}) } };
+    }
+    case "image-viewer": {
+      const message = requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "image-viewer");
+      if (!message) return undefined;
+      if (message.imageCount < 1) {
+        issues.push(issue(`${base}/overlay/messageId`, "INVALID_VALUE", "image viewer target must contain images"));
+        return undefined;
+      }
+      if (typeof overlay.index !== "number" || !Number.isSafeInteger(overlay.index) || overlay.index < 0 || overlay.index >= message.imageCount) {
+        issues.push(issue(`${base}/overlay/index`, "INVALID_VALUE", "image viewer index must point at an image on the target message"));
+        return undefined;
+      }
+      return { type: "overlay", atMs, overlay: { kind: "image-viewer", messageId: message.id, index: overlay.index } };
+    }
+    case "details":
+      return { type: "overlay", atMs, overlay: { kind: "details" } };
+    case "photo-picker":
+      return {
+        type: "overlay",
+        atMs,
+        overlay: typeof overlay.selectedId === "string" ? { kind: "photo-picker", selectedId: overlay.selectedId } : { kind: "photo-picker" },
+      };
+    case "selection": {
+      if (!Array.isArray(overlay.messageIds)) {
+        issues.push(issue(`${base}/overlay/messageIds`, "INVALID_TYPE", "selection messageIds must be an array"));
+        return undefined;
+      }
+      const messageIds: string[] = [];
+      for (const id of overlay.messageIds) {
+        if (!requireLive(live, removed, id, atMs, `${base}/overlay/messageIds`, issues, "selection")) return undefined;
+        messageIds.push(String(id));
+      }
+      return { type: "overlay", atMs, overlay: { kind: "selection", messageIds } };
+    }
+    default:
+      issues.push(issue(`${base}/overlay/kind`, "INVALID_VALUE", `unknown overlay ${JSON.stringify(overlay.kind)}`));
+      return undefined;
+  }
+}
+
+function parseAudioEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "audio-control");
+  if (!message || atMs === undefined || typeof value.messageId !== "string") return undefined;
+  if (message.kind !== "audio") {
+    issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "audio control target must be an audio message"));
+    return undefined;
+  }
+  if (typeof value.position !== "number" || value.position < 0 || (message.audioDuration !== undefined && value.position > message.audioDuration)) {
+    issues.push(issue(`${base}/position`, "INVALID_VALUE", "audio position must fall within the message duration"));
+    return undefined;
+  }
+  if (typeof value.playing !== "boolean") return undefined;
+  return {
+    type: "audio-control",
+    atMs,
+    messageId: value.messageId,
+    position: value.position,
+    playing: value.playing,
+    ...(typeof value.seeking === "boolean" ? { seeking: value.seeking } : {}),
+  };
+}
+
+function parseNoticeEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  const notice = value.notice;
+  if (!isPlainObject(notice) || atMs === undefined) {
+    issues.push(issue(`${base}/notice`, "INVALID_TYPE", "notice must be an object"));
+    return undefined;
+  }
+  if (notice.kind === "unknown-sender") return { type: "notice", atMs, notice: { kind: "unknown-sender" } };
+  if (notice.kind === "not-delivered") {
+    if (!requireLive(live, removed, notice.messageId, atMs, `${base}/notice/messageId`, issues, "notice")) return undefined;
+    return { type: "notice", atMs, notice: { kind: "not-delivered", messageId: String(notice.messageId) } };
+  }
+  if (notice.kind === "missed-call" && (notice.call === "audio" || notice.call === "video")) {
+    return { type: "notice", atMs, notice: { kind: "missed-call", call: notice.call } };
+  }
+  issues.push(issue(`${base}/notice/kind`, "INVALID_VALUE", "notice must be unknown-sender, not-delivered, or a missed audio or video call"));
+  return undefined;
 }

@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { compileDemo, validateDemo } from "@/compiler";
+import { stateAt } from "@/runtime";
 import capabilities from "@/contracts/capabilities.json";
 import motionTokens from "@/contracts/motion-tokens.json";
 
@@ -286,6 +287,113 @@ describe("validateDemo", () => {
     expect(incomingEffect.ok).toBe(false);
     if (incomingEffect.ok) return;
     expect(incomingEffect.issues.some((entry) => entry.path === "/messages/0/effect" && entry.message.startsWith("INVALID_ANIMATION:"))).toBe(true);
+  });
+});
+
+describe("canonical timeline", () => {
+  it("keeps a shorthand flow on message, draft, and typing events", () => {
+    const validated = validateDemo(flow());
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    expect(compileDemo(validated.demo).events.map((event) => event.type)).toEqual(["message", "message", "draft", "typing"]);
+  });
+
+  it("accepts replies, tapbacks, edits, read timestamps, link images, and attachment hrefs", () => {
+    const validated = validateDemo(
+      flow({
+        messages: [
+          { id: "m1", text: "Look", direction: "incoming", atMs: 0, status: "read", readAt: nowMs },
+          {
+            id: "m2",
+            text: "Notes",
+            direction: "incoming",
+            atMs: 1000,
+            kind: "link",
+            link: { url: "https://example.com/notes", title: "Notes", host: "example.com", image: "park-64x48.png" },
+          },
+          {
+            id: "m3",
+            text: "",
+            direction: "outgoing",
+            atMs: 2000,
+            kind: "attachment",
+            attachments: [{ name: "Notes.txt", size: "4 KB", href: "notes.txt" }],
+            reactions: [{ type: "love", byMe: true }, { type: "custom", emoji: "🎉", byMe: false }],
+          },
+          {
+            id: "m4",
+            text: "Yes",
+            direction: "outgoing",
+            atMs: 3000,
+            edited: true,
+            replyTo: { id: "m1", text: "Look", direction: "incoming" },
+          },
+        ],
+      }),
+    );
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    const compiled = compileDemo(validated.demo);
+    const messages = compiled.events.filter((event) => event.type === "message");
+    expect(messages[0]).toMatchObject({ type: "message", message: { readAt: nowMs } });
+    expect(messages[1]).toMatchObject({ type: "message", message: { link: { image: "park-64x48.png" } } });
+    expect(messages[2]).toMatchObject({
+      type: "message",
+      message: { attachments: [{ href: "notes.txt" }], reactions: [{ id: "m3:0", type: "love", byMe: true }, { type: "custom", emoji: "🎉" }] },
+    });
+    expect(messages[3]).toMatchObject({
+      type: "message",
+      message: { edited: true, replyTo: { id: "m1", text: "Look", direction: "incoming" } },
+    });
+    const projected = stateAt(compiled, compiled.durationMs);
+    expect(projected.messages.find((message) => message.id === "m1")?.replyCount).toBe(1);
+    expect(projected.messages.find((message) => message.id === "m4")?.replyTo?.text).toBe("Look");
+    expect(projected.messages.find((message) => message.id === "m3")?.reactions).toHaveLength(2);
+  });
+
+  it("projects audio, overlays, notices, and timestamp reveal from the timeline", () => {
+    const validated = validateDemo(
+      flow({
+        messages: [
+          { id: "m1", text: "Hi", direction: "incoming", atMs: 0 },
+          { id: "m8", text: "", direction: "incoming", atMs: 1000, kind: "audio", audio: { duration: 12 } },
+          { id: "m7", text: "", direction: "incoming", atMs: 2000, kind: "image", images: [{ src: "park-64x48.png", alt: "Park" }] },
+        ],
+        events: [
+          { type: "audio-control", atMs: 8200, messageId: "m8", position: 2.4, playing: true },
+          { type: "overlay", atMs: 9000, overlay: { kind: "image-viewer", messageId: "m7", index: 0 } },
+          { type: "overlay", atMs: 9400, overlay: { kind: "closed" } },
+          { type: "time-reveal", atMs: 9600, progress: 1 },
+          { type: "notice", atMs: 9700, notice: { kind: "unknown-sender" } },
+          { type: "screen-effect", atMs: 9800, effect: "confetti", messageId: "m1" },
+          { type: "overlay", atMs: 9900, overlay: { kind: "selection", messageIds: ["m1"] } },
+        ],
+      }),
+    );
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    const compiled = compileDemo(validated.demo);
+    const playing = stateAt(compiled, 8200);
+    expect(playing.audio).toEqual({ messageId: "m8", position: 2.4, playing: true });
+    expect(stateAt(compiled, 9000).overlay).toEqual({ kind: "image-viewer", messageId: "m7", index: 0 });
+    expect(stateAt(compiled, 9600).timeReveal).toBe(1);
+    expect(stateAt(compiled, 9700).notices).toEqual([{ kind: "unknown-sender" }]);
+    expect(stateAt(compiled, 9900).overlay).toEqual({ kind: "selection", messageIds: ["m1"] });
+  });
+
+  it("rejects a viewer aimed at a message with no images and an unknown authoring field", () => {
+    const viewer = validateDemo(
+      flow({
+        messages: [{ id: "m1", text: "Hi", direction: "incoming", atMs: 0 }],
+        events: [{ type: "overlay", atMs: 1000, overlay: { kind: "image-viewer", messageId: "m1", index: 0 } }],
+      }),
+    );
+    const extra = validateDemo(flow({ tail: true }));
+    expect(viewer.ok).toBe(false);
+    expect(extra.ok).toBe(false);
+    if (viewer.ok || extra.ok) return;
+    expect(viewer.issues.some((entry) => entry.message.startsWith("INVALID_VALUE:"))).toBe(true);
+    expect(extra.issues.some((entry) => entry.message.startsWith("UNKNOWN_FIELD:"))).toBe(true);
   });
 });
 

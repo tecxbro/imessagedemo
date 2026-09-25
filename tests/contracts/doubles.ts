@@ -18,7 +18,7 @@ export function validateDemoDouble(input: unknown): ValidationResult {
     }));
     return { ok: false, issues };
   }
-  return { ok: true, demo: parsed.data };
+  return { ok: true, demo: parsed.data as DemoFlow };
 }
 
 export function compileDemoDouble(demo: DemoFlow): CompiledDemo {

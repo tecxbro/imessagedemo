@@ -42,14 +42,6 @@
   },
   "issues": [
     {
-      "path": "messages.1.removed",
-      "message": "Unrecognized key: \"removed\""
-    },
-    {
-      "path": "messages.2.replyTo",
-      "message": "Unrecognized key: \"replyTo\""
-    },
-    {
       "path": "messages.2.replyTo.id",
       "message": "reply target is missing or removed"
     }

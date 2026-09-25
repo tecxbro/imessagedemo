@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { demoFlowSchema, platformSchema, type DemoFlow, type DemoPlatform } from "@/contracts";
+import { demoFlowSchema, platformSchema, type CompiledEvent, type DemoFlow, type DemoMessage, type DemoPlatform } from "@/contracts";
 
 export const checkpointSchema = z.object({
   id: z.string().min(1),
@@ -24,7 +24,8 @@ export function toDemoFlow(document: AuthoringDocument, platform: DemoPlatform):
     draft: document.draft,
     typing: document.typing,
     screen: document.screen,
-    messages: document.messages,
+    messages: document.messages as DemoMessage[],
+    ...(document.events ? { events: document.events as CompiledEvent[] } : {}),
   };
 }
 

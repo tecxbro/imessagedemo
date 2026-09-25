@@ -34,10 +34,6 @@
   },
   "issues": [
     {
-      "path": "messages.0.edited",
-      "message": "Unrecognized key: \"edited\""
-    },
-    {
       "path": "messages.1.removedAtMs",
       "message": "Unrecognized key: \"removedAtMs\""
     }
