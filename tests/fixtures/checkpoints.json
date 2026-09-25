@@ -1982,5 +1982,199 @@
         ]
       }
     ]
+  },
+  {
+    "scenarioId": "ios-surface-ios-light",
+    "checkpoints": [
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m1",
+        "atMs": 1790008860000,
+        "label": "Are you close?",
+        "messageIds": [
+          "ios-surface-ios-light-m1"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m2",
+        "atMs": 1790008862000,
+        "label": "On my way",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m3",
+        "atMs": 1790008867000,
+        "label": "Leaving now",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m4",
+        "atMs": 1790008873000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3",
+          "ios-surface-ios-light-m4"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m5",
+        "atMs": 1790008875000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3",
+          "ios-surface-ios-light-m4",
+          "ios-surface-ios-light-m5"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m7",
+        "atMs": 1790008877000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3",
+          "ios-surface-ios-light-m4",
+          "ios-surface-ios-light-m5",
+          "ios-surface-ios-light-m7"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m8",
+        "atMs": 1790008883000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3",
+          "ios-surface-ios-light-m4",
+          "ios-surface-ios-light-m5",
+          "ios-surface-ios-light-m7",
+          "ios-surface-ios-light-m8"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-light__ios-surface-ios-light-m9",
+        "atMs": 1790008894000,
+        "label": "See you there",
+        "messageIds": [
+          "ios-surface-ios-light-m1",
+          "ios-surface-ios-light-m2",
+          "ios-surface-ios-light-m3",
+          "ios-surface-ios-light-m4",
+          "ios-surface-ios-light-m5",
+          "ios-surface-ios-light-m7",
+          "ios-surface-ios-light-m8",
+          "ios-surface-ios-light-m9"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "ios-surface-ios-dark",
+    "checkpoints": [
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m1",
+        "atMs": 1790008860000,
+        "label": "Are you close?",
+        "messageIds": [
+          "ios-surface-ios-dark-m1"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m2",
+        "atMs": 1790008862000,
+        "label": "On my way",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m3",
+        "atMs": 1790008867000,
+        "label": "Leaving now",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m4",
+        "atMs": 1790008873000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3",
+          "ios-surface-ios-dark-m4"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m5",
+        "atMs": 1790008875000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3",
+          "ios-surface-ios-dark-m4",
+          "ios-surface-ios-dark-m5"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m7",
+        "atMs": 1790008877000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3",
+          "ios-surface-ios-dark-m4",
+          "ios-surface-ios-dark-m5",
+          "ios-surface-ios-dark-m7"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m8",
+        "atMs": 1790008883000,
+        "label": "",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3",
+          "ios-surface-ios-dark-m4",
+          "ios-surface-ios-dark-m5",
+          "ios-surface-ios-dark-m7",
+          "ios-surface-ios-dark-m8"
+        ]
+      },
+      {
+        "id": "ios-surface-ios-dark__ios-surface-ios-dark-m9",
+        "atMs": 1790008894000,
+        "label": "See you there",
+        "messageIds": [
+          "ios-surface-ios-dark-m1",
+          "ios-surface-ios-dark-m2",
+          "ios-surface-ios-dark-m3",
+          "ios-surface-ios-dark-m4",
+          "ios-surface-ios-dark-m5",
+          "ios-surface-ios-dark-m7",
+          "ios-surface-ios-dark-m8",
+          "ios-surface-ios-dark-m9"
+        ]
+      }
+    ]
   }
 ]

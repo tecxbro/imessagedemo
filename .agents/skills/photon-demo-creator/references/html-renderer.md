@@ -7,7 +7,7 @@ Use this reference for render-only work in `tecxbro/imessagedemo`. This is an ex
 - Follow the target repository's `AGENTS.md`. Read [the repository renderer skill](../../make-imessage-demo/SKILL.md) before authoring. Run its capabilities command and inspect the current authoring contract when necessary. Current repository evidence controls schemas, command flags, and render support; this reference does not add features.
 - Do not call Spectrum, provision a project, request an iMessage number, send messages, create a checkout, or run a live message consumer. No provider credentials are needed for this visual workflow.
 - Produce conversation data and local assets. Do not modify the renderer, install another UI library, add custom message components, embed mini-apps, or render screenshots of unsupported widgets to disguise missing support. A renderer implementation change is a separate task.
-- Keep scripted behavior deterministic. Preserve the parent skill's evidence labels and product-like visible copy. Put mock-data and integration limitations in the handoff, not unsolicited warning bubbles. Never report that a scripted search, generation, diagnosis, booking, or payment actually occurred.
+- Keep playback deterministic. Conversation copy should sound like the product in iMessage. Put integration limits in the handoff, not in message bubbles. Never report that a search, generation, diagnosis, booking, or payment actually occurred when the experience only shows the conversation.
 - Preserve supplied transcripts, assets, and established presentation choices. Keep unrelated files and existing demos intact. Do not edit this reusable skill library while making one company's demo.
 
 ## Choose one path

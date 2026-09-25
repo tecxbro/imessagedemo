@@ -25,9 +25,11 @@ Run from the repository root. Use the existing lockfile; install dependencies on
 npm run demo -- capabilities --json
 ```
 
-Use `supported` capabilities only for authored flows. `catalogueOnly` entries can be inspected as stock scenes but are not timeline fields. `unsupported` includes polls and mini-apps. Check [the flow contract](../../../src/contracts/index.ts) and [CLI authoring fields](../../../src/cli/authoring.ts) for exact data shapes rather than inventing fields.
+Use `supported` capabilities only for authored flows. `catalogueOnly` entries are not timeline fields. `unsupported` includes polls and mini-apps. Check [the flow contract](../../../src/contracts/index.ts) and [CLI authoring fields](../../../src/cli/authoring.ts) for exact data shapes rather than inventing fields.
 
-Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, or `audio`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company agent is incoming. Typing and draft are flow-level initial values, not authorable per-turn events. Reactions, quoted replies, and screen effects are catalogue-only. Audio is waveform data, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
+Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, or `audio`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company agent is incoming. Typing and draft are timeline events. Do not encode typing as a message row. Audio is waveform data plus an `audio-control` event, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
+
+Author the useful iOS surface with canonical events. Examples: react to m4 with love, reply to m2, open thread m2, long-press m5, open image m7, play audio m8 at 2.4 seconds, open the effects picker on the Screen tab, send m9 with confetti, open the plus menu, enter selection, swipe to reveal timestamps, and navigate to the Messages list. The checked-in conversation `scenarios/ios-surface-ios-light.json` is the full sequence, including read time, quoted reply, rich link image, attachment href, image viewer, edit, Undo Send, photo picker, and the return to the conversation. Do not author `tail`, `gapBefore`, or pixel positions.
 
 Contact supports name/initials, not a logo field. The current flow has no conversation-wallpaper or outer-presentation-background field. Keep prepared branding assets separate from claims that they were applied. Do not inject CSS/DOM overrides or new schema keys.
 

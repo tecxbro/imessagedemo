@@ -1,6 +1,6 @@
-# iMessage demo maker
+# Make any product feel like itself in iMessage.
 
-Local studio for authoring a Messages conversation as JSON and previewing or capturing it with the pinned iMessage UI. It does not send iMessage, SMS, or RCS, and it does not need a provider account.
+Local studio for authoring a conversation as JSON and previewing or capturing the rendered conversation with the pinned iMessage UI. It does not send iMessage, SMS, or RCS, and it does not need a provider account.
 
 The assembled app entry is `src/main.tsx` -> `src/App.tsx`. Flows live in `scenarios/`. Two repository skills work together: [Photon Demo Creator](.agents/skills/photon-demo-creator/SKILL.md) handles company research, story selection, and review; [Make an iMessage demo](.agents/skills/make-imessage-demo/SKILL.md) handles the renderer's schema and commands.
 
@@ -88,7 +88,7 @@ Playback time is `message.atMs` minus the first message `atMs`; checkpoints use 
 npm run demo -- capabilities --json
 ```
 
-`supported` entries can be compiled into a timeline. `catalogueOnly` components exist in stock scenes but are not authorable timeline fields. The [renderer skill](.agents/skills/make-imessage-demo/SKILL.md) is the canonical command cookbook.
+`supported` entries compile into one timeline: messages, tapbacks, replies, read time, links, attachments, images, audio, overlays, effects, and navigation. `catalogueOnly` stays off that timeline. The [renderer skill](.agents/skills/make-imessage-demo/SKILL.md) is the canonical command cookbook.
 
 ## Checks
 
@@ -107,7 +107,7 @@ npm run test:e2e
 
 ## Current boundaries
 
-Polls, Photon mini apps, and provider send/receive are out of scope. Do not rewrite a required unsupported interaction as text or a picture. Tapbacks, quoted replies, edited labels, screen effects, FaceTime cards, and system lines are catalogue-only. Group avatars, group details, stickers, and the larger `imessage.swerdlow.dev` registry are not in this pin.
+Polls, Photon mini apps, FaceTime, group chats, and provider send/receive are out of scope. Do not rewrite a required unsupported interaction as text or a picture. Group avatars, group details, stickers, and the larger `imessage.swerdlow.dev` registry are not in this pin. Do not author `tail`, `gapBefore`, or pixel positions.
 
 The current flow has contact name/initials, not an avatar-logo field, chat wallpaper, or outer presentation settings. Researching an asset does not add its placement to the renderer. Keep prepared versus visibly applied branding clear. There is no built-in MP4 or publish command; export/publication requires actual supported tooling, not a claim based on a development URL.
 

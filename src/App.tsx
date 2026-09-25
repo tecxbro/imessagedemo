@@ -93,8 +93,8 @@ function ManifestRoute() {
 function Home() {
   return (
     <main style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif", padding: 24 }}>
-      <h1>iMessage demo maker</h1>
-      <p>Write a flow, validate it, then preview or capture it. This page does not send messages.</p>
+      <h1>Make any product feel like itself in iMessage.</h1>
+      <p>Write a conversation, validate it, then preview or capture the rendered conversation. This page does not send messages.</p>
       <ul>
         <li><a href="/?foundation=ios">Foundation iOS shell</a></li>
         <li><a href="/?foundation=macos">Foundation macOS shell</a></li>

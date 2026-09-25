@@ -19,6 +19,13 @@ Options:
   --catalogue         Preview/capture the finite catalogue route
   -h, --help          Show this help
 
+Authoring:
+  React to a message, reply to one, open its thread, long-press it, open an image,
+  play an audio message at a position, open the effects picker, send with confetti,
+  open the plus menu, enter selection, swipe to reveal timestamps, and move to the
+  Messages list. Use the canonical events in src/contracts/index.ts. Do not author
+  tail, gapBefore, or pixel positions.
+
 Exit codes:
   0  success
   1  usage or unexpected error

@@ -9,9 +9,9 @@ metadata:
 
 Choose the narrowest path that satisfies the request. The full product-research and planning ceremony belongs only to a full new-company demo. Checks for every path are additive by changed surface; an operational request does not silently become a redesign.
 
-Keep demos deterministic unless the user explicitly requests live integrations or AI. In developer documentation and handoffs, distinguish scripted behavior from verified live search, generation, diagnosis, booking, payment, or external access.
+Make any product feel like itself in iMessage. Keep the experience deterministic unless the user explicitly requests live integrations or AI. In developer documentation and handoffs, distinguish the rendered conversation from verified live search, generation, diagnosis, booking, payment, or external access.
 
-Keep the visible demo conversation product-like. Do not insert “demo preview,” “scripted demo,” “simulated,” “no real payment,” or similar disclaimers into messages, mode-selection replies, or mini-app copy unless the user explicitly requests that wording. Put simulation and integration limitations in the README or developer handoff instead. This copy rule does not authorize real transactions or changes to no-charge payment mechanics.
+Conversation copy is the product's own voice. Do not label messages, mode-selection replies, or cards as a preview. Put integration limits in the handoff, not in the conversation. This copy rule does not authorize real transactions or changes to no-charge payment mechanics.
 
 ## Repository alignment
 

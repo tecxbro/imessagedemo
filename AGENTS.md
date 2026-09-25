@@ -1,6 +1,6 @@
 # Agent notes
 
-This is an assembled, agent-operated **local visual demo maker**, not a messaging provider. The app entry is `src/main.tsx` -> `src/App.tsx`. Use the pinned source in `src/components/imessage` and `vendor/upstream`; do not replace or silently patch it to make a demo work.
+This is an assembled studio for making any product feel like itself in iMessage, not a messaging provider. The app entry is `src/main.tsx` -> `src/App.tsx`. Use the pinned source in `src/components/imessage` and `vendor/upstream`; do not replace or silently patch it to make a conversation render.
 
 ## First-run setup
 

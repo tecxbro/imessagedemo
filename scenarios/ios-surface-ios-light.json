@@ -1,0 +1,271 @@
+{
+  "id": "ios-surface-ios-light",
+  "title": "iOS Messages surface",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "ios-surface-ios-light-m1",
+      "text": "Are you close?",
+      "direction": "incoming",
+      "atMs": 1790008860000,
+      "status": "read"
+    },
+    {
+      "id": "ios-surface-ios-light-m2",
+      "text": "On my way",
+      "direction": "outgoing",
+      "atMs": 1790008862000,
+      "status": "read",
+      "readAt": 1790008862000
+    },
+    {
+      "id": "ios-surface-ios-light-m3",
+      "text": "Leaving now",
+      "direction": "outgoing",
+      "atMs": 1790008867000,
+      "status": "delivered",
+      "replyTo": {
+        "id": "ios-surface-ios-light-m2",
+        "text": "On my way",
+        "direction": "outgoing"
+      }
+    },
+    {
+      "id": "ios-surface-ios-light-m4",
+      "text": "https://example.com/notes",
+      "direction": "incoming",
+      "atMs": 1790008873000,
+      "kind": "link",
+      "link": {
+        "url": "https://example.com/notes",
+        "title": "Field notes",
+        "host": "example.com",
+        "image": "/demo-assets/park-64x48.png"
+      }
+    },
+    {
+      "id": "ios-surface-ios-light-m5",
+      "text": "",
+      "direction": "incoming",
+      "atMs": 1790008875000,
+      "kind": "attachment",
+      "attachments": [
+        {
+          "name": "field-notes.png",
+          "size": "4 KB",
+          "href": "/demo-assets/park-64x48.png"
+        }
+      ]
+    },
+    {
+      "id": "ios-surface-ios-light-m7",
+      "text": "",
+      "direction": "incoming",
+      "atMs": 1790008877000,
+      "kind": "image",
+      "images": [
+        {
+          "src": "/demo-assets/park-64x48.png",
+          "alt": "Park",
+          "width": 64,
+          "height": 48
+        },
+        {
+          "src": "/demo-assets/night-32x32.png",
+          "alt": "Night",
+          "width": 32,
+          "height": 32
+        }
+      ]
+    },
+    {
+      "id": "ios-surface-ios-light-m8",
+      "text": "",
+      "direction": "outgoing",
+      "atMs": 1790008883000,
+      "kind": "audio",
+      "status": "delivered",
+      "audio": {
+        "duration": 8,
+        "peaks": [
+          0.2,
+          0.8,
+          0.4,
+          0.9,
+          0.3
+        ]
+      }
+    },
+    {
+      "id": "ios-surface-ios-light-m9",
+      "text": "See you there",
+      "direction": "outgoing",
+      "atMs": 1790008894000,
+      "status": "delivered"
+    }
+  ],
+  "events": [
+    {
+      "type": "reaction",
+      "atMs": 1790008864500,
+      "messageId": "ios-surface-ios-light-m2",
+      "reactionId": "ios-surface-ios-light-heart",
+      "reaction": {
+        "type": "love",
+        "byMe": true
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008869000,
+      "overlay": {
+        "kind": "thread",
+        "rootId": "ios-surface-ios-light-m2"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008870500,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008879000,
+      "overlay": {
+        "kind": "image-viewer",
+        "messageId": "ios-surface-ios-light-m7",
+        "index": 0
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008881000,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "audio-control",
+      "atMs": 1790008885000,
+      "messageId": "ios-surface-ios-light-m8",
+      "position": 2.4,
+      "playing": true
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008887000,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "ios-surface-ios-light-m5"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008889500,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008891000,
+      "overlay": {
+        "kind": "effects-picker",
+        "tab": "screen",
+        "draft": "See you there"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008893500,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "screen-effect",
+      "atMs": 1790008894000,
+      "effect": "confetti",
+      "messageId": "ios-surface-ios-light-m9"
+    },
+    {
+      "type": "edit",
+      "atMs": 1790008898500,
+      "messageId": "ios-surface-ios-light-m2",
+      "text": "On my way over"
+    },
+    {
+      "type": "remove",
+      "atMs": 1790008900500,
+      "messageId": "ios-surface-ios-light-m2"
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008902500,
+      "overlay": {
+        "kind": "plus-menu"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008904500,
+      "overlay": {
+        "kind": "photo-picker",
+        "selectedId": "bloom"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008906500,
+      "overlay": {
+        "kind": "selection",
+        "messageIds": [
+          "ios-surface-ios-light-m1"
+        ]
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008908500,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "time-reveal",
+      "atMs": 1790008909000,
+      "progress": 0.5
+    },
+    {
+      "type": "time-reveal",
+      "atMs": 1790008910500,
+      "progress": 1
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008912000,
+      "screen": "list"
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008914000,
+      "screen": "new-message"
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008916000,
+      "screen": "conversation"
+    }
+  ]
+}
