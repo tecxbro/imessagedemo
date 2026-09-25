@@ -3,14 +3,20 @@ import type { CompiledDemo, RenderFrame, RendererHandle, RendererProps } from "@
 import { useBubbleEffectOnMessage } from "@/components/imessage/message-effects";
 import { IosMessagesApp, iosScreen, type IosMessagesAppProps } from "@/components/imessage/ios-messages-app";
 import type { IosConversation } from "@/components/imessage/ios-conversation-list";
+import { ScreenEffect } from "@/components/imessage/screen-effects";
+import { frameAt } from "@/runtime";
+import type { VisualFrame } from "@/runtime";
 import { toUpstreamMessage } from "./adapt";
 import { statusClock } from "./clock";
 import { cueToken, deriveCues, typingFreezeDelay, type CueState } from "./cues";
+import { effectsPickerShellProps, screenEffectOverlayProps } from "./effects";
+import { ImageViewerFromMedia, imageViewerFromFrame } from "./media";
+import { screenTransitionShellProps } from "./navigation";
 import { frameKey, projectFrame } from "./project";
 import { settleIosScene, type IosSettleReceipt } from "./readiness";
 import { applyCheckpointScroll } from "./scroll";
 import { iosInteractionShell, type InteractionInput } from "./interaction-state";
-import { iosInteractionView, type OverlayRenderOptions } from "./overlays";
+import { iosInteractionView, undoSendOverlay, type OverlayRenderOptions } from "./overlays";
 
 export type { IosSettleReceipt };
 
@@ -96,7 +102,19 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   }
   const shown = session.current.override ?? frame;
   session.current.shown = shown;
-  const cues = useMemo(() => deriveCues(compiled, shown), [compiled, shown]);
+  const visual = useMemo(() => frameAt(compiled, shown.timeMs), [compiled, shown.timeMs]);
+  const viewFrame: RenderFrame = {
+    timeMs: visual.timeMs,
+    platform: visual.platform,
+    theme: visual.theme,
+    screen: visual.screen,
+    contact: visual.contact,
+    nowMs: visual.nowMs,
+    messages: visual.messages,
+    typing: visual.typing,
+    draft: visual.draft,
+  };
+  const cues = useMemo(() => deriveCues(compiled, viewFrame), [compiled, viewFrame]);
   session.current.cues = cues;
   const token = cueToken(cues);
   const committedKey = session.current.key;
@@ -146,7 +164,8 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   }
   useImperativeHandle(ref, () => handleRef.current as IosRendererHandle, []);
 
-  const view = shellProps(shown, cues, posed, interactive, onDraft);
+  const view = shellProps(visual, cues, posed, interactive, onDraft);
+  const canonicalOverlay = canonicalOverlayNode(compiled, visual);
   return (
     <div
       ref={hostRef}
@@ -175,26 +194,43 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         time={view.time}
         now={view.now}
         screen={view.screen}
-        screenTransition={view.screenTransition}
+        screenTransition={shell?.screenTransition ?? view.screenTransition}
         typing={view.typing}
         composer={shell?.composer ?? view.composer}
         sendAnimation={view.sendAnimation}
         receiveAnimation={view.receiveAnimation}
-        overlay={overlay ?? shell?.overlay}
+        longPress={shell?.longPress ?? view.longPress}
+        thread={shell?.thread ?? view.thread}
+        effectsPicker={shell?.effectsPicker ?? view.effectsPicker}
+        audioControl={shell?.audioControl ?? view.audioControl}
+        timeReveal={shell?.timeReveal ?? view.timeReveal}
+        overlay={overlay ?? shell?.overlay ?? canonicalOverlay}
         style={shell?.style}
       />
     </div>
   );
 });
 
-function shellProps(frame: RenderFrame, cues: CueState, posed: boolean, interactive: boolean, onDraft?: (value: string) => void): IosMessagesAppProps {
+function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interactive: boolean, onDraft?: (value: string) => void): IosMessagesAppProps {
+  const interaction = iosInteractionShell(frame);
+  const transition = screenTransitionShellProps(frame);
   return {
     width: iosScreen.width,
     height: iosScreen.height,
     time: statusClock(frame.nowMs),
     screen: frame.screen,
-    screenTransition: { from: frame.screen, progress: 1 },
-    conversations: conversationsFor(frame),
+    screenTransition: transition ?? { from: frame.screen, progress: 1 },
+    conversations: conversationsFor({
+      timeMs: frame.timeMs,
+      platform: frame.platform,
+      theme: frame.theme,
+      screen: frame.screen,
+      contact: frame.contact,
+      nowMs: frame.nowMs,
+      messages: frame.messages,
+      typing: frame.typing,
+      draft: frame.draft,
+    }),
     contact: frame.contact,
     group: false,
     messages: frame.messages.map(toUpstreamMessage),
@@ -206,7 +242,27 @@ function shellProps(frame: RenderFrame, cues: CueState, posed: boolean, interact
     },
     sendAnimation: posed && cues.send ? cues.send : null,
     receiveAnimation: posed && cues.receive ? cues.receive : null,
+    longPress: interaction.longPress,
+    thread: interaction.thread,
+    effectsPicker: effectsPickerShellProps(frame),
+    audioControl: frame.audio,
+    timeReveal: frame.timeReveal,
   };
+}
+
+function canonicalOverlayNode(compiled: CompiledDemo, frame: VisualFrame): ReactNode {
+  const interaction = iosInteractionView(frame, { contact: frame.contact });
+  const viewer = imageViewerFromFrame(frame);
+  const effect = screenEffectOverlayProps(frame);
+  return (
+    <>
+      {interaction.notices}
+      {interaction.overlays}
+      {viewer.photos.length > 0 && (viewer.open || viewer.progress > 0) ? <ImageViewerFromMedia viewer={viewer} /> : null}
+      {effect ? <ScreenEffect kind={effect.kind} progress={effect.progress} /> : null}
+      {undoSendOverlay(compiled, frame.timeMs)}
+    </>
+  );
 }
 
 export const IosDemoRenderer = forwardRef<RendererHandle, RendererProps>(function IosDemoRenderer(props, ref) {

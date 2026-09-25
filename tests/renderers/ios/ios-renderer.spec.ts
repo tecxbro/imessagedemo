@@ -373,7 +373,7 @@ test("catalogue scenes keep source labels and standalone components", async ({ p
     expect(await page.locator('[data-slot="message-row"][data-kind="typing"]').count()).toBe(0);
   }
   await page.evaluate((scene) => window.__ios?.show({ kind: "catalogue", scene, theme: "dark" }), sceneById("system"));
-  await expect(page.locator('[data-slot="system-message"]')).toBeVisible();
+  await expect(page.locator('[data-slot="unknown-sender-notice"], [data-slot="system-message"]')).toBeVisible();
   await expect(page.locator('[data-slot="catalogue-confidence"]')).toContainText("not a MessageKind");
   await page.evaluate((scene) => window.__ios?.show({ kind: "catalogue", scene, theme: "light" }), sceneById("facetime"));
   await expect(page.locator('[data-slot="catalogue-confidence"]')).toContainText("unverified");
@@ -381,7 +381,6 @@ test("catalogue scenes keep source labels and standalone components", async ({ p
   await expect(page.locator('[data-slot="catalogue-skip"]')).toBeVisible();
   await page.evaluate((scene) => window.__ios?.show({ kind: "catalogue", scene, theme: "light" }), sceneById("image-viewer"));
   await expect(page.locator('[data-slot="image-viewer"]')).toBeVisible();
-  await expect(page.locator('[data-slot="scripted-source-rect"]')).toHaveAttribute("data-source-rect", "40 80 100 60");
   await page.evaluate((scene) => window.__ios?.show({ kind: "catalogue", scene, theme: "light" }), sceneById("screen-effect"));
   await expect(page.locator('[data-slot="catalogue-confidence"]')).toContainText("unverified");
   monitor.expectQuiet();

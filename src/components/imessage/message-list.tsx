@@ -15,6 +15,7 @@ import { ReplyCount, ReplyStub } from "@/components/imessage/message-reply";
 import { FailedSendBadge, NotDelivered } from "@/components/imessage/ios-notices";
 import { TypingIndicator } from "@/components/imessage/typing-indicator";
 import { useBubbleScreenSpace } from "@/components/imessage/use-screen-space";
+import { SwipeTimes } from "@/components/imessage/ios-swipe-times";
 
 /**
  * The scrolling message log: clusters consecutive same-sender messages (60 s window, tail on the last
@@ -200,6 +201,11 @@ export type MessageListProps = Omit<ComponentProps<"div">, "children" | "ref"> &
    * `position` / `playing` instead of its idle defaults. No HTML media element is driven here.
    */
   audioControl?: { messageId: string; position: number; playing: boolean } | null;
+  /**
+   * Controlled swipe-to-reveal-times progress, 0..1. Above 0, each row is wrapped in `SwipeTimes`
+   * so a seek lands on the same shift as playback. 0 leaves the log unwrapped.
+   */
+  timeReveal?: number;
   /** Where a short conversation sits: under the header ("top", native iOS) or against the composer ("bottom"). */
   anchor?: "top" | "bottom";
   insetTop?: number;
@@ -290,7 +296,7 @@ function EmojiMessage({ message, platform }: { message: Message; platform: Platf
 
 export function MessageList({
   messages, typing = false, group = false, now, frameRef, platform: platformProp, serviceLabel, renderReactions, autoScroll = true,
-  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, audioControl = null, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
+  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, audioControl = null, timeReveal = 0, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
 }: MessageListProps) {
   const contextPlatform = usePlatform();
   const platform = platformProp ?? contextPlatform;
@@ -553,7 +559,11 @@ export function MessageList({
                   <ReplyStub quote={quote} aria-hidden="true" platform={platform} />
                 </button>
               ) : <ReplyStub quote={quote} platform={platform} />)}
-              {content}
+              {timeReveal > 0 ? (
+                <SwipeTimes time={formatClockTime(ms(message.sentAt))} progress={timeReveal}>
+                  {content}
+                </SwipeTimes>
+              ) : content}
               {message.status === "failed" && <NotDelivered platform={platform} />}
               {message.replyCount ? (onOpenThread ? (
                 // `display: contents` keeps the button exactly where it was in the layout while giving

@@ -2,8 +2,8 @@
   "source": "live",
   "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
   "retrievedAt": "2026-09-22T01:51:21.810Z",
-  "sha256": "0e502db26098cd3227c62bca8f1bf22629a682ede3b36a87b79829404d7914ef",
-  "bytes": 827416,
+  "sha256": "a498e42761cebf84b756205625ec18f70bba39b2dfbdb970c39a99a5265f1970",
+  "bytes": 828938,
   "encoding": "utf-8",
   "encodingCheck": "fatal-utf8",
   "itemCount": 48,
@@ -643,5 +643,6 @@
       "archived": false,
       "reason": "references/SPEC.md is not part of the registry response and the probed URLs did not serve it."
     }
-  ]
+  ],
+  "localForwarding": "Optional audioControl and timeReveal props on the pinned list and iOS shell, so canonical playback can reach MessageAudio and SwipeTimes."
 }

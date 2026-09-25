@@ -60,6 +60,52 @@ function staticFrame(theme: DemoTheme, timeMs: number, messages: DemoMessage[], 
   return { compiled, frame: projectFrame(compiled, timeMs) };
 }
 
+/** Append canonical events and re-project through the runtime. */
+export function extendFixture(fixture: IosFixture, extra: CompiledEvent[], timeMs = fixture.frame.timeMs): IosFixture {
+  const events = [...fixture.compiled.events, ...extra];
+  const compiled: CompiledDemo = {
+    ...fixture.compiled,
+    durationMs: Math.max(fixture.compiled.durationMs, timeMs, ...events.map((event) => event.atMs)),
+    events,
+  };
+  return { compiled, frame: projectFrame(compiled, timeMs) };
+}
+
+export function replyFixture(theme: DemoTheme = "light", extra: CompiledEvent[] = [], timeMs = 5000): IosFixture {
+  const earlier = message({
+    id: "earlier",
+    text: "Earlier note",
+    direction: "incoming",
+    atMs: nowMs - 180_000,
+  });
+  const reply = message({
+    id: "reply",
+    text: "This reply",
+    direction: "outgoing",
+    atMs: nowMs - 60_000,
+    status: "delivered",
+    replyTo: { id: "earlier", text: "Earlier note", direction: "incoming" },
+  });
+  const frame: RenderFrame = {
+    timeMs,
+    platform: "ios",
+    theme,
+    screen: "conversation",
+    contact,
+    nowMs,
+    typing: false,
+    draft: "",
+    messages: [],
+  };
+  return staged(frame, [
+    { type: "message", atMs: 0, message: earlier },
+    { type: "message", atMs: 1000, message: reply },
+    { type: "draft", atMs: 0, value: "" },
+    { type: "typing", atMs: 0, typing: false },
+    ...extra,
+  ]);
+}
+
 export function textFixture(theme: DemoTheme = "light", timeMs = 5000): IosFixture {
   return arrivalFixture(timeMs, theme);
 }

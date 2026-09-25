@@ -136,6 +136,10 @@ export type IosMessagesAppProps = {
   onEffectsPickerClose?: () => void;
   /** Extra overlays (details screen, plus menu, selection toolbar) rendered above everything. */
   overlay?: ReactNode;
+  /** Deterministic audio pose. The list forwards it to MessageAudio; nothing plays in real time. */
+  audioControl?: { messageId: string; position: number; playing: boolean } | null;
+  /** Controlled swipe-to-reveal-times progress forwarded to the message log. */
+  timeReveal?: number;
   /** Render reactions for a message; defaults to the message's `reactions` as Tapback balloons. */
   renderReactions?: (message: Message) => ReactNode;
   className?: string;
@@ -190,7 +194,7 @@ export function IosMessagesApp({
   thread, onOpenThread, onCloseThread,
   sendAnimation, receiveAnimation, onSendAnimationEnd,
   longPress, onLongPress, onLongPressClose, onTapback, onMenuAction,
-  effectsPicker, onEffectsPickerOpen, onEffectsTabChange, onEffectSelect, onSendWithEffect, onEffectsPickerClose,
+  effectsPicker, onEffectsPickerOpen, onEffectsTabChange, onEffectSelect, onSendWithEffect, onEffectsPickerClose, audioControl = null, timeReveal = 0,
   overlay, renderReactions = defaultReactions, className, style, frameRef,
 }: IosMessagesAppProps) {
   const localFrame = useRef<HTMLDivElement>(null);
@@ -391,7 +395,7 @@ export function IosMessagesApp({
           <div ref={conversationLayer} data-slot="screen-conversation" className="absolute inset-0" style={{ pointerEvents: screen === "conversation" ? undefined : "none" }}>
             <MessageList ref={list} frameRef={frame} messages={messages} typing={typing} group={group} now={now} anchor="top"
               insetTop={iosScreen.listTop} insetBottom={iosScreen.listBottom} renderReactions={renderReactions} messageActions={Boolean(onLongPress)}
-              onOpenThread={onOpenThread} className="absolute inset-0" />
+              onOpenThread={onOpenThread} audioControl={audioControl} timeReveal={timeReveal} className="absolute inset-0" />
             <IosNavBar name={contact.name} initials={contact.initials} onBack={onBack} onDetails={onDetails} className="absolute left-0" style={{ top: iosScreen.statusBar }} />
             <IosComposer className="absolute bottom-0 left-0" value={composer?.value} placeholder={composer?.placeholder} disabled={composer?.disabled}
               onChange={composer?.onChange} onSend={composer?.onSend} onAttach={composer?.onAttach} />

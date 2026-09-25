@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { DemoFlow } from "@/contracts";
+import type { CompiledDemo, DemoFlow } from "@/contracts";
 import type { SystemNotice } from "@/runtime/types";
 import { IosPlusMenu } from "@/components/imessage/ios-plus-menu";
 import { IosDetails } from "@/components/imessage/ios-details";
@@ -10,7 +10,7 @@ import {
   MessageSelectionRow,
 } from "@/components/imessage/ios-select-mode";
 import { SwipeTimes } from "@/components/imessage/ios-swipe-times";
-import { EditableBubble, EditedLabel, UndoSendPoof } from "@/components/imessage/message-edit";
+import { EditableBubble, EditedLabel, UndoSendPoof, undoSendPoof } from "@/components/imessage/message-edit";
 import { SystemMessage, type SystemMessageEvent } from "@/components/imessage/system-message";
 import { UnknownSenderNotice, NotDelivered } from "@/components/imessage/ios-notices";
 import { MessageBubble } from "@/components/imessage/message-bubble";
@@ -210,6 +210,31 @@ export function renderUndoSend(
     <UndoSendPoof progress={poofProgress} data-message-id={message.id}>
       <MessageBubble direction={message.direction ?? "outgoing"} tail>
         {message.text}
+      </MessageBubble>
+    </UndoSendPoof>
+  );
+}
+
+/**
+ * Seekable Undo Send. The remove event is the semantic fact; this only paints the pin's poof
+ * while that event's 420ms window is still open.
+ */
+export function undoSendOverlay(compiled: CompiledDemo, timeMs: number): ReactNode {
+  const duration = undoSendPoof.duration;
+  let removal: { atMs: number; messageId: string } | null = null;
+  for (const event of compiled.events) {
+    if (event.type !== "remove" || event.atMs > timeMs) continue;
+    if (timeMs - event.atMs >= duration) continue;
+    if (!removal || event.atMs >= removal.atMs) removal = { atMs: event.atMs, messageId: event.messageId };
+  }
+  if (!removal) return null;
+  const source = compiled.events.find((event) => event.type === "message" && event.message.id === removal.messageId);
+  if (!source || source.type !== "message") return null;
+  const progress = (timeMs - removal.atMs) / duration;
+  return (
+    <UndoSendPoof progress={progress} data-message-id={removal.messageId}>
+      <MessageBubble direction={source.message.direction} tail>
+        {source.message.text}
       </MessageBubble>
     </UndoSendPoof>
   );

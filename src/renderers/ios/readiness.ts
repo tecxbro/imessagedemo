@@ -73,6 +73,33 @@ function gradientsReady(shell: HTMLElement): boolean {
   return true;
 }
 
+function effectCanvasReady(shell: HTMLElement): boolean {
+  const canvas = shell.querySelector<HTMLCanvasElement>('canvas[data-slot="screen-effect"]');
+  if (!canvas) return true;
+  const box = canvas.getBoundingClientRect();
+  return box.width >= 1 && box.height >= 1;
+}
+
+function transitionPoseReady(shell: HTMLElement): boolean {
+  if (!shell.dataset.transition) return true;
+  if (prefersReducedMotion()) return true;
+  const layer = shell.querySelector('[data-slot="screen-conversation"], [data-slot="screen-list"], [data-slot="ios-new-message-sheet"]');
+  if (!layer) return false;
+  return layer.getAnimations().length > 0;
+}
+
+function overlayPoseReady(shell: HTMLElement): boolean {
+  const nodes = shell.querySelectorAll<HTMLElement>(
+    '[data-slot="long-press-layer"], [data-slot="thread-panel"], [data-slot="ios-plus-menu"], [data-slot="image-viewer"], [data-slot="ios-details"], [data-slot="photo-picker"], [data-slot="swipe-times"]',
+  );
+  for (const node of nodes) {
+    if (getComputedStyle(node).display === "contents") continue;
+    const box = node.getBoundingClientRect();
+    if (box.width < 1 && box.height < 1) return false;
+  }
+  return true;
+}
+
 function poseReady(shell: HTMLElement, cues: CueState): boolean {
   if (prefersReducedMotion()) return true;
   const ghost = shell.querySelector('[data-slot="send-ghost"], [data-slot="send-clone"]');
@@ -178,6 +205,21 @@ export async function settleIosScene(options: {
     }
     if (!poseReady(shell, cues)) {
       problem = "readiness timeout: arrival pose";
+      await nextFrame();
+      continue;
+    }
+    if (!effectCanvasReady(shell)) {
+      problem = "readiness timeout: effect canvas";
+      await nextFrame();
+      continue;
+    }
+    if (!transitionPoseReady(shell)) {
+      problem = "readiness timeout: transition pose";
+      await nextFrame();
+      continue;
+    }
+    if (!overlayPoseReady(shell)) {
+      problem = "readiness timeout: overlay pose";
       await nextFrame();
       continue;
     }

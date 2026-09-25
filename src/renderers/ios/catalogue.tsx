@@ -1,25 +1,16 @@
 import type { ReactNode } from "react";
 import type { CatalogueSceneDefinition, CatalogueSceneProps, DemoTheme } from "@/contracts";
 import motionTokens from "@/contracts/motion-tokens.json";
+import { screenEffectDuration } from "@/runtime";
 import { iosScreen } from "@/components/imessage/ios-messages-app";
 import { PlatformProvider } from "@/components/imessage/platform";
 import { PaletteStyle } from "@/components/imessage/palette";
 import { FaceTimeCard } from "@/components/imessage/facetime-card";
-import { SystemMessage } from "@/components/imessage/system-message";
-import { ImageViewer } from "@/components/imessage/image-viewer";
-import { ScreenEffect } from "@/components/imessage/screen-effects";
-import { IosPlusMenu } from "@/components/imessage/ios-plus-menu";
-import { IosDetails } from "@/components/imessage/ios-details";
-import { PhotoPicker, photoPickerSamples } from "@/components/imessage/photo-picker";
-import { EditableBubble, UndoSendPoof } from "@/components/imessage/message-edit";
-import { MessageAudio } from "@/components/imessage/message-audio";
-import { MessageBubble } from "@/components/imessage/message-bubble";
-import { IosSelectMode, IosSelectionToolbar, MessageSelectionRow } from "@/components/imessage/ios-select-mode";
-import { SwipeTimes, useSwipeToRevealTimes } from "@/components/imessage/ios-swipe-times";
-import type { Message } from "@/components/imessage/message-list";
-import { viewportRectToFrame } from "./geometry";
-import { pixel, attachmentFixture, audioFixture, imageFixture, inkFixture, linkFixture, listFixture, newMessageFixture, nowMs, smsFixture, statusFixture, textFixture, typingFixture } from "./fixtures";
-import { IosDemoRenderer, IosFrame } from "./scene";
+import { EditableBubble } from "@/components/imessage/message-edit";
+import { undoSendPoof } from "@/components/imessage/message-edit";
+import { extendFixture, attachmentFixture, audioFixture, imageFixture, inkFixture, linkFixture, listFixture, newMessageFixture, replyFixture, smsFixture, statusFixture, textFixture, typingFixture } from "./fixtures";
+import { projectFrame } from "./project";
+import { IosDemoRenderer } from "./scene";
 
 const tokenByAnchor: Record<string, string> = {
   IosMessagesApp: "iosScreen",
@@ -61,41 +52,12 @@ function themed<T extends { compiled: { theme: DemoTheme }; frame: { theme: Demo
   };
 }
 
-const sentAt = nowMs - 60_000;
-
-const replyMessages: Message[] = [
-  { id: "earlier", text: "Earlier note", direction: "incoming", sentAt: nowMs - 180_000, replyCount: 1 },
-  {
-    id: "reply",
-    text: "This reply",
-    direction: "outgoing",
-    sentAt,
-    status: "delivered",
-    replyTo: { id: "earlier", text: "Earlier note", direction: "incoming" },
-  },
-];
-
-const scriptedSourceRect = viewportRectToFrame(
-  { left: 0, top: 0, width: iosScreen.width * 2, height: iosScreen.height * 2 },
-  { left: 80, top: 160, width: 200, height: 120 },
-  iosScreen,
-);
-
 function rendererScene(scene: CatalogueSceneDefinition, theme: DemoTheme, bundle: ReturnType<typeof textFixture>) {
   const next = themed(bundle, theme);
   return (
     <SceneChrome scene={scene}>
       <IosDemoRenderer compiled={next.compiled} frame={next.frame} />
     </SceneChrome>
-  );
-}
-
-function SwipePreview() {
-  const swipe = useSwipeToRevealTimes({ progress: 0.65 });
-  return (
-    <SwipeTimes time="4:41" progress={swipe.progress}>
-      <MessageBubble direction="incoming" tail>Swipe the row</MessageBubble>
-    </SwipeTimes>
   );
 }
 
@@ -136,27 +98,25 @@ export function IosCatalogueScene({ scene, theme }: CatalogueSceneProps) {
       return rendererScene(scene, theme, typingFixture(360));
     case "bubble-effect":
       return rendererScene(scene, theme, inkFixture(800));
-    case "tapback":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame
-            compiled={textFixture(theme).compiled}
-            frame={themed(textFixture(theme), theme).frame}
-            shell={{
-              messages: [
-                { id: "in-1", text: "Are you close?", direction: "incoming", sentAt: nowMs - 120_000, reactions: [{ type: "love", byMe: true }] },
-                { id: "out-1", text: "See you there.", direction: "outgoing", sentAt, status: "delivered", reactions: [{ type: "like", byMe: false }] },
-              ],
-            }}
-          />
-        </SceneChrome>
-      );
+    case "tapback": {
+      const base = textFixture(theme);
+      const events = base.compiled.events.map((event) => {
+        if (event.type !== "message") return event;
+        if (event.message.id === "in-1") {
+          return { ...event, message: { ...event.message, reactions: [{ id: "love-1", type: "love", byMe: true }] } };
+        }
+        if (event.message.id === "out-1") {
+          return { ...event, message: { ...event.message, reactions: [{ id: "like-1", type: "like", byMe: false }] } };
+        }
+        return event;
+      });
+      const compiled = { ...base.compiled, events };
+      return rendererScene(scene, theme, { compiled, frame: projectFrame(compiled, base.frame.timeMs) });
+    }
     case "screen-effect":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} overlay={<ScreenEffect kind="confetti" progress={0.35} />} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "screen-effect", atMs: 5000 - screenEffectDuration("confetti") * 0.35, effect: "confetti" },
+      ], 5000));
     case "facetime":
       return (
         <SceneChrome scene={scene}>
@@ -166,80 +126,41 @@ export function IosCatalogueScene({ scene, theme }: CatalogueSceneProps) {
         </SceneChrome>
       );
     case "system":
-      return (
-        <SceneChrome scene={scene}>
-          <Standalone theme={theme}>
-            <SystemMessage event={{ type: "unknownSender" }} platform="ios" />
-          </Standalone>
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "notice", atMs: 1000, notice: { kind: "unknown-sender" } },
+      ]));
     case "image-viewer":
-      return (
-        <SceneChrome scene={scene}>
-          <div data-source-rect={`${scriptedSourceRect.x} ${scriptedSourceRect.y} ${scriptedSourceRect.width} ${scriptedSourceRect.height}`} data-slot="scripted-source-rect" />
-          <IosFrame
-            compiled={imageFixture().compiled}
-            frame={themed(imageFixture(), theme).frame}
-            overlay={
-              <ImageViewer
-                photos={[{ src: pixel, alt: "Still", width: 4, height: 4 }]}
-                open
-                progress={1}
-                sourceRect={scriptedSourceRect}
-                frame={iosScreen}
-                title="Alex Morgan"
-                subtitle="4:41"
-              />
-            }
-          />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(imageFixture(), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "image-viewer", messageId: "image-1", index: 0 } },
+      ]));
     case "effects-picker":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} shell={{ effectsPicker: { tab: "bubble", progress: 1, draft: "With effect" } }} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "effects-picker", tab: "bubble", draft: "With effect" } },
+      ]));
     case "reply-long-press":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} shell={{ messages: replyMessages, longPress: { id: "reply", progress: 1 } }} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, replyFixture(theme, [
+        { type: "overlay", atMs: 2000, overlay: { kind: "long-press", messageId: "reply" } },
+      ]));
     case "thread":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} shell={{ messages: replyMessages, thread: { rootId: "earlier", progress: 1 } }} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, replyFixture(theme, [
+        { type: "overlay", atMs: 2000, overlay: { kind: "thread", rootId: "earlier" } },
+      ]));
     case "plus-menu":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} overlay={<IosPlusMenu progress={1} />} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "plus-menu" } },
+      ]));
     case "details":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} overlay={<IosDetails name="Alex Morgan" initials="AM" phone="555-0100" progress={1} open />} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "details" } },
+      ]));
     case "photo-picker":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame compiled={textFixture(theme).compiled} frame={themed(textFixture(theme), theme).frame} overlay={<PhotoPicker photos={photoPickerSamples} selected={[]} open progress={1} />} />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "photo-picker" } },
+      ]));
     case "edited":
-      return (
-        <SceneChrome scene={scene}>
-          <IosFrame
-            compiled={textFixture(theme).compiled}
-            frame={themed(textFixture(theme), theme).frame}
-            shell={{ messages: [{ id: "out-1", text: "See you there.", direction: "outgoing", sentAt, status: "delivered", edited: true }] }}
-          />
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "edit", atMs: 2000, messageId: "out-1", text: "See you there." },
+      ]));
     case "editable-bubble":
       return (
         <SceneChrome scene={scene}>
@@ -249,44 +170,21 @@ export function IosCatalogueScene({ scene, theme }: CatalogueSceneProps) {
         </SceneChrome>
       );
     case "undo-send":
-      return (
-        <SceneChrome scene={scene}>
-          <Standalone theme={theme}>
-            <UndoSendPoof progress={0.35}>
-              <MessageBubble direction="outgoing" tail>Undo this send</MessageBubble>
-            </UndoSendPoof>
-          </Standalone>
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "remove", atMs: 5000 - undoSendPoof.duration * 0.35, messageId: "out-1" },
+      ], 5000));
     case "controlled-audio":
-      return (
-        <SceneChrome scene={scene}>
-          <Standalone theme={theme}>
-            <MessageAudio duration={8} position={3} playing={false} peaks={[0.2, 0.8, 0.4, 0.9, 0.3]} direction="incoming" tail />
-          </Standalone>
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(audioFixture(), [
+        { type: "audio-control", atMs: 0, messageId: "audio-1", position: 3, playing: false },
+      ]));
     case "selection":
-      return (
-        <SceneChrome scene={scene}>
-          <Standalone theme={theme}>
-            <IosSelectMode progress={1}>
-              <MessageSelectionRow selected progress={1} label="Select message">
-                <MessageBubble direction="incoming" tail>Selected</MessageBubble>
-              </MessageSelectionRow>
-              <IosSelectionToolbar count={1} progress={1} />
-            </IosSelectMode>
-          </Standalone>
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "overlay", atMs: 2000, overlay: { kind: "selection", messageIds: ["in-1"] } },
+      ]));
     case "swipe-times":
-      return (
-        <SceneChrome scene={scene}>
-          <Standalone theme={theme}>
-            <SwipePreview />
-          </Standalone>
-        </SceneChrome>
-      );
+      return rendererScene(scene, theme, extendFixture(textFixture(theme), [
+        { type: "time-reveal", atMs: 2000, progress: 0.65 },
+      ]));
     case "status":
       return rendererScene(scene, theme, statusFixture());
     case "service-color":

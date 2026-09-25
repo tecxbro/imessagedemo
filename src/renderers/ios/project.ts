@@ -1,4 +1,5 @@
 import type { CompiledDemo, CompiledEvent, DemoMessage, RenderFrame } from "@/contracts";
+import { frameAt } from "@/runtime/project";
 
 export function frameKey(frame: RenderFrame): string {
   return JSON.stringify({
@@ -14,31 +15,22 @@ export function frameKey(frame: RenderFrame): string {
   });
 }
 
-function orderedEvents(events: CompiledEvent[]): CompiledEvent[] {
-  return events.map((event, index) => ({ event, index })).sort((a, b) => a.event.atMs - b.event.atMs || a.index - b.index).map((entry) => entry.event);
-}
-
-/** Project a frame from frozen compiled events. This does not call the runtime lane. */
+/**
+ * View of the canonical runtime projection.
+ * Semantic timeline state stays in src/runtime/project.ts.
+ */
 export function projectFrame(compiled: CompiledDemo, timeMs: number): RenderFrame {
-  const messages: DemoMessage[] = [];
-  let draft = "";
-  let typing = false;
-  for (const event of orderedEvents(compiled.events)) {
-    if (event.atMs > timeMs) continue;
-    if (event.type === "message") messages.push(event.message);
-    if (event.type === "draft") draft = event.value;
-    if (event.type === "typing") typing = event.typing;
-  }
+  const frame = frameAt(compiled, timeMs);
   return {
-    timeMs,
-    platform: compiled.platform,
-    theme: compiled.theme,
-    screen: compiled.screen,
-    contact: compiled.contact,
-    nowMs: compiled.nowMs,
-    messages,
-    typing,
-    draft,
+    timeMs: frame.timeMs,
+    platform: frame.platform,
+    theme: frame.theme,
+    screen: frame.screen,
+    contact: frame.contact,
+    nowMs: frame.nowMs,
+    messages: frame.messages,
+    typing: frame.typing,
+    draft: frame.draft,
   };
 }
 
