@@ -9,7 +9,7 @@ import { viewportRectToFrame } from "@/renderers/ios/geometry";
 import { projectFrame } from "@/renderers/ios/project";
 import { digestText } from "@/renderers/ios/readiness";
 import { confidenceText } from "@/renderers/ios/catalogue";
-import type { CatalogueSceneDefinition } from "@/contracts";
+import type { CatalogueSceneDefinition, DemoMessage } from "@/contracts";
 
 describe("iOS message adaptation", () => {
   it("keeps numeric sentAt and drops fields the pin does not render from the demo schema", () => {
@@ -29,6 +29,70 @@ describe("iOS message adaptation", () => {
     const upstream = toUpstreamMessage(file!);
     expect(upstream.attachments?.[0]).toEqual({ name: "Notes.txt", size: "4 KB" });
     expect(upstream.attachments?.[0]).not.toHaveProperty("href");
+  });
+
+  it("forwards rich message semantics without dropping authoring fields", () => {
+    const message: DemoMessage & { replyCount: number } = {
+      id: "rich-1",
+      text: "On my way",
+      direction: "outgoing",
+      atMs: nowMs - 30_000,
+      kind: "link",
+      service: "imessage",
+      status: "read",
+      edited: true,
+      readAt: nowMs,
+      replyCount: 2,
+      replyTo: {
+        id: "root-1",
+        text: "Are you close?",
+        direction: "incoming",
+        service: "imessage",
+        sender: "Alex",
+      },
+      reactions: [
+        { id: "rxn-1", type: "like", byMe: false },
+        { id: "rxn-2", type: "custom", byMe: true, emoji: "🎉" },
+      ],
+      link: {
+        url: "https://example.com/notes",
+        title: "Notes",
+        host: "example.com",
+        image: "https://example.com/notes.png",
+      },
+      attachments: [{ name: "Notes.txt", size: "4 KB", href: "https://example.com/Notes.txt" }],
+    };
+
+    const upstream = toUpstreamMessage(message);
+
+    expect(upstream.sentAt).toBe(message.atMs);
+    expect(typeof upstream.sentAt).toBe("number");
+    expect(upstream.readAt).toBe(nowMs);
+    expect(upstream.edited).toBe(true);
+    expect(upstream.replyCount).toBe(2);
+    expect(upstream.replyTo).toEqual({
+      id: "root-1",
+      text: "Are you close?",
+      direction: "incoming",
+      service: "imessage",
+      sender: "Alex",
+    });
+    expect(upstream.reactions).toEqual([
+      { type: "like", byMe: false },
+      { type: "custom", byMe: true, emoji: "🎉" },
+    ]);
+    expect(upstream.reactions?.[0]).not.toHaveProperty("id");
+    expect(upstream.link).toEqual({
+      url: "https://example.com/notes",
+      title: "Notes",
+      host: "example.com",
+      image: "https://example.com/notes.png",
+    });
+    expect(upstream.attachments?.[0]).toEqual({
+      name: "Notes.txt",
+      size: "4 KB",
+      href: "https://example.com/Notes.txt",
+    });
   });
 
   it("does not treat typing as a message kind", () => {
