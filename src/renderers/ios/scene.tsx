@@ -9,8 +9,19 @@ import { cueToken, deriveCues, typingFreezeDelay, type CueState } from "./cues";
 import { frameKey, projectFrame } from "./project";
 import { settleIosScene, type IosSettleReceipt } from "./readiness";
 import { applyCheckpointScroll } from "./scroll";
+import { iosInteractionShell, type InteractionInput } from "./interaction-state";
+import { iosInteractionView, type OverlayRenderOptions } from "./overlays";
 
 export type { IosSettleReceipt };
+
+/** WT-06 assembly hook: derive shell + overlay nodes from a projected runtime frame. */
+export function iosInteractionFromState(state: InteractionInput, options?: OverlayRenderOptions) {
+  return {
+    shell: iosInteractionShell(state),
+    ...iosInteractionView(state, options),
+  };
+}
+
 
 export type IosRendererHandle = RendererHandle & {
   readonly revision: number;
