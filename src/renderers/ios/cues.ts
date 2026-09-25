@@ -1,8 +1,10 @@
-import type { CompiledDemo, DemoMessage, RenderFrame } from "@/contracts";
+import type { CompiledDemo, DemoMessage, IosScreenName, RenderFrame, ScreenEffectName } from "@/contracts";
 import { isEmojiOnly } from "@/components/imessage/message-bubble";
 import { bubbleEffectDuration, type BubbleEffectKind } from "@/components/imessage/message-effects";
 import { messageMotion } from "@/components/imessage/message-motion";
 import { typingLoopMs, typingStaggerMs } from "@/components/imessage/typing-indicator";
+import { frameAt } from "@/runtime/project";
+import type { ScreenTransitionKind } from "@/runtime/types";
 
 export type ArrivalPose = { id: string; progress: number };
 
@@ -12,12 +14,29 @@ export type BubblePose = {
   progress: number;
 };
 
+export type ScreenEffectPose = {
+  effect: ScreenEffectName;
+  progress: number;
+  messageId?: string;
+};
+
+export type ScreenTransitionPose = {
+  kind: ScreenTransitionKind;
+  progress: number;
+  from?: IosScreenName;
+  to?: IosScreenName;
+};
+
 export type CueState = {
   send?: ArrivalPose;
   receive?: ArrivalPose;
   bubbleEffect: BubblePose | null;
   typingElapsed: number | null;
   inkElapsed: Array<{ id: string; elapsed: number }>;
+  /** Surfaced from `frameAt` screen-effect cues; omitted when settled. */
+  screenEffect?: ScreenEffectPose | null;
+  /** Surfaced from `frameAt` screen-transition cues; omitted when settled. */
+  screenTransition?: ScreenTransitionPose | null;
 };
 
 function messageEvents(compiled: CompiledDemo, timeMs: number) {
@@ -82,7 +101,26 @@ export function deriveCues(compiled: CompiledDemo, frame: RenderFrame): CueState
     typingElapsed = frame.timeMs - (startedAt ?? 0);
   }
 
-  return { send, receive, bubbleEffect, typingElapsed, inkElapsed };
+  const visual = frameAt(compiled, frame.timeMs);
+  const screenEffectCue = [...visual.cues].reverse().find((cue) => cue.kind === "screen-effect");
+  let screenEffect: ScreenEffectPose | null = null;
+  if (screenEffectCue?.detail?.effect) {
+    const effect = screenEffectCue.detail.effect;
+    if (effect === "echo" || effect === "spotlight" || effect === "balloons" || effect === "confetti" || effect === "love" || effect === "lasers" || effect === "fireworks" || effect === "celebration") {
+      screenEffect = { effect, progress: screenEffectCue.progress };
+      if (screenEffectCue.subjectId !== undefined) screenEffect.messageId = screenEffectCue.subjectId;
+    }
+  }
+
+  const screenCue = [...visual.cues].reverse().find((cue) => cue.kind === "screen");
+  let screenTransition: ScreenTransitionPose | null = null;
+  if (screenCue?.transition) {
+    screenTransition = { kind: screenCue.transition, progress: screenCue.progress };
+    if (screenCue.detail?.fromScreen !== undefined) screenTransition.from = screenCue.detail.fromScreen;
+    if (screenCue.detail?.toScreen !== undefined) screenTransition.to = screenCue.detail.toScreen;
+  }
+
+  return { send, receive, bubbleEffect, typingElapsed, inkElapsed, screenEffect, screenTransition };
 }
 
 export function cueToken(cues: CueState): string {
