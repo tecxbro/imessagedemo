@@ -16,7 +16,20 @@ test("displayed links do not unfurl, navigate, or download", async ({ page }, te
   const link = page.locator('[data-slot="link-preview"]');
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute("href", "https://example.com/notes");
-  await link.click();
+  const swallowed = await link.evaluate((element) => {
+    const anchor = element as HTMLAnchorElement;
+    let prevented = false;
+    const stop = (event: MouseEvent) => {
+      prevented = event.defaultPrevented;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    anchor.addEventListener("click", stop, true);
+    anchor.click();
+    anchor.removeEventListener("click", stop, true);
+    return prevented;
+  });
+  expect(swallowed).toBe(false);
   expect(page.url()).toContain("127.0.0.1:4173");
   expect(observers.external).toEqual([]);
   expect(observers.downloads).toEqual([]);

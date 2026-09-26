@@ -51,12 +51,12 @@ exit 1
 
 | Spec | State | Why |
 | --- | --- | --- |
-| `tests/e2e/replay.spec.ts` | NOT RUN | Player seek hook and `/?flow=&t=` are unimplemented. `validateDemo`, `compileDemo`, `frameAt`, and `createPlayer` throw `NOT_IMPLEMENTED` |
-| `tests/e2e/network.spec.ts` | NOT RUN | Same preview route. Needs `[data-slot="scenario-error"]` for the path-escape case |
-| `tests/e2e/agent-workflow.spec.ts` | NOT RUN | CLI and compiler still throw `NOT_IMPLEMENTED: demo` / `validateDemo` / `compileDemo` |
+| `tests/e2e/replay.spec.ts` | Historical gap | Recorded before the player seek hook. `/?flow=&t=` now renders a compiled flow. This row is not a claim that seek is missing |
+| `tests/e2e/network.spec.ts` | Historical gap | Recorded before the preview route. Path escapes still surface `[data-slot="scenario-error"]` |
+| `tests/e2e/agent-workflow.spec.ts` | Historical gap | Recorded before `validateDemo` and `compileDemo` were implemented. They no longer throw `NOT_IMPLEMENTED` |
 | Scenario visual baselines | NOT RUN | Captured after the real renderers are on the branch. Placeholder stubs were not screenshotted |
 | Native fidelity | NOT RUN | `vendor/upstream/lock.json` `unavailable[].id = native-captures`, archived false, reason "No native capture set was supplied. None is claimed." |
 
-`IosCatalogueScene` and `MacCatalogueScene` throw `NOT_IMPLEMENTED`. That assertion passed as a gate. It is not a catalogue render pass.
+Replies, reactions, edits, removals, and overlays are implemented on the timeline and drawn by the iOS renderer. They are not catalogue-only. FaceTime cards and group-chat system lines remain catalogue-only. Polls and mini apps stay unsupported.
 
-The frozen test double accepts several negative files by stripping unknown keys (`silentOnFrozenDouble: true` in `tests/negative/`). `diagnoseDemo` rejects them. Production `validateDemo` does not implement either behavior yet; it throws.
+The frozen test double accepts several negative files by stripping unknown keys (`silentOnFrozenDouble: true` in `tests/negative/`). `diagnoseDemo` rejects them. Production `validateDemo` enforces the same families: it accepts a local asset path or an `https://` attachment href, and it rejects other href schemes.

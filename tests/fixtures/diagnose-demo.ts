@@ -41,6 +41,19 @@ function escapesAsset(src: string): boolean {
   return src.includes("..") || src.includes("\\") || lower.includes("%2e") || lower.startsWith("file:") || src.startsWith("//");
 }
 
+function isDiagnosedAttachmentHref(value: string): boolean {
+  if (value.startsWith("https://")) {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" && url.hostname.length > 0;
+    } catch {
+      return false;
+    }
+  }
+  if (/^[a-z][a-z+.-]*:/i.test(value)) return false;
+  return value.length > 0 && !value.includes("..") && !value.includes("\\") && !value.includes("\0");
+}
+
 function pngSize(file: string): { width: number; height: number } | null {
   const bytes = readFileSync(file);
   if (bytes.length < 24 || bytes[0] !== 137 || bytes.toString("ascii", 12, 16) !== "IHDR") return null;
@@ -160,7 +173,7 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
     }
     if (Array.isArray(message.attachments)) {
       message.attachments.forEach((file, fileIndex) => {
-        if (isRecord(file) && typeof file.href === "string" && /^[a-z][a-z+.-]*:/i.test(file.href)) {
+        if (isRecord(file) && typeof file.href === "string" && !isDiagnosedAttachmentHref(file.href)) {
           issues.push({ path: `${base}.attachments.${fileIndex}.href`, message: "attachment href is not allowed" });
         }
       });

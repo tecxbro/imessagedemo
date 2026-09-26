@@ -15,6 +15,7 @@ import {
 } from "@/renderers/ios/interaction-state";
 import { renderIosOverlays, renderNotices, renderSwipeTimes } from "@/renderers/ios/overlays";
 import { MessageBubble } from "@/components/imessage/message-bubble";
+import { MessageList } from "@/components/imessage/message-list";
 
 const contact = { name: "Alex Morgan", initials: "AM" };
 const sentAt = 1_758_470_000_000;
@@ -204,7 +205,25 @@ describe("iOS overlays render from canonical state", () => {
     );
     expect(selectionHtml).toContain("data-slot=\"ios-select-mode\"");
     expect(selectionHtml).toContain("data-slot=\"ios-selection-toolbar\"");
+    expect(selectionHtml).toContain("data-slot=\"message-selection-row\"");
     expect(selectionHtml).toContain("data-message-id=\"m1\"");
+    expect(selectionHtml).toContain("data-slot=\"bubble\"");
+    expect(selectionHtml).toContain("Hi");
+    expect(selectionHtml).not.toContain("data-slot=\"selection-message-id\"");
+  });
+
+  it("wraps the live message row instead of an empty selection placeholder", () => {
+    const html = renderToStaticMarkup(
+      <MessageList
+        messages={[{ id: "m1", text: "Are you close?", direction: "incoming", sentAt }]}
+        iosSelection={{ active: true, progress: 1, messageIds: ["m1"] }}
+      />,
+    );
+    expect(html).toContain("data-slot=\"message-selection-row\"");
+    expect(html).toContain("data-message-id=\"m1\"");
+    expect(html).toContain("data-slot=\"bubble\"");
+    expect(html).toContain("Are you close?");
+    expect(html).not.toContain("data-slot=\"selection-message-id\"");
   });
 
   it("renders notices and controlled swipe progress from state", () => {

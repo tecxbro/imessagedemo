@@ -33,6 +33,11 @@ export type OverlayRenderOptions = {
   photos?: typeof photoPickerSamples;
   /** Message rows rendered inside selection mode (circles + toolbar wrap these). */
   selectionChildren?: ReactNode;
+  /**
+   * The conversation log owns select mode and wraps its real rows.
+   * Skip the overlay copy so the circles are not a second, empty list.
+   */
+  selectionInList?: boolean;
 };
 
 /** Map canonical notices onto the pinned system-message / notice components' event shapes. */
@@ -114,20 +119,24 @@ export function renderSelection(
   const pose = describeSelection(state);
   if (!pose) return null;
   const selected = new Set(pose.messageIds);
+  const rows = children ?? state.messages.map((message) => (
+    <MessageSelectionRow
+      key={message.id}
+      data-message-id={message.id}
+      selected={selected.has(message.id)}
+      active={pose.open}
+      progress={pose.progress}
+      label={message.text || message.id}
+    >
+      <MessageBubble direction={message.direction} tail>
+        {message.text}
+      </MessageBubble>
+    </MessageSelectionRow>
+  ));
   return (
     <IosSelectMode active={pose.open} progress={pose.progress}>
-      {children}
-      {pose.messageIds.map((id) => (
-        <MessageSelectionRow
-          key={id}
-          selected={selected.has(id)}
-          progress={pose.progress}
-          label={`Select ${id}`}
-        >
-          <span data-slot="selection-message-id" data-message-id={id} />
-        </MessageSelectionRow>
-      ))}
-      <IosSelectionToolbar count={pose.messageIds.length} progress={pose.progress} />
+      {rows}
+      <IosSelectionToolbar count={pose.messageIds.length} active={pose.open} progress={pose.progress} />
     </IosSelectMode>
   );
 }
@@ -145,8 +154,10 @@ export function renderIosOverlays(state: InteractionInput, options: OverlayRende
   if (details) parts.push(<div key="details" data-slot="ios-overlay-details">{details}</div>);
   const picker = renderPhotoPicker(state, options.photos);
   if (picker) parts.push(<div key="photo-picker" data-slot="ios-overlay-photo-picker">{picker}</div>);
-  const selection = renderSelection(state, options.selectionChildren);
-  if (selection) parts.push(<div key="selection" data-slot="ios-overlay-selection">{selection}</div>);
+  if (!options.selectionInList) {
+    const selection = renderSelection(state, options.selectionChildren);
+    if (selection) parts.push(<div key="selection" data-slot="ios-overlay-selection">{selection}</div>);
+  }
   if (parts.length === 0) return null;
   return <div data-slot="ios-runtime-overlays">{parts}</div>;
 }

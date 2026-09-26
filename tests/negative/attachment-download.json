@@ -1,7 +1,7 @@
 {
   "id": "attachment-download",
   "silentOnFrozenDouble": true,
-  "note": "A file card may show a name and size. An href would navigate or download.",
+  "note": "A file card may link a local asset or an https URL. Other schemes are rejected.",
   "input": {
     "id": "negative",
     "title": "Negative",
@@ -26,7 +26,7 @@
           {
             "name": "secret.pdf",
             "size": "12 KB",
-            "href": "https://example.com/secret.pdf"
+            "href": "javascript:alert(1)"
           }
         ]
       }

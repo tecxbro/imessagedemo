@@ -1000,8 +1000,8 @@ function readAttachments(
       issues.push(issue(`${path}/size`, "INVALID_TYPE", "attachment size must be a string"));
       invalid = true;
     }
-    if (Object.hasOwn(item, "href") && (typeof item.href !== "string" || !isDemoImageSrc(item.href))) {
-      issues.push(issue(`${path}/href`, "INVALID_ASSET", "attachment href must be a local path inside the asset root"));
+    if (Object.hasOwn(item, "href") && (typeof item.href !== "string" || !isAttachmentHref(item.href))) {
+      issues.push(issue(`${path}/href`, "INVALID_ASSET", "attachment href must be a local asset path or an https URL"));
       invalid = true;
     }
     for (const key of Object.keys(item)) {
@@ -1012,7 +1012,7 @@ function readAttachments(
     if (typeof item.name === "string" && isConfinedName(item.name)) {
       const copy: NonNullable<DemoMessage["attachments"]>[number] = { name: item.name };
       if (typeof item.size === "string") copy.size = item.size;
-      if (typeof item.href === "string" && isDemoImageSrc(item.href)) copy.href = item.href;
+      if (typeof item.href === "string" && isAttachmentHref(item.href)) copy.href = item.href;
       copies.push(copy);
     }
   });
@@ -1269,6 +1269,19 @@ function isDisplayedHttpUrl(value: string): boolean {
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isAttachmentHref(value: string): boolean {
+  return isHttpsUrl(value) || isDemoImageSrc(value);
+}
+
+function isHttpsUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname.length > 0;
   } catch {
     return false;
   }

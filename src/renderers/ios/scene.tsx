@@ -15,7 +15,7 @@ import { screenTransitionShellProps } from "./navigation";
 import { frameKey, projectFrame } from "./project";
 import { settleIosScene, type IosSettleReceipt } from "./readiness";
 import { applyCheckpointScroll } from "./scroll";
-import { iosInteractionShell, type InteractionInput } from "./interaction-state";
+import { describeSelection, iosInteractionShell, type InteractionInput } from "./interaction-state";
 import { iosInteractionView, undoSendOverlay, type OverlayRenderOptions } from "./overlays";
 
 export type { IosSettleReceipt };
@@ -176,13 +176,6 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
       data-revision={session.current.revision}
       className={shown.theme === "dark" ? "dark" : undefined}
       style={{ width: iosScreen.width, height: iosScreen.height }}
-      onClickCapture={(event) => {
-        const target = event.target instanceof Element ? event.target : null;
-        if (target?.closest("a")) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-      }}
     >
       <IosMessagesApp
         {...view}
@@ -213,6 +206,7 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
 
 function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interactive: boolean, onDraft?: (value: string) => void): IosMessagesAppProps {
   const interaction = iosInteractionShell(frame);
+  const selection = describeSelection(frame);
   const transition = screenTransitionShellProps(frame);
   return {
     width: iosScreen.width,
@@ -244,6 +238,9 @@ function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interact
     receiveAnimation: posed && cues.receive ? cues.receive : null,
     longPress: interaction.longPress,
     thread: interaction.thread,
+    selection: selection
+      ? { active: selection.open, progress: selection.progress, messageIds: selection.messageIds }
+      : null,
     effectsPicker: effectsPickerShellProps(frame),
     audioControl: frame.audio,
     timeReveal: frame.timeReveal,
@@ -251,7 +248,7 @@ function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interact
 }
 
 function canonicalOverlayNode(compiled: CompiledDemo, frame: VisualFrame): ReactNode {
-  const interaction = iosInteractionView(frame, { contact: frame.contact });
+  const interaction = iosInteractionView(frame, { contact: frame.contact, selectionInList: true });
   const viewer = imageViewerFromFrame(frame);
   const effect = screenEffectOverlayProps(frame);
   return (

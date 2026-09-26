@@ -16,6 +16,7 @@ import { FailedSendBadge, NotDelivered } from "@/components/imessage/ios-notices
 import { TypingIndicator } from "@/components/imessage/typing-indicator";
 import { useBubbleScreenSpace } from "@/components/imessage/use-screen-space";
 import { SwipeTimes } from "@/components/imessage/ios-swipe-times";
+import { MessageSelectionRow } from "@/components/imessage/ios-select-mode";
 
 /**
  * The scrolling message log: clusters consecutive same-sender messages (60 s window, tail on the last
@@ -206,6 +207,11 @@ export type MessageListProps = Omit<ComponentProps<"div">, "children" | "ref"> &
    * so a seek lands on the same shift as playback. 0 leaves the log unwrapped.
    */
   timeReveal?: number;
+  /**
+   * iOS checkbox select mode. When set, each real message row is wrapped in `MessageSelectionRow`
+   * so the circle measures that row's bubble. `messageIds` are the checked rows.
+   */
+  iosSelection?: { active: boolean; progress: number; messageIds: readonly string[] } | null;
   /** Where a short conversation sits: under the header ("top", native iOS) or against the composer ("bottom"). */
   anchor?: "top" | "bottom";
   insetTop?: number;
@@ -296,7 +302,7 @@ function EmojiMessage({ message, platform }: { message: Message; platform: Platf
 
 export function MessageList({
   messages, typing = false, group = false, now, frameRef, platform: platformProp, serviceLabel, renderReactions, autoScroll = true,
-  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, audioControl = null, timeReveal = 0, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
+  firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, audioControl = null, timeReveal = 0, iosSelection = null, anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
 }: MessageListProps) {
   const contextPlatform = usePlatform();
   const platform = platformProp ?? contextPlatform;
@@ -314,6 +320,7 @@ export function MessageList({
   // roles it has always had, so iOS and every uncontrolled consumer are untouched.
   const selectable = selectedIds !== undefined;
   const selection = useMemo(() => new Set(selectedIds ?? []), [selectedIds]);
+  const iosSelectionIds = useMemo(() => new Set(iosSelection?.messageIds ?? []), [iosSelection]);
 
   useBubbleScreenSpace(scroller, frameRef);
 
@@ -532,7 +539,7 @@ export function MessageList({
           const canJump = Boolean(quote) && (Boolean(onJumpToMessage) || messageIds.has(quote!.id));
           // Rule 3 of `threadGesture`: a plain tap opens the thread, but not while a click selects.
           const tapOpensThread = Boolean(onOpenThread) && Boolean(message.replyCount) && !selectable;
-          return (
+          const rowElement = (
             // `tabIndex -1`: the row is not its own tab stop, the log's arrow keys focus it. That is
             // what lets a keyboard open a message's actions, or its thread, without a pointer.
             <div key={row.key} data-slot="message-row" data-message-id={message.id} data-direction={message.direction} data-kind={message.kind ?? "text"}
@@ -575,6 +582,18 @@ export function MessageList({
                 </span>
               ) : <ReplyCount count={message.replyCount} platform={platform} />) : null}
             </div>
+          );
+          if (!iosSelection) return rowElement;
+          return (
+            <MessageSelectionRow
+              key={row.key}
+              selected={iosSelectionIds.has(message.id)}
+              active={iosSelection.active}
+              progress={iosSelection.progress}
+              label={message.text || message.id}
+            >
+              {rowElement}
+            </MessageSelectionRow>
           );
         })}
       </div>

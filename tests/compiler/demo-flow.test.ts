@@ -351,6 +351,38 @@ describe("canonical timeline", () => {
     expect(projected.messages.find((message) => message.id === "m3")?.reactions).toHaveLength(2);
   });
 
+  it("accepts a local or https attachment href and rejects other schemes", () => {
+    const attachment = (href: string) =>
+      flow({
+        messages: [
+          {
+            id: "file",
+            text: "",
+            direction: "outgoing",
+            atMs: firstAt,
+            kind: "attachment",
+            attachments: [{ name: "Notes.txt", size: "4 KB", href }],
+          },
+        ],
+      });
+    const https = validateDemo(attachment("https://example.com/Notes.txt"));
+    expect(https.ok, https.ok ? "" : https.issues.map((issue) => issue.message).join("\n")).toBe(true);
+    if (https.ok) {
+      const compiled = compileDemo(https.demo);
+      const message = compiled.events.find((event) => event.type === "message");
+      expect(message).toMatchObject({ type: "message", message: { attachments: [{ href: "https://example.com/Notes.txt" }] } });
+    }
+    expect(validateDemo(attachment("/demo-assets/park-64x48.png")).ok).toBe(true);
+    expect(validateDemo(attachment("notes.txt")).ok).toBe(true);
+    for (const href of ["http://example.com/Notes.txt", "javascript:alert(1)", "file:///etc/passwd"]) {
+      const rejected = validateDemo(attachment(href));
+      expect(rejected.ok, href).toBe(false);
+      if (!rejected.ok) {
+        expect(rejected.issues.some((issue) => issue.path.endsWith("/href"))).toBe(true);
+      }
+    }
+  });
+
   it("projects audio, overlays, notices, and timestamp reveal from the timeline", () => {
     const validated = validateDemo(
       flow({
