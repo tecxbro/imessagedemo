@@ -21,6 +21,8 @@ In `tecxbro/imessagedemo`, this repository copy is the canonical Photon Demo Cre
 
 A company-only request passed to either skill enters the research workflow once. Once a brief or exact transcript exists, call the renderer workflow directly; never bounce between the skills. The HTML defaults and review policy live in [HTML renderer workflow](references/html-renderer.md).
 
+The company-name path is one sequence: research, author, validate, preview and capture, then inspect. Load the HTML workflow, [Conversation design](references/conversation-design.md), [Company analysis](references/company-analysis.md), and [Make an iMessage demo](../make-imessage-demo/SKILL.md) from this repository automatically. Do not ask the user to tag a second skill, write JSON, or choose UI components. Customer messages are outgoing. Company messages are incoming. Stay on the conversation screen. Turn typing on before each company response and explicitly turn it off when that message arrives. Put reactions on stable message ids at deliberate times. Do not edit the renderer for one company. Do not claim the preview is ready until playback has been checked.
+
 This repo remains render-only even when a user asks for a live number. Spectrum mode requires a separate existing Spectrum checkout and explicitly authorized operations; never convert `imessagedemo` into a provider or start a live consumer here.
 
 ## Choose the execution mode first

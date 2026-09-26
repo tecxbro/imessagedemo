@@ -28,7 +28,7 @@ The HTML adapter defaults to three distinct use cases only when no count/transcr
 
 Runtime code and capability output decide what can render. Both skills must use the renderer contract instead of inventing fields or flags. Prepared logos are not applied avatars; inner wallpaper and outer presentation backgrounds are different roles. The current authoring format does not expose those placements. Unsupported required interactions block only affected flows and must not be silently rewritten.
 
-Use the executor's existing example and actual CLI commands. `targets` is for platform variants, not multiple conversations. Explicitly select the platform for each preview/capture. Inspect the opening, proof/final state, and changed transitions. Server readiness, flow validity, PNG capture, playback inspection, and publication are different checks.
+Use the executor's existing example and actual CLI commands. `targets` is for platform variants, not multiple conversations. Explicitly select the platform for each preview/capture. Customer messages are outgoing and company messages are incoming. Stay on the conversation screen. Turn typing on before a company reply and explicitly turn it off when that message arrives. Reactions target stable message ids. Inspect the opening, proof/final state, and changed transitions, and check Play, Pause, and Reset before calling a preview ready. Server readiness, flow validity, PNG capture, playback inspection, and publication are different checks.
 
 Preview includes controls; captures crop to the Messages frame. PNG samples are not MP4 output. Publishing with Sites or another tool requires an explicit request plus a supported, verified export artifact and authorized target. A local development URL is not a hosted demo.
 

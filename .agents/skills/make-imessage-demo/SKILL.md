@@ -7,6 +7,8 @@ description: Render local iMessage demo flows with the pinned UI. Owns schema, c
 
 This is the renderer executor for a **local visual demo maker**. Produce one JSON file per conversation, not application code or a replacement Messages UI.
 
+One company-name workflow: research the company, author the conversation, validate, preview and capture, then inspect playback before calling it ready. The user should not write JSON, pick UI components, or tag a second skill. Load this file and [Photon Demo Creator](../photon-demo-creator/SKILL.md) from the repository when either skill is requested. Do not change application code for each company; use the renderer that is already here.
+
 ## Skill handoff and source of truth
 
 For project setup without a company, follow [Agent bootstrap](../../../docs/agent-bootstrap.md) first. Load the included skills, verify the supplied example, and start a usable preview before asking for a company name. Do not treat the repository URL as a company brief or start research during setup. Read-only review stays read-only; an already supplied company/transcript continues after setup without another question.
@@ -27,7 +29,9 @@ npm run demo -- capabilities --json
 
 Use `supported` capabilities only for authored flows. `catalogueOnly` entries are not timeline fields. `unsupported` includes polls and mini-apps. Check [the flow contract](../../../src/contracts/index.ts) and [CLI authoring fields](../../../src/cli/authoring.ts) for exact data shapes rather than inventing fields.
 
-Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, or `audio`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company agent is incoming. Typing and draft are timeline events. Do not encode typing as a message row. Audio is waveform data plus an `audio-control` event, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
+Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, or `audio`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company is incoming. Default `screen` to `conversation`. Typing and draft are timeline events. Do not encode typing as a message row. Turn typing on before each company response and add an explicit typing-off event at the same time that incoming message arrives. A later typing interval is another on/off pair. Do not rely on message arrival to clear typing. Audio is waveform data plus an `audio-control` event, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
+
+Reactions are timeline events aimed at a stable message id, after that message exists. `byMe: true` is the customer; `byMe: false` is the company. Use a classic tapback type or `custom` with `emoji`. Time the add, replacement, or removal deliberately. [examples/typing-reactions.flow.json](../../../examples/typing-reactions.flow.json) is the small runnable pattern for typing and reactions. Keep using the walkover file below for the command cookbook.
 
 Author the useful iOS surface with canonical events. Examples: react to m4 with love, reply to m2, open thread m2, long-press m5, open image m7, play audio m8 at 2.4 seconds, open the effects picker on the Screen tab, send m9 with confetti, open the plus menu, enter selection, swipe to reveal timestamps, and navigate to the Messages list. The checked-in conversation `scenarios/ios-surface-ios-light.json` is the full sequence, including read time, quoted reply, rich link image, attachment href, image viewer, edit, Undo Send, photo picker, and the return to the conversation. Do not author `tail`, `gapBefore`, or pixel positions.
 
@@ -67,7 +71,11 @@ npm run demo -- preview examples/agent-walkover.flow.json --json --platform ios
 
 With no port specified the server selects an available port. CLI JSON returns the actual bound URL; do not invent one. An explicit `--port` already in use fails instead of attaching to another server. Keep the owning process alive. `IMESSAGE_DEMO_PREVIEW_ONCE=1` closes it and must not be used for a persistent handoff.
 
-Preview displays player controls. Check Play, Pause, and Reset in the browser when playback is requested. For screen recording, crop to the Messages frame as needed; there is no documented clean/fullscreen CLI flag. A server-ready response alone is not visual or playback verification.
+Preview displays player controls. Before calling a demo ready, open that preview and check Play, Pause, and Reset. Typing dots should move while Play is running, stop when typing turns off, and hold still on Pause. Seek and Reset must show the authored state. For screen recording, crop to the Messages frame as needed; there is no documented clean/fullscreen CLI flag. A server-ready response alone is not visual or playback verification.
+
+```sh
+npm run demo -- validate examples/typing-reactions.flow.json --json
+```
 
 ## 5. Capture and inspect
 

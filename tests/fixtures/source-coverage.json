@@ -51,7 +51,7 @@
     { "item": "ios-details", "route": "unwired", "visible": true, "slots": ["ios-details"] },
     { "item": "ios-plus-menu", "route": "unwired", "visible": true, "slots": ["ios-plus-menu"] },
     { "item": "photo-picker", "route": "unwired", "visible": true, "slots": ["photo-picker"] },
-    { "item": "ios-select-mode", "route": "unwired", "visible": true, "slots": ["ios-select-mode"] },
+    { "item": "ios-select-mode", "route": "shell-overlay", "visible": true, "slots": ["ios-select-mode"], "importedBy": ["ios-messages-app", "message-list"] },
     { "item": "ios-swipe-times", "route": "shell-overlay", "visible": true, "slots": ["swipe-times"], "importedBy": ["message-list"] },
     { "item": "ios-notices", "route": "transcript", "visible": true, "slots": ["failed-send-badge", "not-delivered"], "scenarioSlugs": ["typing-status"] },
     { "item": "system-message", "route": "catalogue", "visible": true, "slots": ["system-message"], "sceneId": "system", "standalone": true },

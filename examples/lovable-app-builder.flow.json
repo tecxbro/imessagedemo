@@ -1,0 +1,68 @@
+{
+  "id": "lovable-app-builder",
+  "title": "Lovable booth page",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Lovable", "initials": "LV" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "targets": ["ios"],
+  "checkpoints": [
+    { "id": "opening", "atMs": 0 },
+    { "id": "company-typing", "atMs": 1800 },
+    { "id": "first-reply", "atMs": 3800 },
+    { "id": "later-typing", "atMs": 7000 },
+    { "id": "published", "atMs": 9000 },
+    { "id": "tapback", "atMs": 10200 }
+  ],
+  "messages": [
+    {
+      "id": "customer-1",
+      "text": "Can you turn a weekend market into a page where vendors reserve a booth?",
+      "direction": "outgoing",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "company-1",
+      "text": "Yes. I'll make a booth list, a reservation form, and accounts, then show you a working version.",
+      "direction": "incoming",
+      "atMs": 1790008743400
+    },
+    {
+      "id": "customer-2",
+      "text": "Start there. I want to publish it when it looks right.",
+      "direction": "outgoing",
+      "atMs": 1790008745200,
+      "status": "delivered"
+    },
+    {
+      "id": "company-2",
+      "text": "It's up. You can click through the booths, and the code can sync to GitHub whenever you want it.",
+      "direction": "incoming",
+      "atMs": 1790008748600
+    }
+  ],
+  "events": [
+    { "type": "typing", "atMs": 1790008741400, "typing": true },
+    { "type": "typing", "atMs": 1790008743400, "typing": false },
+    { "type": "typing", "atMs": 1790008746200, "typing": true },
+    { "type": "typing", "atMs": 1790008748600, "typing": false },
+    {
+      "type": "reaction",
+      "atMs": 1790008749800,
+      "messageId": "company-1",
+      "reactionId": "love-company-1",
+      "reaction": { "type": "love", "byMe": true }
+    },
+    {
+      "type": "reaction",
+      "atMs": 1790008751000,
+      "messageId": "customer-2",
+      "reactionId": "spark-customer-2",
+      "reaction": { "type": "custom", "emoji": "✨", "byMe": false }
+    }
+  ]
+}

@@ -55,12 +55,37 @@ function conversationsFor(frame: RenderFrame): IosConversation[] {
   }];
 }
 
+function demoIsPlaying(): boolean {
+  return window.IMESSAGE_DEMO?.state().playing === true;
+}
+
 function freezeLoops(root: ParentNode, cues: CueState) {
   if (cues.typingElapsed !== null) {
+    const elapsed = cues.typingElapsed ?? 0;
+    const playing = demoIsPlaying();
     root.querySelectorAll<HTMLElement>('[data-slot="typing-indicator"] > span[data-dot]').forEach((dot) => {
       const index = Number(dot.dataset.dot ?? 0);
-      dot.style.animationDelay = typingFreezeDelay(index, cues.typingElapsed ?? 0);
-      dot.style.animationPlayState = "paused";
+      const previous = Number(dot.dataset.typingElapsed);
+      const jumped = !Number.isFinite(previous) || elapsed + 32 < previous || elapsed - previous > 80;
+      dot.dataset.typingElapsed = String(elapsed);
+      if (playing && !jumped && dot.style.animationPlayState === "running" && dot.dataset.typingDelay) {
+        if (dot.style.animationDelay !== dot.dataset.typingDelay) dot.style.animationDelay = dot.dataset.typingDelay;
+        return;
+      }
+      const delay = typingFreezeDelay(index, elapsed);
+      dot.dataset.typingDelay = delay;
+      dot.style.animationDelay = delay;
+      dot.style.animationPlayState = playing ? "running" : "paused";
+      if (!playing) {
+        for (const animation of dot.getAnimations()) {
+          animation.pause();
+          try {
+            animation.currentTime = 0;
+          } catch {
+            // The effect timing is not ready on the first layout.
+          }
+        }
+      }
     });
   }
   for (const ink of cues.inkElapsed) {

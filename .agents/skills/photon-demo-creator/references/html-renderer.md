@@ -30,7 +30,7 @@ When the company name or URL is all the user supplies, use these defaults unless
 
 - Create **three distinct conversations**, each with one narrow product thesis, rather than three paraphrases of the same story. If the user supplies a complete transcript or a count, follow it instead. Do not fabricate capabilities to fill a count.
 - Use iOS conversation mode. Reuse a supplied or saved presentation style. With no style evidence, use the renderer's supported light theme; do not invent brand-specific wallpaper or palette claims.
-- Keep roughly four to eight meaningful turns per conversation when appropriate. The customer's phone is the viewpoint: the customer is `outgoing`; the company/agent is `incoming`.
+- Keep roughly four to eight meaningful turns per conversation when appropriate. The customer's phone is the viewpoint: the customer is `outgoing`; the company is `incoming`. Default to the conversation screen. Use the renderer's existing capabilities. Do not change application code, add components, or invent fields for one company.
 - Return flow files, ready preview URLs, and inspected PNGs. A recording-ready browser preview is sufficient when the user plans to screen-record. Video encoding, static packaging, and publication are separate deliverables: use them only when requested and actually supported.
 
 #### Research and choose the story
@@ -64,7 +64,9 @@ Create one authoring document per demo using the current repository schema. Reus
 
 For multiple demos, repeat the existing workflow sequentially by default. Use separate preview pages/servers when necessary. Do not assume several players can share one global controller. Do not build a gallery, multi-instance manager, database, or new CLI merely to render three conversations.
 
-Set pacing deliberately. Confirm how the repository maps message timestamps to playback milliseconds; do not assume wall-clock times are independent. Checkpoints must use the actual playback clock and occur after the intended content and arrival motion are visible. Use several-seconds pacing appropriate to reading length, not a minute-long gap copied accidentally from fictional chat timestamps. Do not request per-turn typing, reactions, or other state changes unless the current flow format supports them.
+Set pacing deliberately. Confirm how the repository maps message timestamps to playback milliseconds; do not assume wall-clock times are independent. Checkpoints must use the actual playback clock and occur after the intended content and arrival motion are visible. Use several-seconds pacing appropriate to reading length, not a minute-long gap copied accidentally from fictional chat timestamps.
+
+Typing and reactions are supported timeline events. Turn typing on before each company response and add an explicit typing-off event when that incoming message arrives. A later reply needs its own on/off pair. Do not leave typing on, and do not expect message arrival to clear it. Target each reaction at a stable message id that already exists, at a deliberate time. The customer owns `byMe: true`; the company owns `byMe: false`. The runnable pattern is [examples/typing-reactions.flow.json](../../../../examples/typing-reactions.flow.json). Load that executor automatically; do not ask for a second skill tag.
 
 #### Validate, preview, capture, and inspect
 
@@ -72,7 +74,7 @@ Follow the validate, compile, preview, and capture sequence in [the repository r
 
 Keep flow files at `scenarios/<company>-<use-case>.json` (the current built-in scenario loader is not recursive), assets at `public/demo-assets/<company>/`, and run outputs at unique `artifacts/<company>/<use-case>/<run-id>/` paths. These are file conventions, not new JSON fields. Pass one declared platform explicitly for each preview/capture; compile targets are platform variants, not different conversations.
 
-Use the actual preview URL returned by the command. Keep its owning session alive; run captures in another session. Starting a preview proves the server answered, not that the browser, playback, or visuals were inspected. The normal preview has controls; capture excludes them. Do not promise a clean fullscreen recording mode that the CLI does not implement.
+Use the actual preview URL returned by the command. Keep its owning session alive; run captures in another session. Starting a preview proves the server answered, not that the browser, playback, or visuals were inspected. The normal preview has controls; capture excludes them. Do not promise a clean fullscreen recording mode that the CLI does not implement. Before calling the output ready, play the preview and check Play, Pause, and Reset, including typing dots and reactions on the messages they target.
 
 Inspect the rendered image, not only the command's exit code. Check the company name, customer/agent direction, text wrapping, media order, crops, clipped messages, scrolling, proof visibility, actual applied branding, and visible old-brand leftovers. Inspect the opening and proof/final states; add transition checks for timing changes. When playback is requested, open the preview and check play/pause/reset using the existing controls. A still image is not evidence that playback was tested.
 

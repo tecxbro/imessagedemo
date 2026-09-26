@@ -3,7 +3,7 @@ import { isEmojiOnly } from "@/components/imessage/message-bubble";
 import { bubbleEffectDuration, type BubbleEffectKind } from "@/components/imessage/message-effects";
 import { messageMotion } from "@/components/imessage/message-motion";
 import { typingLoopMs, typingStaggerMs } from "@/components/imessage/typing-indicator";
-import { frameAt } from "@/runtime/project";
+import { compareTimelineEvents, effectiveSourceIndex, frameAt } from "@/runtime/project";
 import type { ScreenTransitionKind } from "@/runtime/types";
 
 export type ArrivalPose = { id: string; progress: number };
@@ -93,10 +93,19 @@ export function deriveCues(compiled: CompiledDemo, frame: RenderFrame): CueState
 
   let typingElapsed: number | null = null;
   if (frame.typing) {
+    const ordered = compiled.events
+      .map((event, index) => ({
+        event,
+        index,
+        sourceIndex: effectiveSourceIndex(event, index),
+        atMs: event.atMs,
+      }))
+      .filter((item) => item.event.type === "typing" && Number.isFinite(item.atMs) && item.atMs <= frame.timeMs)
+      .sort(compareTimelineEvents);
     let startedAt: number | null = null;
-    for (const event of compiled.events) {
-      if (event.type !== "typing" || event.atMs > frame.timeMs) continue;
-      startedAt = event.typing ? (startedAt ?? event.atMs) : null;
+    for (const item of ordered) {
+      if (item.event.type !== "typing") continue;
+      startedAt = item.event.typing ? (startedAt ?? item.atMs) : null;
     }
     typingElapsed = frame.timeMs - (startedAt ?? 0);
   }
@@ -130,4 +139,10 @@ export function cueToken(cues: CueState): string {
 /** Freeze the source typing loop at a cue-relative offset. The delay constants are the pin's own. */
 export function typingFreezeDelay(index: number, elapsed: number): string {
   return `${index * typingStaggerMs - typingLoopMs - elapsed}ms`;
+}
+
+/** Position inside the pin's typing loop for one dot, using the same offset as `typingFreezeDelay`. */
+export function typingDotPhaseMs(index: number, elapsed: number): number {
+  const phase = (elapsed - index * typingStaggerMs) % typingLoopMs;
+  return phase < 0 ? phase + typingLoopMs : phase;
 }

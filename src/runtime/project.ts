@@ -71,16 +71,27 @@ function queryTime(timeMs: number): number {
   return Number.isFinite(timeMs) ? timeMs : 0;
 }
 
+export function effectiveSourceIndex(event: { sourceIndex?: number }, index: number): number {
+  return typeof event.sourceIndex === "number" && Number.isFinite(event.sourceIndex) ? event.sourceIndex : index;
+}
+
+export function compareTimelineEvents(
+  a: { atMs: number; sourceIndex: number; index: number },
+  b: { atMs: number; sourceIndex: number; index: number },
+): number {
+  return a.atMs - b.atMs || a.sourceIndex - b.sourceIndex || a.index - b.index;
+}
+
 function prepare(events: readonly SceneEvent[]): Prepared[] {
   return events
     .map((event, index) => ({
       event,
       index,
-      sourceIndex: typeof event.sourceIndex === "number" && Number.isFinite(event.sourceIndex) ? event.sourceIndex : index,
+      sourceIndex: effectiveSourceIndex(event, index),
       atMs: event.atMs,
     }))
     .filter((item) => Number.isFinite(item.atMs))
-    .sort((a, b) => a.atMs - b.atMs || a.sourceIndex - b.sourceIndex || a.index - b.index);
+    .sort(compareTimelineEvents);
 }
 
 function copyReactions(message: SceneMessage): Reaction[] {

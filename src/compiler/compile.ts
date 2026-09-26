@@ -130,8 +130,16 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
     durationMs = Math.max(durationMs, copied.atMs);
   }
 
-  events.push({ type: "draft", atMs: 0, value: demo.draft });
-  events.push({ type: "typing", atMs: 0, typing: demo.typing });
+  // Initialization shares time zero with authored events. Give it an earlier source
+  // index so playback applies it first and an authored value at the same instant wins.
+  // Authored events keep the order they were compiled in.
+  let earliest = 0;
+  events.forEach((event, index) => {
+    const source = typeof event.sourceIndex === "number" && Number.isFinite(event.sourceIndex) ? event.sourceIndex : index;
+    if (source < earliest) earliest = source;
+  });
+  events.push({ type: "draft", atMs: 0, value: demo.draft, sourceIndex: earliest - 2 });
+  events.push({ type: "typing", atMs: 0, typing: demo.typing, sourceIndex: earliest - 1 });
 
   return {
     id: demo.id,

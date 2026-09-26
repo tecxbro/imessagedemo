@@ -1,0 +1,68 @@
+{
+  "id": "typing-reactions",
+  "title": "Typing and reactions",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Harbor", "initials": "HA" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "targets": ["ios"],
+  "checkpoints": [
+    { "id": "opening", "atMs": 0 },
+    { "id": "company-typing", "atMs": 900 },
+    { "id": "company-reply", "atMs": 2600 },
+    { "id": "customer-tapback", "atMs": 3600 },
+    { "id": "later-typing", "atMs": 6400 },
+    { "id": "booked", "atMs": 8000 }
+  ],
+  "messages": [
+    {
+      "id": "customer-1",
+      "text": "Can you hold a table for two tonight?",
+      "direction": "outgoing",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "company-1",
+      "text": "Yes — 7:30 is open by the window.",
+      "direction": "incoming",
+      "atMs": 1790008742200
+    },
+    {
+      "id": "customer-2",
+      "text": "We'll take it.",
+      "direction": "outgoing",
+      "atMs": 1790008745200,
+      "status": "delivered"
+    },
+    {
+      "id": "company-2",
+      "text": "Booked under your name.",
+      "direction": "incoming",
+      "atMs": 1790008747600
+    }
+  ],
+  "events": [
+    { "type": "typing", "atMs": 1790008740800, "typing": true },
+    { "type": "typing", "atMs": 1790008742200, "typing": false },
+    {
+      "type": "reaction",
+      "atMs": 1790008743400,
+      "messageId": "company-1",
+      "reactionId": "love-company-1",
+      "reaction": { "type": "love", "byMe": true }
+    },
+    {
+      "type": "reaction",
+      "atMs": 1790008744600,
+      "messageId": "customer-1",
+      "reactionId": "emoji-customer-1",
+      "reaction": { "type": "custom", "emoji": "🎉", "byMe": false }
+    },
+    { "type": "typing", "atMs": 1790008746000, "typing": true },
+    { "type": "typing", "atMs": 1790008747600, "typing": false }
+  ]
+}
