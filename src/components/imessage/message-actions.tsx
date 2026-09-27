@@ -3,7 +3,8 @@
 import { useEffect, useId, useLayoutEffect, useRef, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { fontStack, type Direction, type Service } from "@/components/imessage/tokens";
-import { BalloonTrail, TapbackGlyph, tapbackLabels, type TapbackType } from "@/components/imessage/tapback";
+import { fittedPillBox, tapbackMotion, tapbackVisualAt, type GlyphPartPose, type TapbackTracks } from "@/contracts/tapback-motion";
+import { BalloonTrail, TapbackGlyph, tapbackLabels, type TapbackGlyphMotion, type TapbackType } from "@/components/imessage/tapback";
 import { TapbackBar, tapbackBarMetrics, type TapbackSelection } from "@/components/imessage/tapback-bar";
 import { ContextMenu, contextMenuMetrics, iosContextMenuHeight, iosMessageMenu, type ContextMenuItem } from "@/components/imessage/context-menu";
 
@@ -31,7 +32,29 @@ import { ContextMenu, contextMenuMetrics, iosContextMenuHeight, iosMessageMenu, 
  * the bubble's corner over ≈130 ms; the pill expands from the picker circle over ≈200 ms; glyphs fade
  * in left to right with a 17 ms stagger. `progress` (0..1) scrubs the whole timeline.
  */
-export const messageActionsTiming = { total: 600, exit: 220, dim: 150, lift: 130, menu: 130, picker: [60, 200], bar: [100, 320], glyphStart: 250, glyphStagger: 17, glyphDuration: 120 } as const;
+export const messageActionsTiming = { total: tapbackMotion.entranceMs, exit: tapbackMotion.exitMs, dim: 150, lift: 130, menu: 130, picker: [60, 200], bar: [100, 320], glyphStart: 250, glyphStagger: 17, glyphDuration: 120 } as const;
+
+export type ScriptedTapback = {
+  phase: "enter" | "open" | "select" | "exit";
+  elapsedMs: number;
+  entranceElapsedMs: number;
+  reduced?: boolean;
+};
+
+function optionStyle(part: GlyphPartPose | undefined): CSSProperties | undefined {
+  if (!part) return undefined;
+  return { opacity: part.opacity, transform: `translate(${part.x}px, ${part.y}px) scale(${part.scaleX}, ${part.scaleY})` };
+}
+
+function glyphMotionFor(type: TapbackType | undefined, tracks: TapbackTracks): TapbackGlyphMotion | undefined {
+  if (type === "laugh") return { laughTop: tracks.glyphs.laughTop, laughBottom: tracks.glyphs.laughBottom };
+  if (type === "emphasize") return { emphasizeFirst: tracks.glyphs.emphasizeFirst, emphasizeSecond: tracks.glyphs.emphasizeSecond };
+  if (type === "question") return { question: tracks.glyphs.question };
+  if (type === "love") return { whole: tracks.glyphs.love };
+  if (type === "like") return { whole: tracks.glyphs.like };
+  if (type === "dislike") return { whole: tracks.glyphs.dislike };
+  return undefined;
+}
 
 export const messageActionsMetrics = {
   /** The lift widens the bubble by this much, up to `liftMaxScale`; height follows the same factor. */
@@ -81,6 +104,11 @@ export type MessageActionsProps = {
   onExited?: () => void;
   /** Move focus into the tapback bar on open (default). */
   autoFocus?: boolean;
+  /**
+   * Canonical long-press pose. When set, entrance and dismissal are declarative and do not
+   * follow the wall clock, `onExited`, or a shared fade of the whole picker.
+   */
+  scripted?: ScriptedTapback;
   /** Override the lift scale (default: `liftScale(rect)`, uniform). */
   scale?: number | [number, number];
   /** Counter-scale for the text inside the lifted bubble. Native scales it with the bubble, so 1. */
@@ -112,7 +140,7 @@ export function layoutMessageActions({ rect, frame, direction, scale, items, tai
   return { outgoing, lifted, bar, menu, shift, bubbleTranslate: shift + m.liftY, pickerX: pickerCenterX - bar.left };
 }
 
-export function MessageActions({ rect, frame, direction = "outgoing", service = "imessage", tail = false, children, items = iosMessageMenu, selected, wash, recent, details, onSelect, onAction, onPickEmoji, onClose, progress, open = true, onExited, autoFocus = true, scale: scaleProp, textScale: textScaleProp, className, style }: MessageActionsProps) {
+export function MessageActions({ rect, frame, direction = "outgoing", service = "imessage", tail = false, children, items = iosMessageMenu, selected, wash, recent, details, onSelect, onAction, onPickEmoji, onClose, progress, open = true, onExited, autoFocus = true, scale: scaleProp, textScale: textScaleProp, scripted, className, style }: MessageActionsProps) {
   const root = useRef<HTMLDivElement>(null);
   const scrub = useRef<((time: number | null) => void) | null>(null);
   const id = useId().replace(/:/g, "");
@@ -121,6 +149,14 @@ export function MessageActions({ rect, frame, direction = "outgoing", service = 
   const textScale = textScaleProp ?? 1;
   const L = layoutMessageActions({ rect, frame, direction, scale, items, tail });
   const side = L.outgoing ? "left" : "right";
+  const scriptedMotion = scripted != null;
+  const tracks = scripted ? tapbackVisualAt(scripted) : null;
+  const liftAmount = tracks ? tracks.lift : 1;
+  const liftedTransform = tracks
+    ? `translateY(${liftAmount * L.bubbleTranslate}px) scale(${1 + (scale[0] - 1) * liftAmount}, ${1 + (scale[1] - 1) * liftAmount})`
+    : `translateY(${L.bubbleTranslate}px) scale(${scale[0]}, ${scale[1]})`;
+  const barWidth = L.bar.right - L.bar.left;
+  const pill = tracks ? fittedPillBox(tracks.pillExpand, tracks.pillRemain, barWidth, L.bar.height) : null;
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { event.preventDefault(); onClose?.(); } };
@@ -170,6 +206,7 @@ export function MessageActions({ rect, frame, direction = "outgoing", service = 
 
   // Build the entrance timeline once with the Web Animations API so it can be played or scrubbed.
   useLayoutEffect(() => {
+    if (scriptedMotion) return;
     const el = root.current;
     if (!el) return;
     const t = messageActionsTiming;
@@ -209,22 +246,24 @@ export function MessageActions({ rect, frame, direction = "outgoing", service = 
     };
     return () => { list.forEach(a => a.cancel()); scrub.current = null; };
     // The timeline depends on the final layout only; a new layout remounts via `key` upstream.
+    // Layout is captured when the live timeline is created. Scripted poses do not use this clock.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [scriptedMotion]);
 
   useEffect(() => {
+    if (scriptedMotion) return;
     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (progress !== undefined) scrub.current?.(Math.min(1, Math.max(0, progress)) * messageActionsTiming.total);
     else if (reduced) scrub.current?.(messageActionsTiming.total);
     else scrub.current?.(null);
-  }, [progress]);
+  }, [progress, scriptedMotion]);
 
   // Dismissal. The entrance animations are cancelled once they settle (so the glass keeps its
   // backdrop), so this is a fresh, shorter timeline that folds everything back toward the bubble.
   const exited = useRef(onExited);
   useEffect(() => { exited.current = onExited; }, [onExited]);
   useEffect(() => {
-    if (open) return;
+    if (scriptedMotion || open) return;
     const overlay = root.current;
     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (!overlay || reduced) { exited.current?.(); return; }
@@ -242,31 +281,35 @@ export function MessageActions({ rect, frame, direction = "outgoing", service = 
     if (!running.length) { finish(); return; }
     Promise.allSettled(running.map(a => a.finished)).then(finish);
     return () => running.forEach(a => { try { a.cancel(); } catch { /* already gone */ } });
-  }, [open]);
+  }, [open, scriptedMotion]);
 
   return (
     // z-20 clears the reaction balloons the list paints at z-10, so they dim and blur with everything else.
-    <div ref={root} data-slot="message-actions" data-direction={direction} role="dialog" aria-modal="true" aria-label="Message options"
-      onKeyDown={onRootKeyDown} className={cn("absolute inset-0 z-20 select-none outline-none", className)} style={{ fontFamily: fontStack, ...style }}>
+      <div ref={root} data-slot="message-actions" data-direction={direction} data-phase={scripted?.phase} data-lift={tracks ? tracks.lift : undefined} data-glyph-row={tracks ? tracks.glyphRowOpacity : undefined} data-pill-remain={tracks ? tracks.pillRemain : undefined} data-menu-opacity={tracks ? tracks.menuOpacity : undefined} role="dialog" aria-modal="true" aria-label="Message options"
+      onKeyDown={onRootKeyDown} className={cn("absolute inset-0 z-20 select-none outline-none", className)} style={{ fontFamily: fontStack, pointerEvents: tracks && tracks.backdrop <= 0.02 && tracks.pillOpacity <= 0.02 && tracks.glyphRowOpacity <= 0.02 ? "none" : undefined, ...style }}>
       {/* The lift is a transform, so the bubble's own shrink-to-fit measures its line boxes in scaled
           screen pixels and would set a frame that is `scale` too wide. Pin it to the measured body. */}
       <style>{`[data-actions="${id}"] [data-slot="bubble"] > span:last-child { display: inline-block; transform-origin: 50% 50%; transform: scale(var(--im-lift-text, 1)); }
 [data-actions="${id}"] [data-slot="bubble-frame"] { max-width: ${rect.width}px !important; }`}</style>
-      <div data-slot="backdrop" aria-hidden="true" onClick={onClose} style={{ position: "absolute", inset: 0, background: "var(--im-dim, rgba(22,18,44,0.21))" }} />
+      <div data-slot="backdrop" aria-hidden="true" onClick={onClose} style={{ position: "absolute", inset: 0, background: "var(--im-dim, rgba(22,18,44,0.21))", opacity: tracks?.backdrop, pointerEvents: tracks && tracks.backdrop <= 0.02 ? "none" : undefined }} />
       {/* The lifted bubble casts its own shadow onto the dimmed list. Fitted beside the "Ok" bubble in
           `longpress-ok-light.png`, where nothing else contributes: the dim (#ceced2 over white) reads
           194 at 0.7 pt out, 196 at 4, 198 at 7.3, 201 at 12.3 and 202 at 14, and 188 just under the body.
           One tight layer carries the edge and one wide layer the falloff; both reproduce within 1/255.
           `drop-shadow` rather than `box-shadow` so the tail and the reaction balloon cast it too. */}
-      <div data-slot="lifted-bubble" data-actions={id} data-service={service} style={{ position: "absolute", left: rect.x, top: rect.y, width: rect.width, height: rect.height, transformOrigin: L.outgoing ? "100% 50%" : "0% 50%", transform: `translateY(${L.bubbleTranslate}px) scale(${scale[0]}, ${scale[1]})`, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.07)) drop-shadow(0 6px 24px rgba(0,0,0,0.13))", "--im-lift-text": String(textScale) } as CSSProperties}>
+      <div data-slot="lifted-bubble" data-actions={id} data-service={service} style={{ position: "absolute", left: rect.x, top: rect.y, width: rect.width, height: rect.height, transformOrigin: L.outgoing ? "100% 50%" : "0% 50%", transform: liftedTransform, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.07)) drop-shadow(0 6px 24px rgba(0,0,0,0.13))", "--im-lift-text": String(textScale) } as CSSProperties}>
         {children}
       </div>
-      <TapbackBar layout="ios" selected={selected} recent={recent} onSelect={onSelect} onPickEmoji={onPickEmoji} autoFocus={autoFocus}
-        pickerX={L.pickerX} pickerSide={side} width={L.bar.right - L.bar.left}
+      <TapbackBar layout="ios" selected={selected} recent={recent} onSelect={onSelect} onPickEmoji={onPickEmoji} autoFocus={autoFocus && !scriptedMotion}
+        pickerX={L.pickerX} pickerSide={side} width={barWidth}
+        glyphStyle={tracks ? (index) => index < 0 ? { opacity: tracks.bubbleOpacity, transform: `scale(${tracks.bubbleScale})` } : optionStyle(tracks.options[index]) : undefined}
+        glyphMotion={tracks ? (_index, item) => glyphMotionFor(item.type, tracks) : undefined}
+        surfaceStyle={pill && tracks ? { position: "absolute", left: pill.left, top: pill.top, width: pill.width, height: pill.height, borderRadius: pill.radius, ...(pill.opacity * tracks.pillOpacity < 0.999 ? { opacity: pill.opacity * tracks.pillOpacity } : {}) } : undefined}
+        scrollStyle={tracks ? { opacity: tracks.glyphRowOpacity, visibility: tracks.glyphRowOpacity <= 0.02 ? "hidden" : undefined, pointerEvents: tracks.glyphRowOpacity <= 0.02 ? "none" : undefined } : undefined}
         style={{ position: "absolute", left: L.bar.left, top: L.bar.top + L.shift }} />
       <ContextMenu variant="ios" items={items} onAction={onAction}
         wash={wash === undefined ? (service === "sms" ? "var(--im-green-bottom, #31c355)" : L.outgoing ? "var(--im-blue-bottom, #3583f6)" : "var(--im-gray-bottom, #e9e9eb)") : wash ?? undefined}
-        style={{ position: "absolute", left: L.menu.left, top: L.menu.top + L.shift, transformOrigin: L.outgoing ? "100% 0%" : "0% 0%" }} />
+        style={{ position: "absolute", left: L.menu.left, top: L.menu.top + L.shift, transformOrigin: L.outgoing ? "100% 0%" : "0% 0%", ...(tracks ? { ...(tracks.menuOpacity < 0.999 ? { opacity: tracks.menuOpacity } : {}), ...(Math.abs(tracks.menuScale - 1) > 0.001 ? { transform: `scale(${tracks.menuScale})` } : {}), visibility: tracks.menuOpacity <= 0.02 ? "hidden" : undefined } : {}) }} />
       {selected && details && <TapbackDetails selection={selected} initials={details.initials} name={details.name} style={{ position: "absolute", left: frame.width / 2 - tapbackDetailsMetrics.width / 2, top: tapbackDetailsMetrics.top }} />}
     </div>
   );

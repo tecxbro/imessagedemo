@@ -1,0 +1,229 @@
+--- a/src/components/imessage/message-list.tsx
++++ b/src/components/imessage/message-list.tsx
+@@ -17,6 +17,7 @@
+ import { useBubbleScreenSpace } from "@/components/imessage/use-screen-space";
+ import { SystemMessage, systemMessageMetrics, type SystemMessageEvent } from "@/components/imessage/system-message";
+ import { SenderAvatar, senderAvatarMetricsForPlatform } from "@/components/imessage/group-avatar";
++import { SwipeTimes } from "@/components/imessage/ios-swipe-times";
+ 
+ /**
+  * The scrolling message log: clusters consecutive same-sender messages (60 s window, tail on the last
+@@ -230,6 +231,18 @@
+    * seeks that entrance rather than playing it. UNVERIFIED motion — see `systemMessageMotion`.
+    */
+   systemArrival?: { id: string; progress?: number } | null;
++  /**
++   * Canonical playback of a voice message. The list does not own a media clock; the caller
++   * passes the position and playing flag for one message.
++   */
++  audioControl?: { messageId: string; position: number; playing: boolean } | null;
++  /** 0 hides timestamps. 1 is the fully revealed swipe-for-times pose. */
++  timeReveal?: number;
++  /**
++   * Replace or wrap a row's content. Used for repository-owned poll, FaceTime, and sticker
++   * rows that are not message kinds in the registry. Return undefined to keep `content`.
++   */
++  renderContent?: (message: Message, content: ReactNode) => ReactNode | undefined;
+   /** Where a short conversation sits: under the header ("top", native iOS) or against the composer ("bottom"). */
+   anchor?: "top" | "bottom";
+   insetTop?: number;
+@@ -340,6 +353,7 @@
+ export function MessageList({
+   messages, typing = false, group = false, now, frameRef, platform: platformProp, serviceLabel, renderReactions, autoScroll = true,
+   firstDateHeader = true, messageActions = false, selectedIds, onOpenThread, onJumpToMessage, openThreadId, flash, onOpenImage, systemArrival,
++  audioControl = null, timeReveal = 0, renderContent,
+   anchor = "top", insetTop, insetBottom, ref, className, style, onScroll, onKeyDown, ...props
+ }: MessageListProps) {
+   const contextPlatform = usePlatform();
+@@ -536,7 +550,18 @@
+             content = <MessageImages images={message.images} direction={message.direction} tail={row.tail} platform={platform}
+               onOpenImage={onOpenImage ? (index, rect) => onOpenImage(message.id, index, rect) : undefined} />;
+           } else if (message.kind === "audio" && message.audio) {
+-            content = <MessageAudio duration={message.audio.duration} peaks={message.audio.peaks} direction={message.direction} tail={row.tail} platform={platform} />;
++            const controlled = audioControl?.messageId === message.id ? audioControl : null;
++            content = (
++              <MessageAudio
++                duration={message.audio.duration}
++                peaks={message.audio.peaks}
++                direction={message.direction}
++                tail={row.tail}
++                platform={platform}
++                position={controlled?.position}
++                playing={controlled?.playing}
++              />
++            );
+           } else if (message.kind === "attachment" && message.attachments?.length) {
+             content = (
+               <>
+@@ -572,6 +597,8 @@
+               </div>
+             );
+           }
++          const rendered = renderContent?.(message, content);
++          if (rendered !== undefined) content = rendered;
+           if (message.effect === "invisible-ink") content = <InvisibleInk>{content}</InvisibleInk>;
+           if (message.status === "failed") {
+             content = (
+@@ -622,7 +649,11 @@
+                   <ReplyStub quote={quote} aria-hidden="true" platform={platform} />
+                 </button>
+               ) : <ReplyStub quote={quote} platform={platform} />)}
+-              {content}
++              {timeReveal > 0 ? (
++                <SwipeTimes time={formatClockTime(ms(message.sentAt))} progress={timeReveal}>
++                  {content}
++                </SwipeTimes>
++              ) : content}
+               {message.status === "failed" && <NotDelivered platform={platform} />}
+               {message.replyCount ? (onOpenThread ? (
+                 // `display: contents` keeps the button exactly where it was in the layout while giving
+--- a/src/components/imessage/ios-messages-app.tsx
++++ b/src/components/imessage/ios-messages-app.tsx
+@@ -18,7 +18,8 @@
+ import { bubbleMetrics, emojiFontStack, fontStack } from "@/components/imessage/tokens";
+ import { ReplyThread, replyThreadMetrics, replyThreadMotion } from "@/components/imessage/message-reply";
+ import { Tapback, type TapbackType } from "@/components/imessage/tapback";
+-import { MessageActions, type Rect } from "@/components/imessage/message-actions";
++import { MessageActions, type Rect, type ScriptedTapback } from "@/components/imessage/message-actions";
++import { Avatar } from "@/components/imessage/avatar";
+ import { useArrivalAnimation, type ArrivalAnimation } from "@/components/imessage/message-motion";
+ import { IosEffectsPicker, type EffectsPickerSelection } from "@/components/imessage/ios-effects-picker";
+ import type { TapbackSelection } from "@/components/imessage/tapback-bar";
+@@ -92,7 +93,7 @@
+   time?: string;
+   screen?: IosScreen;
+   conversations?: IosConversation[];
+-  contact: { name: string; initials?: string };
++  contact: { name: string; initials?: string; photo?: string; silhouette?: boolean };
+   group?: boolean;
+   /**
+    * The people in the conversation, when it is a group. Two or more of them turn the nav bar's Ø60
+@@ -138,6 +139,28 @@
+   onSendAnimationEnd?: () => void;
+   /** Open the long-press overlay on a message; `progress` scrubs the entrance (0–1). */
+   longPress?: { id: string; progress?: number } | null;
++  /**
++   * Canonical long-press pose. When set, entrance, selection, and exit follow this timeline
++   * instead of the shell's own clock. `null` is closed. `undefined` keeps `longPress`.
++   */
++  longPressPose?: {
++    id: string;
++    phase: ScriptedTapback["phase"];
++    elapsedMs: number;
++    entranceElapsedMs: number;
++    reduced?: boolean;
++  } | null;
++  /** Seek one voice message. Passed through to the transcript. */
++  audioControl?: { messageId: string; position: number; playing: boolean } | null;
++  /** Swipe-to-reveal timestamps, 0..1. */
++  timeReveal?: number;
++  /** Repository-owned row content (polls, FaceTime, stickers, audible audio). */
++  renderContent?: (message: Message, content: ReactNode) => ReactNode | undefined;
++  /**
++   * Stickers already on the transcript. When passed, including an empty list, the shell
++   * draws these instead of stickers dropped in an uncontrolled session.
++   */
++  placedStickers?: Array<{ key: string; sticker: Sticker; placement: StickerPlacement }> | null;
+   onLongPress?: (id: string) => void;
+   onLongPressClose?: () => void;
+   onTapback?: (id: string, selection: TapbackSelection) => void;
+@@ -549,7 +572,7 @@
+   messages, typing = false, now, composer, screenTransition, onBack, onSelectConversation, onCompose, onCloseNewMessage, onDetails,
+   thread, onOpenThread, onCloseThread,
+   sendAnimation, receiveAnimation, onSendAnimationEnd,
+-  longPress, onLongPress, onLongPressClose, onTapback, onMenuAction,
++  longPress, longPressPose, onLongPress, onLongPressClose, onTapback, onMenuAction,
+   selectMode, onOpenSelectMode, onCloseSelectMode, selectedMessageIds, onSelectMessage, onDeleteMessages, onForwardMessages,
+   effectsPicker, onEffectsPickerOpen, onEffectsTabChange, onEffectSelect, onSendWithEffect, onEffectsPickerClose,
+   plusMenu, onPlusMenuSelect, onPlusMenuClose, plusMenuItems = defaultPlusMenuItems,
+@@ -560,25 +583,29 @@
+   details, onCloseDetails, detailsContent, onGroupNameChange, onGroupEvent,
+   tapbackDetails, onOpenTapbackDetails, onCloseTapbackDetails, onRemoveTapback,
+   search, onOpenSearch, onCloseSearch, onSearchQueryChange, onSearchSelect, onSearchSeeAll,
+-  systemArrival,
++  systemArrival, audioControl = null, timeReveal = 0, renderContent, placedStickers = null,
+   overlay, renderReactions = defaultReactions, className, style, frameRef,
+ }: IosMessagesAppProps) {
+   const localFrame = useRef<HTMLDivElement>(null);
+   const frame = frameRef ?? localFrame;
+   const list = useRef<MessageListHandle>(null);
+   const [pressedRect, setPressedRect] = useState<{ id: string; rect: Rect; tail: boolean } | null>(null);
+-  const pressed = longPress ? messages.find(message => message.id === longPress.id) : undefined;
++  const scriptedPress = longPressPose === undefined ? null : longPressPose;
++  const pressed = scriptedPress
++    ? messages.find(message => message.id === scriptedPress.id)
++    : longPress ? messages.find(message => message.id === longPress.id) : undefined;
+   const pressedId = pressed?.id;
+   // The overlay stays mounted for its exit timeline after `longPress` clears. Deriving this during
+   // render rather than in an effect matters: an effect would leave one committed frame with the
+-  // overlay already gone, and the dismissal would never be seen.
++  // overlay already gone, and the dismissal would never be seen. A scripted pose already includes
++  // the exit frame, so that clock stays out of it.
+   const [seenPressedId, setSeenPressedId] = useState<string | null>(pressedId ?? null);
+   const [closing, setClosing] = useState<string | null>(null);
+-  if (seenPressedId !== (pressedId ?? null)) {
++  if (!scriptedPress && seenPressedId !== (pressedId ?? null)) {
+     setSeenPressedId(pressedId ?? null);
+     setClosing(pressedId ? null : seenPressedId);
+   }
+-  const overlayId = pressedId ?? closing;
++  const overlayId = scriptedPress ? scriptedPress.id : (pressedId ?? closing);
+   const overlayMessage = overlayId ? messages.find(message => message.id === overlayId) : undefined;
+ 
+   // Same derive-during-render rule as the long-press overlay: the effects screen has to outlive the
+@@ -751,7 +778,9 @@
+   // The Ø60 slot the details screen's entrance morphs out of, so a group grows out of its own faces.
+   const navAvatar = participants && participants.length > 1
+     ? <GroupAvatar participants={participants} size={groupAvatarMetrics.phone.groupAvatar} name={contact.name} />
+-    : undefined;
++    : contact.photo || contact.silhouette
++      ? <Avatar size={60} name={contact.name} src={contact.photo} initials={contact.silhouette ? undefined : contact.initials} />
++      : undefined;
+ 
+   const [ownPlusMenu, setOwnPlusMenu] = useState(false);
+   const plusValue = plusMenu === undefined ? (ownPlusMenu ? openMarker : null) : plusMenu;
+@@ -904,6 +933,7 @@
+     <div inert className="absolute inset-0" style={{ background: "var(--im-bg)" }}>
+       <MessageList messages={messages} typing={typing} group={isGroup} now={now} anchor="top"
+         insetTop={iosScreen.listTop} insetBottom={iosScreen.listBottom} renderReactions={renderReactions}
++        audioControl={audioControl} timeReveal={timeReveal} renderContent={renderContent}
+         className="absolute inset-0" />
+       <IosNavBar name={contact.name} initials={contact.initials} avatar={navAvatar} className="absolute left-0" style={{ top: iosScreen.statusBar }} />
+       <IosComposer className="absolute bottom-0 left-0" value={composer?.value} placeholder={composer?.placeholder} disabled />
+@@ -960,8 +990,10 @@
+             <IosSelectMode active={selecting} progress={selectValue?.progress} onExited={selectLatch.exited}>
+             {selectShown && <style>{selectModeRules(selectTransition.timing)}</style>}
+             <MessageList ref={list} frameRef={frame} messages={messages} typing={typing} group={isGroup} now={now} anchor="top"
+-              insetTop={iosScreen.listTop} insetBottom={listBottom} renderReactions={renderReactions} messageActions={Boolean(onLongPress)}
+-              onOpenThread={onOpenThread} onOpenImage={openPhoto} systemArrival={systemArrival} className="absolute inset-0" />
++              insetTop={iosScreen.listTop} insetBottom={listBottom} renderReactions={renderReactions} messageActions={Boolean(onLongPress) || scriptedPress != null}
++              onOpenThread={onOpenThread} onOpenImage={openPhoto} systemArrival={systemArrival}
++              audioControl={audioControl} timeReveal={timeReveal} renderContent={renderContent}
++              className="absolute inset-0" />
+             {/* Over the log and under the nav bar, so a circle scrolled up behind the bar is covered
+                 by it the way the bubbles are. */}
+             {selectShown && (
+@@ -972,9 +1004,9 @@
+                 coordinates, ChatKit's landed Ø48 and the angle the drop finished at, so the ghost
+                 unmounting is invisible. They sit over the log rather than inside a bubble, because
+                 nothing in `references/` measures where a landed sticker attaches. */}
+-            {placed.length > 0 && (
++            {(placedStickers ?? placed).length > 0 && (
+               <div aria-hidden="true" data-slot="placed-stickers" className="pointer-events-none absolute inset-0">
+-                {placed.map(({ key, sticker, placement }) => (
++                {(placedStickers ?? placed).map(({ key, sticker, placement }) => (
+                   // `placement.x/y` is the sticker's centre, and the two font ratios are the ones
+                   // `StickerArt` draws a cell with, so the landed sticker is the same artwork at the
+                   // same proportions the sheet showed.
+@@ -1174,8 +1206,9 @@
+         {overlayMessage && pressedBody && <style>{messageBodyHiddenSlots.map(slot => `[data-message-id="${overlayMessage.id}"] [data-slot="${slot}"]`).join(",")}{"{visibility:hidden}"}</style>}
+         {overlayMessage && pressedBody && (
+           <MessageActions rect={pressedBody.rect} frame={{ width, height }} direction={overlayMessage.direction} service={overlayMessage.service ?? "imessage"}
+-            progress={longPress?.progress} autoFocus={longPress?.progress === undefined && !closing}
+-            open={!closing} onExited={() => setClosing(null)}
++            scripted={scriptedPress ? { phase: scriptedPress.phase, elapsedMs: scriptedPress.elapsedMs, entranceElapsedMs: scriptedPress.entranceElapsedMs, reduced: scriptedPress.reduced } : undefined}
++            progress={scriptedPress ? undefined : longPress?.progress} autoFocus={!scriptedPress && longPress?.progress === undefined && !closing}
++            open={scriptedPress ? scriptedPress.phase !== "exit" : !closing} onExited={() => setClosing(null)}
+             // The menu's glass picks up the bubble behind it, and a message with no bubble has none to
+             // give: an emoji-only message, a photo, a link card and a file card all take the plain glass.
+             wash={liftsABubble(overlayMessage) ? undefined : null}

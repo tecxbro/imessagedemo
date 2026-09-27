@@ -1,0 +1,79 @@
+# iOS feature coverage
+
+The pin is `https://imessage.swerdlow.dev/r/registry.json`. Polls are repository-owned (`src/components/owned/ios-poll.tsx`) because the registry has no poll item.
+
+Authoring goes flow JSON, validation, compilation, one runtime timeline, then the iOS renderer. Playback is Play, Pause or Resume, and Replay. Interactive preview pauses, applies the same events in a local session, and Replay restores the authored opening.
+
+A one-to-one conversation is the default. Groups, polls, stickers, search, and the recorder are available when the story needs them.
+
+## Registry items
+
+| Item | Disposition |
+| --- | --- |
+| platform | Infrastructure. Platform context, not an authoring field. |
+| tokens | Infrastructure. Colors, type, and bubble metrics. |
+| bubble-shape | Infrastructure. Bubble geometry. |
+| use-screen-space | Infrastructure. Screen-space fill. |
+| message-bubble | Authorable text rows, tails, and status. |
+| tapback | Reactions on message ids. Classic types and emoji. |
+| tapback-details | Overlay `tapback-details`. |
+| typing-indicator | Flow field `typing`, cleared by an explicit false event. |
+| date-separator | Derived from message times. |
+| link-preview | Kind `link`. |
+| message-attachment | Kind `attachment`. |
+| conversation | Shared conversation helper. Composed by the shells. |
+| message-motion | Send and receive cues follow the timeline. |
+| facetime-card | Kind `facetime`. Visual state only. No call is placed. |
+| avatar | Contact photo, initials, or silhouette. |
+| macos-window | macOS infrastructure. |
+| macos-sidebar | macOS conversation list. |
+| macos-header | macOS header. |
+| macos-composer | macOS composer. |
+| tapback-bar | Long-press picker. Scripted by the timeline. |
+| context-menu | macOS catalogue-only menu. |
+| message-actions | Long-press menu. Reply, copy, and select are local. Forward does not send. |
+| use-long-press | Infrastructure hook used by the shell. |
+| message-list | Authorable transcript, clustering, dates, typing, system rows. |
+| ios-status-bar | Composed by the iOS shell. |
+| ios-nav-bar | Composed by the iOS shell. Photo, initials, or silhouette. |
+| ios-composer | Draft and send. Author `draft` and typing. |
+| ios-conversation-list | Screen `list`. Multiple conversations with stable ids. |
+| ios-new-message-sheet | Screen `new-message`. iOS only. |
+| palette | Infrastructure. Theme variables. |
+| ios-messages-app | iOS shell. Status, nav, composer, screens, and controlled overlays. |
+| macos-messages-app | macOS shell. Preserved. iOS-only kinds are rejected. |
+| macos-plus-menu | macOS catalogue-only menu. |
+| macos-details | macOS details. Not an iOS authoring field. |
+| message-effects | Bubble effects slam, loud, gentle, invisible-ink. |
+| screen-effects | Event `screen-effect`. |
+| ios-effects-picker | Overlay `effects-picker` with bubble or screen tab. |
+| message-reply | replyTo, reply counts, overlay `thread`. |
+| message-image | Kind `image`. |
+| image-viewer | Overlay `image-viewer` with index, chrome, and dismiss. |
+| message-audio | Kind `audio`. Optional `src` plays in the browser. |
+| message-edit | Event `edit` sets Edited. Event `remove` is Undo Send. |
+| ios-details | Overlay `details` for one person. |
+| group-details | Overlay `details` when the conversation is a group. |
+| ios-plus-menu | Overlay `plus-menu`. Camera, Cash, and Check In do not call native services. |
+| photo-picker | Overlay `photo-picker`. `library` supplies local assets. |
+| sticker-picker | Overlay `sticker-picker` and sticker messages. |
+| ios-select-mode | Overlay `selection`. |
+| ios-search | Overlay `search`. |
+| ios-swipe-times | Event `time-reveal`. |
+| ios-notices | Event `notice`. |
+| system-message | Kind `system` with a SystemMessage event. Not a bubble. |
+| group-avatar | Participants with photos or initials. |
+| audio-recorder | Overlay `recorder`. Fixture levels, no microphone. |
+| index | Registry index. No source file. |
+
+## Polls
+
+Repository-owned. Kind `poll` with up to 12 options. Events `poll-option`, `poll-vote`, and overlay `poll-details`. Vote membership is a set, so replay does not double-count. Bars are each option's share of participants, not a split that sums to 100%. Example: `examples/ios-poll.flow.json`.
+
+## Not a rendered iMessage feature
+
+Mini apps other than the checkout `app-card`, real FaceTime calls, Apple Cash, and payments stay outside this renderer.
+
+## Verification
+
+`scripts/check-ios-coverage.mjs` fails when a registry item is missing from this document or when `capabilities.json` still lists polls as unsupported.

@@ -1,7 +1,10 @@
 import { forwardRef, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type Ref } from "react";
 import type { CompiledDemo, RenderFrame, RendererHandle, RendererProps } from "@/contracts";
+import { tapbackLandingAt } from "@/contracts/tapback-motion";
 import { useBubbleEffectOnMessage } from "@/components/imessage/message-effects";
 import { IosMessagesApp, iosScreen, type IosMessagesAppProps } from "@/components/imessage/ios-messages-app";
+import { Tapback, type TapbackType } from "@/components/imessage/tapback";
+import type { Message } from "@/components/imessage/message-list";
 import type { IosConversation } from "@/components/imessage/ios-conversation-list";
 import { ScreenEffect } from "@/components/imessage/screen-effects";
 import { frameAt } from "@/runtime";
@@ -15,9 +18,10 @@ import { screenTransitionShellProps } from "./navigation";
 import { frameKey, projectFrame } from "./project";
 import { settleIosScene, type IosSettleReceipt } from "./readiness";
 import { applyCheckpointScroll } from "./scroll";
-import { describeSelection, iosInteractionShell, type InteractionInput } from "./interaction-state";
+import { controlledLongPressPose, iosInteractionShell, type InteractionInput } from "./interaction-state";
 import { iosInteractionView, undoSendOverlay, type OverlayRenderOptions } from "./overlays";
 import { AppCardLayer } from "./app-card/AppCardLayer";
+import { renderOwnedContent } from "./owned-content";
 
 export type { IosSettleReceipt };
 
@@ -43,17 +47,28 @@ type Session = {
   cues: CueState;
 };
 
-const emptyCues: CueState = { bubbleEffect: null, typingElapsed: null, inkElapsed: [] };
+const emptyCues: CueState = { bubbleEffect: null, typingElapsed: null, inkElapsed: [], reactions: [] };
 
-function conversationsFor(frame: RenderFrame): IosConversation[] {
-  const latest = frame.messages[frame.messages.length - 1];
-  return [{
-    id: "contact",
-    name: frame.contact.name,
-    initials: frame.contact.initials,
-    preview: latest?.text || frame.draft || frame.contact.name,
-    time: statusClock(frame.nowMs),
+function conversationsFor(compiled: CompiledDemo, frame: VisualFrame): IosConversation[] {
+  const rows = frame.conversations.length > 0 ? frame.conversations : [{
+    id: compiled.id,
+    contact: frame.contact,
+    messages: frame.messages,
+    draft: frame.draft,
   }];
+  return rows.map((conversation) => {
+    const latest = conversation.messages[conversation.messages.length - 1];
+    const seed = compiled.conversations?.find((item) => item.id === conversation.id);
+    const people = conversation.id === (compiled.selectedConversationId ?? compiled.id) ? compiled.participants : seed?.participants;
+    return {
+      id: conversation.id,
+      name: conversation.contact.name,
+      initials: conversation.contact.initials,
+      preview: latest?.text || conversation.draft || conversation.contact.name,
+      time: statusClock(frame.nowMs),
+      ...(people && people.length > 1 ? { members: people.map((person) => ({ name: person.name, initials: person.initials, src: person.photo })) } : {}),
+    };
+  });
 }
 
 function demoIsPlaying(): boolean {
@@ -190,7 +205,7 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   }
   useImperativeHandle(ref, () => handleRef.current as IosRendererHandle, []);
 
-  const view = shellProps(visual, cues, posed, interactive, onDraft);
+  const view = shellProps(compiled, visual, cues, posed, interactive, onDraft);
   const canonicalOverlay = canonicalOverlayNode(compiled, visual);
   const hostsAppCards = useMemo(() => compiledHasAppCards(compiled), [compiled]);
   const baseOverlay = overlay ?? shell?.overlay ?? canonicalOverlay;
@@ -221,6 +236,8 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         sendAnimation={view.sendAnimation}
         receiveAnimation={view.receiveAnimation}
         longPress={shell?.longPress ?? view.longPress}
+        longPressPose={shell?.longPressPose !== undefined ? shell.longPressPose : view.longPressPose}
+        renderReactions={shell?.renderReactions ?? view.renderReactions}
         thread={shell?.thread ?? view.thread}
         effectsPicker={shell?.effectsPicker ?? view.effectsPicker}
         audioControl={shell?.audioControl ?? view.audioControl}
@@ -241,9 +258,16 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   );
 });
 
-function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interactive: boolean, onDraft?: (value: string) => void): IosMessagesAppProps {
+function shellProps(
+  compiled: CompiledDemo,
+  frame: VisualFrame,
+  cues: CueState,
+  posed: boolean,
+  interactive: boolean,
+  onDraft?: (value: string) => void,
+): IosMessagesAppProps {
   const interaction = iosInteractionShell(frame);
-  const selection = describeSelection(frame);
+  const longPressPose = controlledLongPressPose(compiled, frame);
   const transition = screenTransitionShellProps(frame);
   return {
     width: iosScreen.width,
@@ -251,19 +275,10 @@ function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interact
     time: statusClock(frame.nowMs),
     screen: frame.screen,
     screenTransition: transition ?? { from: frame.screen, progress: 1 },
-    conversations: conversationsFor({
-      timeMs: frame.timeMs,
-      platform: frame.platform,
-      theme: frame.theme,
-      screen: frame.screen,
-      contact: frame.contact,
-      nowMs: frame.nowMs,
-      messages: frame.messages,
-      typing: frame.typing,
-      draft: frame.draft,
-    }),
+    conversations: conversationsFor(compiled, frame),
     contact: frame.contact,
-    group: false,
+    group: Boolean(compiled.group) || (compiled.participants?.length ?? 0) > 1,
+    participants: compiled.participants?.map((person) => ({ name: person.name, initials: person.initials, src: person.photo })),
     messages: frame.messages.map(toUpstreamMessage),
     typing: frame.typing,
     now: frame.nowMs,
@@ -274,13 +289,44 @@ function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interact
     sendAnimation: posed && cues.send ? cues.send : null,
     receiveAnimation: posed && cues.receive ? cues.receive : null,
     longPress: interaction.longPress,
+    longPressPose,
+    renderReactions: scriptedReactions(frame, cues),
     thread: interaction.thread,
-    selection: selection
-      ? { active: selection.open, progress: selection.progress, messageIds: selection.messageIds }
-      : null,
     effectsPicker: effectsPickerShellProps(frame),
     audioControl: frame.audio,
     timeReveal: frame.timeReveal,
+    renderContent: (message, content) => renderOwnedContent(compiled, frame, message, content),
+    ...controlledSurfaces(frame),
+    photos: compiled.library?.map((photo) => ({ id: photo.id, src: photo.src, alt: photo.alt })),
+  };
+}
+
+function overlayProgress(frame: VisualFrame): number | undefined {
+  const enter = [...frame.cues].reverse().find((cue) => cue.kind === "overlay-enter");
+  if (enter && frame.overlay.kind !== "closed") return enter.progress;
+  return frame.overlay.kind === "closed" ? undefined : 1;
+}
+
+function controlledSurfaces(frame: VisualFrame): Partial<IosMessagesAppProps> {
+  const overlay = frame.overlay;
+  const progress = overlayProgress(frame);
+  return {
+    plusMenu: overlay.kind === "plus-menu" ? { progress } : null,
+    photoPicker: overlay.kind === "photo-picker"
+      ? { selected: overlay.selectedIds ?? (overlay.selectedId ? [overlay.selectedId] : []), detent: overlay.detent, progress }
+      : null,
+    stickerPicker: overlay.kind === "sticker-picker" ? { tab: overlay.tab, progress } : null,
+    audioRecorder: overlay.kind === "recorder"
+      ? { state: overlay.state, position: overlay.position, duration: overlay.duration, progress }
+      : null,
+    details: overlay.kind === "details" ? { progress } : null,
+    tapbackDetails: overlay.kind === "tapback-details" ? { id: overlay.messageId, progress, filter: overlay.filter } : null,
+    search: overlay.kind === "search" ? { query: overlay.query, progress } : null,
+    photoViewer: overlay.kind === "image-viewer"
+      ? { id: overlay.messageId, index: overlay.index, progress, chrome: overlay.chrome, dismiss: overlay.dismiss }
+      : null,
+    selectMode: overlay.kind === "selection" ? { progress } : null,
+    selectedMessageIds: overlay.kind === "selection" ? overlay.messageIds : [],
   };
 }
 
@@ -290,6 +336,35 @@ function compiledHasAppCards(compiled: CompiledDemo): boolean {
     compiled.events.some((event) => event.type === "message" && event.message.kind === "app-card") ||
     Boolean(compiled.initialState?.conversations?.some((conversation) => conversation.messages?.some((message) => message.kind === "app-card")))
   );
+}
+
+function scriptedReactions(frame: VisualFrame, cues: CueState): NonNullable<IosMessagesAppProps["renderReactions"]> {
+  return (message: Message) => {
+    const logical = frame.messages.find((item) => item.id === message.id);
+    const reactions = logical?.reactions ?? [];
+    if (reactions.length === 0) return undefined;
+    const outgoing = message.direction === "outgoing";
+    return (
+      <div data-slot="reaction-stack" style={{ display: "flex", gap: 2 }}>
+        {reactions.map((reaction) => {
+          const landing = cues.reactions.find((item) => item.messageId === message.id && item.reactionId === reaction.id);
+          const pose = landing ? tapbackLandingAt(landing.elapsedMs) : null;
+          const classic = reaction.emoji ? undefined : (reaction.type as TapbackType);
+          return (
+            <Tapback
+              key={reaction.id}
+              reaction={classic}
+              emoji={reaction.emoji}
+              own={reaction.byMe ?? true}
+              side={outgoing ? "left" : "right"}
+              animateIn={false}
+              style={pose ? { opacity: pose.opacity, transform: `scale(${pose.scale})` } : undefined}
+            />
+          );
+        })}
+      </div>
+    );
+  };
 }
 
 function canonicalOverlayNode(compiled: CompiledDemo, frame: VisualFrame): ReactNode {

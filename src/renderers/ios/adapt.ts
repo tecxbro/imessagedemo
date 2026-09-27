@@ -19,15 +19,33 @@ export function toUpstreamMessage(message: AdaptableMessage): Message {
     // cluster; `AppCardLayer` hides that row's contents and docks the checkout iframe in it.
     return { id: message.id, text: message.text, direction: message.direction, sentAt: message.atMs };
   }
+  const owned = message.kind === "poll" || message.kind === "facetime" || message.kind === "sticker";
   const upstream: Message = {
     id: message.id,
     text: message.text,
     direction: message.direction,
     sentAt: message.atMs,
   };
+  if (message.sender) upstream.sender = message.sender;
+  if (message.senderInitials) upstream.senderInitials = message.senderInitials;
+  if (message.senderPhoto) upstream.senderPhoto = message.senderPhoto;
+  if (message.kind === "system" && message.system) {
+    upstream.kind = "system";
+    upstream.system = message.system;
+    return upstream;
+  }
+  if (owned) return upstream;
   if (message.service) upstream.service = message.service;
   if (message.status) upstream.status = message.status;
-  if (message.kind) upstream.kind = message.kind;
+  if (
+    message.kind === "text" ||
+    message.kind === "link" ||
+    message.kind === "attachment" ||
+    message.kind === "image" ||
+    message.kind === "audio"
+  ) {
+    upstream.kind = message.kind;
+  }
   if (message.effect) upstream.effect = message.effect;
   if (message.edited) upstream.edited = message.edited;
   if (message.readAt !== undefined) upstream.readAt = message.readAt;

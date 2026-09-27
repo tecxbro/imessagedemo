@@ -1,9 +1,6 @@
 import type { ValidationIssue } from "@/contracts";
 
 const UNSUPPORTED_KEYS = new Set([
-  "poll",
-  "polls",
-  "pollId",
   "miniApp",
   "miniApps",
   "mini-app",
@@ -12,7 +9,7 @@ const UNSUPPORTED_KEYS = new Set([
   "spectrum",
 ]);
 
-const UNSUPPORTED_KINDS = new Set(["poll", "mini-app", "photon"]);
+const UNSUPPORTED_KINDS = new Set(["mini-app", "photon"]);
 
 export function findUnsupported(value: unknown, path = "$"): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
@@ -31,7 +28,7 @@ function visit(value: unknown, path: string, issues: ValidationIssue[]): void {
     if (UNSUPPORTED_KEYS.has(key)) {
       issues.push({
         path: path === "$" ? key : `${path}.${key}`,
-        message: `Unsupported feature "${key}". Do not translate polls or mini apps into text.`,
+        message: `Unsupported feature "${key}". Do not translate mini apps into text.`,
       });
     }
     if ((key === "kind" || key === "type") && typeof nested === "string" && UNSUPPORTED_KINDS.has(nested)) {

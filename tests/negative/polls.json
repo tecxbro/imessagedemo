@@ -1,7 +1,7 @@
 {
   "id": "polls",
   "silentOnFrozenDouble": false,
-  "note": "Polls are not a pinned message kind. The row must not render as text.",
+  "note": "A poll without options is malformed. It must not render as text.",
   "input": {
     "id": "negative",
     "title": "Negative",
@@ -30,12 +30,8 @@
   },
   "issues": [
     {
-      "path": "messages.0.kind",
-      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\""
-    },
-    {
-      "path": "messages.0.poll",
-      "message": "Unrecognized key: \"poll\""
+      "path": "messages.0.poll.options",
+      "message": "Invalid input: expected array, received undefined"
     }
   ]
 }

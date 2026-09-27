@@ -1,13 +1,13 @@
 {
   "source": "live",
-  "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
-  "retrievedAt": "2026-09-22T01:51:21.810Z",
-  "sha256": "a498e42761cebf84b756205625ec18f70bba39b2dfbdb970c39a99a5265f1970",
-  "bytes": 828938,
+  "url": "https://imessage.swerdlow.dev/r/registry.json",
+  "retrievedAt": "2026-09-27T06:20:00.000Z",
+  "sha256": "a5d67edf561f04d431e1ae03af879554ac75e27b0265063b7a461049e0356391",
+  "bytes": 1484029,
   "encoding": "utf-8",
   "encodingCheck": "fatal-utf8",
-  "itemCount": 48,
-  "fileCount": 47,
+  "itemCount": 55,
+  "fileCount": 54,
   "replacementCharacterCount": 0,
   "importClosure": "passed",
   "externalImportsAllowed": [
@@ -15,24 +15,15 @@
     "@/lib/utils"
   ],
   "alternateRegistry": {
-    "url": "https://imessage.swerdlow.dev/r/registry.json",
-    "status": 200,
+    "url": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
+    "status": "previous-pin",
     "installed": false,
-    "sha256": "a5d67edf561f04d431e1ae03af879554ac75e27b0265063b7a461049e0356391",
-    "bytes": 1484029,
-    "itemCount": 55,
-    "fileCount": 54,
+    "sha256": "a498e42761cebf84b756205625ec18f70bba39b2dfbdb970c39a99a5265f1970",
+    "bytes": 828938,
+    "itemCount": 48,
+    "fileCount": 47,
     "identicalToPin": false,
-    "onlyInAlternate": [
-      "audio-recorder",
-      "group-avatar",
-      "group-details",
-      "ios-search",
-      "macos-details",
-      "sticker-picker",
-      "tapback-details"
-    ],
-    "onlyInPin": []
+    "note": "The installed pin is now https://imessage.swerdlow.dev/r/registry.json. Archived llms snapshots below were retrieved with the previous pin."
   },
   "docs": [
     {
@@ -644,5 +635,9 @@
       "reason": "references/SPEC.md is not part of the registry response and the probed URLs did not serve it."
     }
   ],
-  "localForwarding": "Optional audioControl and timeReveal props on the pinned list and iOS shell, so canonical playback can reach MessageAudio and SwipeTimes."
+  "localForwarding": "Recorded patches add audioControl, timeReveal, renderContent, scripted long-press, and authored stickers on top of the imessage.swerdlow.dev pin. Polls are a repository-owned component, not a registry item.",
+  "patches": [
+    "patches/imessage/playback-controls.patch",
+    "patches/imessage/tapback-interaction.patch"
+  ]
 }

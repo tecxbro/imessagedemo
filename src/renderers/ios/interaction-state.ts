@@ -1,3 +1,6 @@
+import type { CompiledDemo, PickerSelection } from "@/contracts";
+import { tapbackMotion } from "@/contracts/tapback-motion";
+import { compareTimelineEvents, effectiveSourceIndex } from "@/runtime/project";
 import type {
   Cue,
   LogicalMessage,
@@ -94,10 +97,15 @@ function beforeOf(state: InteractionInput): LogicalState | null {
   return isVisualFrame(state) ? state.beforeState : null;
 }
 
-function findOverlayCue(cues: Cue[], kind: "overlay-enter" | "overlay-exit"): Cue | undefined {
+function findOverlayCue(cues: Cue[], kind: "overlay-enter" | "overlay-exit", current?: OverlayState): Cue | undefined {
   for (let index = cues.length - 1; index >= 0; index -= 1) {
     const cue = cues[index];
-    if (cue?.kind === kind && cue.detail?.overlay) return cue;
+    if (cue?.kind !== kind || !cue.detail?.overlay) continue;
+    if (current?.kind === "long-press") {
+      const detail = cue.detail.overlay;
+      if (detail.kind !== "long-press" || detail.messageId !== current.messageId) continue;
+    }
+    return cue;
   }
   return undefined;
 }
@@ -108,7 +116,7 @@ function findOverlayCue(cues: Cue[], kind: "overlay-enter" | "overlay-exit"): Cu
  */
 export function activeOverlay(state: InteractionInput): ActiveOverlay {
   const cues = cuesOf(state);
-  const enter = findOverlayCue(cues, "overlay-enter");
+  const enter = findOverlayCue(cues, "overlay-enter", state.overlay);
   const exit = findOverlayCue(cues, "overlay-exit");
 
   if (state.overlay.kind !== "closed") {
@@ -259,5 +267,134 @@ export function iosInteractionShell(state: InteractionInput): {
     longPress: longPress && longPress.open ? { id: longPress.messageId, progress: longPress.progress } : null,
     thread: thread && thread.open ? { rootId: thread.rootId, progress: thread.progress } : null,
     flash: replyJump ? { id: replyJump.messageId, progress: replyJump.progress } : null,
+  };
+}
+
+export type ControlledLongPressPose = {
+  id: string;
+  phase: "enter" | "open" | "select" | "exit";
+  elapsedMs: number;
+  entranceElapsedMs: number;
+  progress: number;
+  selected?: PickerSelection | null;
+  reduced?: boolean;
+};
+
+type LongPressGesture = {
+  messageId: string;
+  openedAt: number;
+  selected?: PickerSelection | null;
+  selectedAt: number | null;
+  closedAt: number | null;
+};
+
+/**
+ * Timeline pose for the scripted long-press. Closed is null.
+ * A fresh seek uses the canonical events, including an exit that the page never rendered open.
+ */
+export function controlledLongPressPose(
+  compiled: Pick<CompiledDemo, "events" | "reducedMotion">,
+  frame: Pick<VisualFrame, "timeMs">,
+): ControlledLongPressPose | null {
+  const ordered = compiled.events
+    .map((event, index) => ({
+      event,
+      index,
+      sourceIndex: effectiveSourceIndex(event, index),
+      atMs: event.atMs,
+    }))
+    .filter((item) => Number.isFinite(item.atMs) && item.atMs <= frame.timeMs)
+    .sort(compareTimelineEvents);
+
+  let gesture: LongPressGesture | null = null;
+  for (const item of ordered) {
+    const event = item.event;
+    if (event.type !== "overlay") continue;
+    if (event.overlay.kind !== "long-press") {
+      if (gesture && gesture.closedAt === null) {
+        gesture = {
+          messageId: gesture.messageId,
+          openedAt: gesture.openedAt,
+          selected: gesture.selected,
+          selectedAt: gesture.selectedAt,
+          closedAt: item.atMs,
+        };
+      }
+      continue;
+    }
+    const messageId = event.overlay.messageId;
+    const selected = event.overlay.selected;
+    if (gesture && gesture.closedAt === null && gesture.messageId === messageId) {
+      gesture = {
+        messageId,
+        openedAt: gesture.openedAt,
+        selected,
+        selectedAt: selected !== undefined ? item.atMs : gesture.selectedAt,
+        closedAt: null,
+      };
+    } else {
+      gesture = {
+        messageId,
+        openedAt: item.atMs,
+        selected,
+        selectedAt: selected !== undefined ? item.atMs : null,
+        closedAt: null,
+      };
+    }
+  }
+
+  if (!gesture) return null;
+  const reduced = compiled.reducedMotion === true;
+  const selectedFields = gesture.selected === undefined ? {} : { selected: gesture.selected };
+  if (gesture.closedAt !== null) {
+    const elapsedMs = frame.timeMs - gesture.closedAt;
+    if (elapsedMs >= tapbackMotion.exitMs) return null;
+    const entranceElapsedMs = Math.max(0, gesture.closedAt - gesture.openedAt);
+    return {
+      id: gesture.messageId,
+      phase: "exit",
+      elapsedMs,
+      entranceElapsedMs,
+      progress: elapsedMs / tapbackMotion.exitMs,
+      reduced,
+      ...selectedFields,
+    };
+  }
+
+  const entranceElapsedMs = Math.max(0, frame.timeMs - gesture.openedAt);
+  const pendingSelection = gesture.selectedAt !== null && gesture.selectedAt > gesture.openedAt;
+  if (pendingSelection && gesture.selectedAt !== null) {
+    const elapsedMs = frame.timeMs - gesture.selectedAt;
+    if (elapsedMs < tapbackMotion.selectionFeedbackMs) {
+      return {
+        id: gesture.messageId,
+        phase: "select",
+        elapsedMs,
+        entranceElapsedMs,
+        progress: elapsedMs / tapbackMotion.selectionFeedbackMs,
+        reduced,
+        ...selectedFields,
+      };
+    }
+  }
+  if (entranceElapsedMs < tapbackMotion.entranceMs) {
+    return {
+      id: gesture.messageId,
+      phase: "enter",
+      elapsedMs: entranceElapsedMs,
+      entranceElapsedMs,
+      progress: entranceElapsedMs / tapbackMotion.entranceMs,
+      reduced,
+      ...selectedFields,
+    };
+  }
+  return {
+    id: gesture.messageId,
+    phase: "open",
+    elapsedMs: entranceElapsedMs,
+    entranceElapsedMs,
+    progress: 1,
+    reduced,
+    ...selectedFields,
   };
 }

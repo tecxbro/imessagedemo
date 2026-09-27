@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { fontStack } from "@/components/imessage/tokens";
-import { BalloonTrail, pickerBalloonGeometry, TapbackGlyph, tapbackColors, tapbackLabels, tapbackTypes, type TapbackType } from "@/components/imessage/tapback";
+import { BalloonTrail, pickerBalloonGeometry, TapbackGlyph, tapbackColors, tapbackLabels, tapbackTypes, type TapbackGlyphMotion, type TapbackType } from "@/components/imessage/tapback";
 
 /**
  * Tapback picker, measured from iOS 26 (`references/ios/captures/longpress-ok-light.png`, 3x) and
@@ -61,6 +61,12 @@ export type TapbackBarProps = {
   style?: CSSProperties;
   /** Optional per-glyph style hook, used by the long-press overlay to stagger the entrance. */
   glyphStyle?: (index: number) => CSSProperties | undefined;
+  /** Fitted sub-glyph pose. Only the iOS picker applies it; badges and macOS stay settled. */
+  glyphMotion?: (index: number, item: { type?: TapbackType; emoji?: string }) => TapbackGlyphMotion | undefined;
+  /** Replaces the pill's inset box when the surface is contracting. */
+  surfaceStyle?: CSSProperties;
+  /** Sibling glyph row. Exit fades this independently of the pill. */
+  scrollStyle?: CSSProperties;
   children?: ReactNode;
 };
 
@@ -99,7 +105,7 @@ export function EmojiPickerBubble({ side = "left", onClick, style, fill, iconCol
   );
 }
 
-export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, onSelect, onPickEmoji, onClose, pickerX, pickerSide = "left", width, autoFocus = false, className, style, glyphStyle, children }: TapbackBarProps) {
+export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, onSelect, onPickEmoji, onClose, pickerX, pickerSide = "left", width, autoFocus = false, className, style, glyphStyle, glyphMotion, surfaceStyle, scrollStyle, children }: TapbackBarProps) {
   const root = useRef<HTMLDivElement>(null);
   const items: Array<{ type?: TapbackType; emoji?: string; label: string }> = [
     ...tapbackTypes.map(type => ({ type, label: tapbackLabels[type] })),
@@ -138,7 +144,7 @@ export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, o
         style={{ width: slot, height: "100%", ...extra, ...glyphStyle?.(index) }}>
         {active && layout === "ios" && <span aria-hidden="true" data-slot="tapback-selected-ring" style={{ position: "absolute", width: tapbackBarMetrics.ios.selectedRing, height: tapbackBarMetrics.ios.selectedRing, borderRadius: "50%", background: "var(--im-tapback-ring, " + tapbackColors.selectedRing + ")" }} />}
         {active && layout === "macos" && <span aria-hidden="true" data-slot="tapback-selected-ring" style={{ position: "absolute", width: 30, height: 30, borderRadius: "50%", background: "var(--im-tapback-ring, " + tapbackColors.selectedRing + ")" }} />}
-        <TapbackGlyph type={item.type} emoji={item.emoji} size={size} onAccent={active} style={{ position: "relative" }} />
+        <TapbackGlyph type={item.type} emoji={item.emoji} size={size} onAccent={active} style={{ position: "relative" }} motion={layout === "ios" ? glyphMotion?.(index, item) : undefined} />
       </button>
     );
   };
@@ -179,8 +185,8 @@ export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, o
   return (
     <div ref={root} role="menu" aria-label="Tapback" data-slot="tapback-bar" data-layout="ios" className={cn("select-none", className)} onKeyDown={onKeyDown}
       style={{ position: "relative", height, width, borderRadius: height / 2, fontFamily: fontStack, ...style }}>
-      <div data-slot="tapback-pill" style={{ position: "absolute", inset: 0, borderRadius: height / 2, ...glass }} />
-      <div data-slot="tapback-scroll" className="scrollbar-none" style={{ position: "absolute", inset: 0, borderRadius: height / 2, overflowX: "auto", overflowY: "hidden", display: "flex", alignItems: "center", paddingLeft: m.firstCenter - m.slot / 2, scrollbarWidth: "none" }}>
+      <div data-slot="tapback-pill" style={surfaceStyle ? { ...glass, ...surfaceStyle } : { position: "absolute", inset: 0, borderRadius: height / 2, ...glass }} />
+      <div data-slot="tapback-scroll" className="scrollbar-none" style={{ position: "absolute", inset: 0, borderRadius: height / 2, overflowX: "auto", overflowY: "hidden", display: "flex", alignItems: "center", paddingLeft: m.firstCenter - m.slot / 2, scrollbarWidth: "none", ...scrollStyle }}>
         {items.map((item, i) => glyphButton(item, i, item.type ? m.glyph : m.emojiSize, m.slot))}
         <span aria-hidden="true" style={{ flex: "none", width: m.firstCenter - m.slot / 2 }} />
       </div>

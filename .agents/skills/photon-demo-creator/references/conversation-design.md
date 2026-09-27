@@ -32,6 +32,8 @@ These are interaction patterns, not industry labels. Combine them only when ever
 
 If an uploaded asset deserves acknowledgement but a heart would be off-brand or inappropriate, use a read receipt or immediate text confirmation instead. When a reaction is a control, record the exact target message ID and accepted emoji set.
 
+A customer tapback is something the viewer watches: the message lifts, the menu and picker play, the choice highlights, and only then does the badge land. The company reacting does not open that local picker. Already-present reactions stay settled. Leave enough time after the target message arrives, and an intentional hold so the choice can be read; that hold is pacing, not part of the animation. The one runnable recipe is [examples/ios-tapback-interaction.flow.json](../../../../examples/ios-tapback-interaction.flow.json). Do not copy its idle wait into every conversation, and do not silently compress an exact transcript when the interaction does not fit.
+
 ## Write the executable transcript
 
 For every turn, specify:

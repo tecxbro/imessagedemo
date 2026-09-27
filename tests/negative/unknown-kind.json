@@ -21,14 +21,14 @@
         "text": "Sticker",
         "direction": "incoming",
         "atMs": 1000,
-        "kind": "sticker"
+        "kind": "widget"
       }
     ]
   },
   "issues": [
     {
       "path": "messages.0.kind",
-      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\""
+      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\"|\"system\"|\"facetime\"|\"sticker\"|\"poll\""
     }
   ]
 }

@@ -70,23 +70,23 @@ describe("validateDemo", () => {
     });
   });
 
-  it("rejects a poll without inventing a text or card fallback", () => {
-    const polls = capabilities.unsupported.find((entry) => entry.id === "polls");
+  it("rejects a mini app without inventing a text or card fallback", () => {
+    const mini = capabilities.unsupported.find((entry) => entry.id === "mini-apps");
     const validated = validateDemo({
-      steps: [{ message: { kind: "poll" } }],
+      steps: [{ message: { kind: "mini-app" } }],
     });
     expect(validated.ok).toBe(false);
     if (validated.ok) return;
     expect(validated.issues).toEqual([
       {
         path: "/steps/0/message/kind",
-        message: `UNSUPPORTED_COMPONENT: ${polls?.reason}`,
+        message: `UNSUPPORTED_COMPONENT: ${mini?.reason}`,
       },
     ]);
     expect(JSON.stringify(validated.issues)).not.toMatch(/fallback/i);
   });
 
-  it("classifies a poll message on a flow separately from a catalogue-only system line", () => {
+  it("rejects a poll or system message that omits its payload", () => {
     const poll = validateDemo(
       flow({
         messages: [{ id: "p", text: "", direction: "incoming", atMs: 0, kind: "poll" }],
@@ -100,8 +100,9 @@ describe("validateDemo", () => {
     expect(poll.ok).toBe(false);
     expect(system.ok).toBe(false);
     if (poll.ok || system.ok) return;
-    expect(poll.issues.some((entry) => entry.path === "/messages/0/kind" && entry.message.startsWith("UNSUPPORTED_COMPONENT:"))).toBe(true);
-    expect(system.issues.some((entry) => entry.path === "/messages/0/kind" && entry.message.startsWith("CATALOGUE_ONLY:"))).toBe(true);
+    expect(poll.issues.some((entry) => entry.path === "/messages/0/poll")).toBe(true);
+    expect(system.issues.some((entry) => entry.path === "/messages/0/system")).toBe(true);
+    expect(JSON.stringify(poll.issues)).not.toMatch(/fallback|text list/i);
   });
 
   it("rejects duplicate ids, bad timestamps, missing payloads, bad assets, and platform mismatches", () => {

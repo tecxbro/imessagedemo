@@ -9,7 +9,7 @@ export const checkpointSchema = z.object({
 export const authoringDocumentSchema = demoFlowSchema.extend({
   targets: z.array(platformSchema).min(1).optional(),
   checkpoints: z.array(checkpointSchema).optional(),
-});
+}).strict();
 
 export type AuthoringDocument = z.infer<typeof authoringDocumentSchema>;
 
@@ -26,6 +26,11 @@ export function toDemoFlow(document: AuthoringDocument, platform: DemoPlatform):
     screen: document.screen,
     messages: document.messages as DemoMessage[],
     ...(document.events ? { events: document.events as CompiledEvent[] } : {}),
+    ...(document.participants ? { participants: document.participants } : {}),
+    ...(document.group ? { group: document.group } : {}),
+    ...(document.conversations ? { conversations: document.conversations } : {}),
+    ...(document.selectedConversationId ? { selectedConversationId: document.selectedConversationId } : {}),
+    ...(document.library ? { library: document.library } : {}),
   };
 }
 

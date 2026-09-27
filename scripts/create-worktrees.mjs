@@ -7,7 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const parent = path.resolve(root, "..", "imessage-demo-maker-worktrees");
 const tag = "imessage-demo/foundation-v1";
 
-execFileSync("node", ["scripts/check-upstream.mjs"], { cwd: root, stdio: "inherit" });
+execFileSync("node", ["node_modules/tsx/dist/cli.mjs", "scripts/check-upstream.ts"], { cwd: root, stdio: "inherit" });
 
 const lanes = [
   ["WT-01", "codex/wt-01-compiler", "docs/worktrees/WT-01.md"],

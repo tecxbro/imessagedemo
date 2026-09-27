@@ -12,7 +12,7 @@ export function notImplemented(symbol: string): never {
   throw new Error(`NOT_IMPLEMENTED: ${symbol}`);
 }
 
-export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio", "app-card"]);
+export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll"]);
 export const directionSchema = z.enum(["incoming", "outgoing"]);
 export const serviceSchema = z.enum(["imessage", "sms"]);
 export const statusSchema = z.enum(["sending", "sent", "delivered", "read", "failed"]);
@@ -71,6 +71,70 @@ export const APP_CARD_MIN_HEIGHT = 120;
 export const APP_CARD_MAX_HEIGHT = 480;
 export const APP_CARD_DEFAULT_HEIGHT = 240;
 
+export const POLL_MAX_OPTIONS = 12;
+
+export const systemMessageEventSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("unknownSender") }),
+  z.object({ type: z.literal("conversationNamed"), actor: z.string().min(1).optional(), name: z.string().min(1) }),
+  z.object({ type: z.literal("conversationNameRemoved"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("participantAdded"), actor: z.string().min(1).optional(), participant: z.string().min(1).optional() }),
+  z.object({ type: z.literal("participantRemoved"), actor: z.string().min(1).optional(), participant: z.string().min(1).optional() }),
+  z.object({ type: z.literal("participantLeft"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("groupPhotoChanged"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("groupPhotoRemoved"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("backgroundChanged"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("backgroundRemoved"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("messageUnsent"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("messageKept"), actor: z.string().min(1).optional(), what: z.string().min(1), from: z.string().min(1).optional() }),
+  z.object({ type: z.literal("phoneNumberChanged"), actor: z.string().min(1).optional() }),
+  z.object({ type: z.literal("addFailed"), participant: z.string().min(1) }),
+  z.object({ type: z.literal("removeFailed"), participant: z.string().min(1) }),
+]);
+
+export const facetimeStateSchema = z.enum(["invitation", "ringing", "connected", "ended", "missed"]);
+
+export const stickerPayloadSchema = z.object({
+  id: z.string().min(1),
+  glyph: z.string().min(1),
+  label: z.string().min(1),
+  rotation: z.number().optional(),
+});
+
+export const pollOptionSchema = z.object({
+  id: z.string().min(1),
+  text: z.string().min(1),
+});
+
+export const pollVoteSchema = z.object({
+  participantId: z.string().min(1),
+  optionId: z.string().min(1),
+});
+
+export const pollPayloadSchema = z.object({
+  question: z.string().min(1),
+  options: z.array(pollOptionSchema).min(1).max(POLL_MAX_OPTIONS),
+  votes: z.array(pollVoteSchema).optional(),
+});
+
+export const participantSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  initials: z.string().optional(),
+  photo: z.string().min(1).optional(),
+  me: z.boolean().optional(),
+});
+
+export const groupSchema = z.object({
+  name: z.string().min(1).optional(),
+  photo: z.string().min(1).optional(),
+});
+
+export const libraryPhotoSchema = z.object({
+  id: z.string().min(1),
+  src: z.string().min(1),
+  alt: z.string().min(1),
+});
+
 export const appCardPayloadSchema = z.object({
   url: z.string().min(1),
   live: z.literal(true),
@@ -90,8 +154,22 @@ export const demoMessageSchema = z.object({
   link: linkPayloadSchema.optional(),
   attachments: z.array(attachmentPayloadSchema).optional(),
   images: z.array(z.object({ src: z.string().min(1), alt: z.string(), width: z.number().optional(), height: z.number().optional() })).optional(),
-  audio: z.object({ duration: z.number().nonnegative(), peaks: z.array(z.number()).optional() }).optional(),
+  audio: z.object({
+    duration: z.number().nonnegative(),
+    peaks: z.array(z.number()).optional(),
+    src: z.string().min(1).optional(),
+  }).optional(),
   appCard: appCardPayloadSchema.optional(),
+  sender: z.string().min(1).optional(),
+  senderId: z.string().min(1).optional(),
+  senderInitials: z.string().optional(),
+  senderPhoto: z.string().min(1).optional(),
+  conversationId: z.string().min(1).optional(),
+  system: systemMessageEventSchema.optional(),
+  facetime: z.object({ state: facetimeStateSchema, duration: z.string().optional() }).optional(),
+  sticker: stickerPayloadSchema.optional(),
+  stickers: z.array(stickerPayloadSchema).optional(),
+  poll: pollPayloadSchema.optional(),
   reactions: z.array(reactionSchema).optional(),
   replyTo: z.union([z.string().min(1), replySnapshotSchema]).optional(),
   edited: z.boolean().optional(),
@@ -100,10 +178,22 @@ export const demoMessageSchema = z.object({
   removed: z.boolean().optional(),
 });
 
+export const classicTapbackSchema = z.enum(["love", "like", "dislike", "laugh", "emphasize", "question"]);
+
+/** Transient picker choice on a long-press overlay. It is not a committed reaction. */
+export const pickerSelectionSchema = z.union([
+  z.object({ type: classicTapbackSchema }),
+  z.object({ emoji: z.string().min(1) }),
+]);
+
 export const overlayStateSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("closed") }),
   z.object({ kind: z.literal("thread"), rootId: z.string().min(1) }),
-  z.object({ kind: z.literal("long-press"), messageId: z.string().min(1) }),
+  z.object({
+    kind: z.literal("long-press"),
+    messageId: z.string().min(1),
+    selected: pickerSelectionSchema.nullable().optional(),
+  }),
   z.object({ kind: z.literal("context-menu"), messageId: z.string().min(1), x: z.number(), y: z.number() }),
   z.object({ kind: z.literal("plus-menu") }),
   z.object({
@@ -112,10 +202,36 @@ export const overlayStateSchema = z.discriminatedUnion("kind", [
     draft: z.string(),
     effect: z.string().min(1).optional(),
   }),
-  z.object({ kind: z.literal("image-viewer"), messageId: z.string().min(1), index: z.number().int().nonnegative() }),
   z.object({ kind: z.literal("details") }),
-  z.object({ kind: z.literal("photo-picker"), selectedId: z.string().min(1).optional() }),
+  z.object({
+    kind: z.literal("photo-picker"),
+    selectedId: z.string().min(1).optional(),
+    selectedIds: z.array(z.string().min(1)).optional(),
+    detent: z.enum(["collapsed", "expanded"]).optional(),
+  }),
   z.object({ kind: z.literal("selection"), messageIds: z.array(z.string().min(1)) }),
+  z.object({ kind: z.literal("search"), query: z.string() }),
+  z.object({
+    kind: z.literal("recorder"),
+    state: z.enum(["recording", "stopped", "playing"]),
+    position: z.number().nonnegative().optional(),
+    duration: z.number().nonnegative().optional(),
+  }),
+  z.object({
+    kind: z.literal("tapback-details"),
+    messageId: z.string().min(1),
+    filter: z.string().nullable().optional(),
+  }),
+  z.object({ kind: z.literal("sticker-picker"), tab: z.string().min(1).optional() }),
+  z.object({ kind: z.literal("poll-details"), messageId: z.string().min(1) }),
+  z.object({
+    kind: z.literal("image-viewer"),
+    messageId: z.string().min(1),
+    index: z.number().int().nonnegative(),
+    zoom: z.number().positive().optional(),
+    chrome: z.boolean().optional(),
+    dismiss: z.number().min(0).max(1).optional(),
+  }),
 ]);
 
 export const systemNoticeSchema = z.discriminatedUnion("kind", [
@@ -244,21 +360,69 @@ export const compiledEventSchema = z.discriminatedUnion("type", [
     sourceIndex: z.number().int().optional(),
     notice: systemNoticeSchema,
   }),
+  z.object({
+    type: z.literal("poll-option"),
+    atMs: z.number().int(),
+    sourceIndex: z.number().int().optional(),
+    conversationId: z.string().min(1).optional(),
+    messageId: z.string().min(1),
+    optionId: z.string().min(1),
+    text: z.string().min(1),
+  }),
+  z.object({
+    type: z.literal("poll-vote"),
+    atMs: z.number().int(),
+    sourceIndex: z.number().int().optional(),
+    conversationId: z.string().min(1).optional(),
+    messageId: z.string().min(1),
+    participantId: z.string().min(1),
+    optionId: z.string().min(1),
+    voted: z.boolean(),
+  }),
+  z.object({
+    type: z.literal("sticker"),
+    atMs: z.number().int(),
+    sourceIndex: z.number().int().optional(),
+    conversationId: z.string().min(1).optional(),
+    messageId: z.string().min(1),
+    sticker: stickerPayloadSchema.nullable(),
+  }),
 ]);
+
+export const contactSchema = z.object({
+  name: z.string().min(1),
+  initials: z.string().optional(),
+  photo: z.string().min(1).optional(),
+  silhouette: z.boolean().optional(),
+});
+
+export const conversationSeedSchema = z.object({
+  id: z.string().min(1),
+  contact: contactSchema,
+  participants: z.array(participantSchema).optional(),
+  group: groupSchema.optional(),
+  draft: z.string().optional(),
+  typing: z.boolean().optional(),
+});
 
 export const demoFlowSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
   platform: platformSchema,
   theme: themeSchema,
-  contact: z.object({ name: z.string().min(1), initials: z.string().optional() }),
+  contact: contactSchema,
   nowMs: z.number().int(),
   draft: z.string(),
   typing: z.boolean(),
   screen: iosScreenSchema,
   messages: z.array(demoMessageSchema),
   events: z.array(compiledEventSchema).optional(),
-});
+  participants: z.array(participantSchema).optional(),
+  group: groupSchema.optional(),
+  conversations: z.array(conversationSeedSchema).optional(),
+  selectedConversationId: z.string().min(1).optional(),
+  library: z.array(libraryPhotoSchema).optional(),
+}).strict();
 
 export type Reaction = {
   id: string;
@@ -277,6 +441,16 @@ export type ReplySnapshot = {
   sender?: string;
 };
 
+export type SystemMessagePayload = z.infer<typeof systemMessageEventSchema>;
+export type FaceTimeStateName = z.infer<typeof facetimeStateSchema>;
+export type StickerPayload = z.infer<typeof stickerPayloadSchema>;
+export type PollPayload = z.infer<typeof pollPayloadSchema>;
+export type DemoParticipant = z.infer<typeof participantSchema>;
+export type DemoGroup = z.infer<typeof groupSchema>;
+export type LibraryPhoto = z.infer<typeof libraryPhotoSchema>;
+export type ConversationSeed = z.infer<typeof conversationSeedSchema>;
+export type DemoContact = z.infer<typeof contactSchema>;
+
 export type DemoMessage = {
   id: string;
   text: string;
@@ -289,7 +463,7 @@ export type DemoMessage = {
   link?: { url: string; title?: string; host?: string; image?: string };
   attachments?: Array<{ name: string; size?: string; href?: string }>;
   images?: Array<{ src: string; alt: string; width?: number; height?: number }>;
-  audio?: { duration: number; peaks?: number[] };
+  audio?: { duration: number; peaks?: number[]; src?: string };
   appCard?: AppCardPayload;
   reactions?: Reaction[];
   replyTo?: ReplySnapshot;
@@ -297,19 +471,36 @@ export type DemoMessage = {
   readAt?: number;
   revealed?: boolean;
   removed?: boolean;
+  sender?: string;
+  senderId?: string;
+  senderInitials?: string;
+  senderPhoto?: string;
+  conversationId?: string;
+  system?: SystemMessagePayload;
+  facetime?: { state: FaceTimeStateName; duration?: string };
+  sticker?: StickerPayload;
+  stickers?: StickerPayload[];
+  poll?: PollPayload;
 };
+
+export type PickerSelection = z.infer<typeof pickerSelectionSchema>;
 
 export type OverlayState =
   | { kind: "closed" }
   | { kind: "thread"; rootId: string }
-  | { kind: "long-press"; messageId: string }
+  | { kind: "long-press"; messageId: string; selected?: PickerSelection | null }
   | { kind: "context-menu"; messageId: string; x: number; y: number }
   | { kind: "plus-menu" }
   | { kind: "effects-picker"; tab: "bubble" | "screen"; draft: string; effect?: string }
-  | { kind: "image-viewer"; messageId: string; index: number }
+  | { kind: "image-viewer"; messageId: string; index: number; zoom?: number; chrome?: boolean; dismiss?: number }
   | { kind: "details" }
-  | { kind: "photo-picker"; selectedId?: string }
-  | { kind: "selection"; messageIds: string[] };
+  | { kind: "photo-picker"; selectedId?: string; selectedIds?: string[]; detent?: "collapsed" | "expanded" }
+  | { kind: "selection"; messageIds: string[] }
+  | { kind: "search"; query: string }
+  | { kind: "recorder"; state: "recording" | "stopped" | "playing"; position?: number; duration?: number }
+  | { kind: "tapback-details"; messageId: string; filter?: string | null }
+  | { kind: "sticker-picker"; tab?: string }
+  | { kind: "poll-details"; messageId: string };
 
 export type SystemNotice =
   | { kind: "unknown-sender" }
@@ -340,7 +531,10 @@ export type CompiledEvent =
   | { type: "screen-effect"; atMs: number; sourceIndex?: number; effect: ScreenEffectName; messageId?: string }
   | { type: "audio-control"; atMs: number; sourceIndex?: number; messageId: string; position: number; playing: boolean; seeking?: boolean }
   | { type: "time-reveal"; atMs: number; sourceIndex?: number; progress: number }
-  | { type: "notice"; atMs: number; sourceIndex?: number; notice: SystemNotice };
+  | { type: "notice"; atMs: number; sourceIndex?: number; notice: SystemNotice }
+  | { type: "poll-option"; atMs: number; sourceIndex?: number; conversationId?: string; messageId: string; optionId: string; text: string }
+  | { type: "poll-vote"; atMs: number; sourceIndex?: number; conversationId?: string; messageId: string; participantId: string; optionId: string; voted: boolean }
+  | { type: "sticker"; atMs: number; sourceIndex?: number; conversationId?: string; messageId: string; sticker: StickerPayload | null };
 
 export type InitialConversation = {
   id: string;
@@ -364,13 +558,18 @@ export type DemoFlow = {
   title: string;
   platform: DemoPlatform;
   theme: DemoTheme;
-  contact: { name: string; initials?: string };
+  contact: DemoContact;
   nowMs: number;
   draft: string;
   typing: boolean;
   screen: IosScreenName;
   messages: DemoMessage[];
   events?: CompiledEvent[];
+  participants?: DemoParticipant[];
+  group?: DemoGroup;
+  conversations?: ConversationSeed[];
+  selectedConversationId?: string;
+  library?: LibraryPhoto[];
 };
 
 export type ValidationIssue = { path: string; message: string };
@@ -387,6 +586,11 @@ export type CompiledDemo = {
   events: CompiledEvent[];
   initialState?: InitialState;
   reducedMotion?: boolean;
+  participants?: DemoParticipant[];
+  group?: DemoGroup;
+  conversations?: ConversationSeed[];
+  selectedConversationId?: string;
+  library?: LibraryPhoto[];
 };
 
 export type PlaybackState = {

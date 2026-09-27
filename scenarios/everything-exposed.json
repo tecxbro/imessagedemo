@@ -1,0 +1,352 @@
+{
+  "id": "everything-exposed",
+  "title": "Everything we expose",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Alex Morgan",
+    "initials": "AM"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "hi",
+      "text": "Are you close?",
+      "direction": "incoming",
+      "atMs": 1790008800000,
+      "status": "read"
+    },
+    {
+      "id": "wave",
+      "text": "\ud83d\udc4b",
+      "direction": "incoming",
+      "atMs": 1790008800900
+    },
+    {
+      "id": "way",
+      "text": "On my way",
+      "direction": "outgoing",
+      "atMs": 1790008802000,
+      "status": "read",
+      "readAt": 1790008802000
+    },
+    {
+      "id": "note",
+      "text": "The gate is on the south side, past the fountain.",
+      "direction": "incoming",
+      "atMs": 1790008803600
+    },
+    {
+      "id": "reply",
+      "text": "Leaving now",
+      "direction": "outgoing",
+      "atMs": 1790008809800,
+      "status": "delivered",
+      "replyTo": "way"
+    },
+    {
+      "id": "link",
+      "text": "https://example.com/notes",
+      "direction": "incoming",
+      "atMs": 1790008811000,
+      "kind": "link",
+      "link": {
+        "url": "https://example.com/notes",
+        "title": "Field notes",
+        "host": "example.com",
+        "image": "/demo-assets/park-64x48.png"
+      }
+    },
+    {
+      "id": "file",
+      "text": "",
+      "direction": "incoming",
+      "atMs": 1790008811800,
+      "kind": "attachment",
+      "attachments": [
+        {
+          "name": "field-notes.png",
+          "size": "4 KB",
+          "href": "/demo-assets/park-64x48.png"
+        }
+      ]
+    },
+    {
+      "id": "photos",
+      "text": "",
+      "direction": "incoming",
+      "atMs": 1790008812600,
+      "kind": "image",
+      "images": [
+        {
+          "src": "/demo-assets/park-64x48.png",
+          "alt": "Park",
+          "width": 64,
+          "height": 48
+        },
+        {
+          "src": "/demo-assets/night-32x32.png",
+          "alt": "Night",
+          "width": 32,
+          "height": 32
+        }
+      ]
+    },
+    {
+      "id": "voice",
+      "text": "",
+      "direction": "outgoing",
+      "atMs": 1790008813600,
+      "kind": "audio",
+      "status": "delivered",
+      "audio": {
+        "duration": 8,
+        "peaks": [
+          0.2,
+          0.8,
+          0.4,
+          0.9,
+          0.3,
+          0.7
+        ]
+      }
+    },
+    {
+      "id": "there",
+      "text": "See you there",
+      "direction": "outgoing",
+      "atMs": 1790008816800,
+      "status": "delivered",
+      "effect": "slam"
+    },
+    {
+      "id": "sms",
+      "text": "Texted you the gate code.",
+      "direction": "outgoing",
+      "atMs": 1790008831600,
+      "service": "sms",
+      "status": "sent"
+    }
+  ],
+  "events": [
+    {
+      "type": "reaction",
+      "atMs": 1790008802750,
+      "messageId": "way",
+      "reactionId": "alex-like",
+      "reaction": {
+        "type": "like",
+        "byMe": false
+      }
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008802900,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008803600,
+      "typing": false
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008804200,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "note"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008806400,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "note",
+        "selected": {
+          "type": "love"
+        }
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008806433,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "reaction",
+      "atMs": 1790008806900,
+      "messageId": "note",
+      "reactionId": "love-note",
+      "reaction": {
+        "type": "love",
+        "byMe": true
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008810600,
+      "overlay": {
+        "kind": "thread",
+        "rootId": "way"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008811200,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008813200,
+      "overlay": {
+        "kind": "image-viewer",
+        "messageId": "photos",
+        "index": 0
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008813800,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "audio-control",
+      "atMs": 1790008814400,
+      "messageId": "voice",
+      "position": 2.4,
+      "playing": true
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008817600,
+      "overlay": {
+        "kind": "effects-picker",
+        "tab": "screen",
+        "draft": "See you there",
+        "effect": "confetti"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008818200,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "screen-effect",
+      "atMs": 1790008818600,
+      "effect": "confetti",
+      "messageId": "there"
+    },
+    {
+      "type": "edit",
+      "atMs": 1790008823200,
+      "messageId": "way",
+      "text": "On my way over"
+    },
+    {
+      "type": "remove",
+      "atMs": 1790008823800,
+      "messageId": "way"
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008824400,
+      "overlay": {
+        "kind": "plus-menu"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008825000,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008825400,
+      "overlay": {
+        "kind": "photo-picker",
+        "selectedId": "bloom"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008826000,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008826400,
+      "overlay": {
+        "kind": "selection",
+        "messageIds": [
+          "hi"
+        ]
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008827000,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "time-reveal",
+      "atMs": 1790008827400,
+      "progress": 1
+    },
+    {
+      "type": "notice",
+      "atMs": 1790008827800,
+      "notice": {
+        "kind": "missed-call",
+        "call": "audio"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008828200,
+      "overlay": {
+        "kind": "details"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008828800,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008829200,
+      "screen": "list"
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008830000,
+      "screen": "new-message"
+    },
+    {
+      "type": "screen",
+      "atMs": 1790008830800,
+      "screen": "conversation"
+    }
+  ]
+}

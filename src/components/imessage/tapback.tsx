@@ -129,7 +129,22 @@ export function BalloonTrail({ geometry, side, color }: { geometry: BalloonGeome
   );
 }
 
-const glossyText = (gradient: string): CSSProperties => ({ backgroundImage: gradient, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" });
+/** One line of the laugh sticker: inflated H and A, the shape in the reference picker. */
+function HaStickerLine() {
+  return (
+    <g>
+      <rect x="0.4" y="0.3" width="5.4" height="13.4" rx="2.7" />
+      <rect x="7.6" y="0.3" width="5.4" height="13.4" rx="2.7" />
+      <rect x="0.4" y="5.1" width="12.6" height="3.8" rx="1.9" />
+      <path fillRule="evenodd" d="M20.2 0.5c1 0 1.6.8 1.9 1.8l3.2 10.6c.3.9-.3 1.7-1.2 1.7h-2.2l-.6-2.4h-2.2l-.6 2.4h-2.2c-.9 0-1.5-.8-1.2-1.7l3.2-10.6c.3-1 .9-1.8 1.9-1.8z M20.2 4.7c-.55 0-.8.45-.7.95l.45 2.15h1.5l.45-2.15c.1-.5-.15-.95-.7-.95h-1z" />
+    </g>
+  );
+}
+
+function glyphMotionTransform(part: GlyphPartPose | undefined): string | undefined {
+  if (!part) return undefined;
+  return `translate(${part.x} ${part.y}) scale(${part.scaleX} ${part.scaleY})`;
+}
 
 /**
  * Heart ramps, sampled at matching heights on every capture. On a gray or white balloon Apple's heart
@@ -147,7 +162,32 @@ const heartRamp = {
  * `size` is the glyph box: 25.33 in the iOS tapback bar, 18.34 in a Ø34 balloon.
  * `onAccent` picks the lighter artwork Apple uses on the blue balloon and the blue selected disc.
  */
-export function TapbackGlyph({ type, emoji, size, onAccent = false, className, style }: { type?: TapbackType; emoji?: string; size: number; onAccent?: boolean; className?: string; style?: CSSProperties }) {
+/** Fitted sub-glyph pose. Absent motion leaves the settled artwork unchanged. */
+export type GlyphPartPose = { opacity: number; scaleX: number; scaleY: number; x: number; y: number };
+export type TapbackGlyphMotion = {
+  whole?: GlyphPartPose;
+  laughTop?: GlyphPartPose;
+  laughBottom?: GlyphPartPose;
+  emphasizeFirst?: GlyphPartPose;
+  emphasizeSecond?: GlyphPartPose;
+  question?: GlyphPartPose;
+};
+
+function glyphPartStyle(part: GlyphPartPose | undefined): CSSProperties | undefined {
+  if (!part) return undefined;
+  return {
+    opacity: part.opacity,
+    transform: `translate(${part.x}px, ${part.y}px) scale(${part.scaleX}, ${part.scaleY})`,
+    transformOrigin: "50% 50%",
+  };
+}
+
+function glyphPartData(name: string, part: GlyphPartPose | undefined): Record<string, string | number> {
+  if (!part) return { "data-glyph-part": name };
+  return { "data-glyph-part": name, "data-opacity": part.opacity, "data-scale-x": part.scaleX, "data-scale-y": part.scaleY };
+}
+
+export function TapbackGlyph({ type, emoji, size, onAccent = false, className, style, motion }: { type?: TapbackType; emoji?: string; size: number; onAccent?: boolean; className?: string; style?: CSSProperties; motion?: TapbackGlyphMotion }) {
   const id = useId().replace(/:/g, "");
   const base: CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", lineHeight: 1, userSelect: "none", ...style };
   if (emoji || !type) {
@@ -159,7 +199,7 @@ export function TapbackGlyph({ type, emoji, size, onAccent = false, className, s
     // and each flank is one cubic to the tip (rmse 0.03 against 15 sampled rows).
     const w = size, h = size * 0.8906;
     return (
-      <svg data-slot="tapback-glyph" data-glyph="love" className={className} style={base} width={w} height={h} viewBox="0 0 18 16.03" aria-hidden="true">
+      <svg data-slot="tapback-glyph" data-glyph="love" className={className} style={{ ...base, ...glyphPartStyle(motion?.whole) }} width={w} height={h} viewBox="0 0 18 16.03" aria-hidden="true" {...glyphPartData("love", motion?.whole)}>
         <defs>
           <radialGradient id={`${id}-h`} cx="0.5" cy="0.18" r="0.8">
             {(onAccent ? heartRamp.onAccent : heartRamp.plain).map(([offset, color]) => <stop key={offset} offset={offset} stopColor={color} />)}
@@ -172,13 +212,36 @@ export function TapbackGlyph({ type, emoji, size, onAccent = false, className, s
   if (type === "like" || type === "dislike") {
     // The 👎 face sits 1.84 higher than native in a 25.33 slot; 👍 lands right. Push it back down.
     const drop = type === "dislike" ? size * 0.145 : 0;
-    return <span data-slot="tapback-glyph" data-glyph={type} className={className} style={{ ...base, marginTop: (typeof base.marginTop === "number" ? base.marginTop : 0) + drop, fontSize: size * 0.987, fontFamily: emojiFontStack, width: size, height: size }}>{type === "like" ? "👍" : "👎"}</span>;
+    return <span data-slot="tapback-glyph" data-glyph={type} className={className} style={{ ...base, marginTop: (typeof base.marginTop === "number" ? base.marginTop : 0) + drop, fontSize: size * 0.987, fontFamily: emojiFontStack, width: size, height: size, ...glyphPartStyle(motion?.whole) }} {...glyphPartData(type, motion?.whole)}>{type === "like" ? "👍" : "👎"}</span>;
   }
   if (type === "laugh") {
+    // Native sticker: inflated cyan letters, top HA larger, lower HA smaller and tucked under it.
+    // Traced from the reference picker, not set in a system font.
     return (
-      <span data-slot="tapback-glyph" data-glyph="laugh" className={className} style={{ ...base, flexDirection: "column", width: size, height: size, fontFamily: fontStack, fontWeight: 800, fontSize: size * 0.68, lineHeight: `${size * 0.5}px`, letterSpacing: -size * 0.02, ...glossyText("linear-gradient(#5fc9ff, #0aa6ff 55%, #0090f5)") }}>
-        <span style={{ WebkitTextStroke: `${size * 0.02}px rgba(255,255,255,0.6)` }}>HA</span><span style={{ WebkitTextStroke: `${size * 0.02}px rgba(255,255,255,0.6)` }}>HA</span>
-      </span>
+      <svg data-slot="tapback-glyph" data-glyph="laugh" className={className} style={base} width={size} height={size} viewBox="0 0 32 34" aria-hidden="true">
+        <defs>
+          <linearGradient id={`${id}-ha`} x1="0" y1="0" x2="0.2" y2="1">
+            <stop offset="0" stopColor="#c6f4ff" />
+            <stop offset="0.38" stopColor="#3ec0ff" />
+            <stop offset="1" stopColor="#0074ea" />
+          </linearGradient>
+        </defs>
+        <g {...glyphPartData("ha-top", motion?.laughTop)} opacity={motion?.laughTop?.opacity} transform={glyphMotionTransform(motion?.laughTop)}>
+          <g fill="#0057c8" transform="translate(0.45 0.55)"><HaStickerLine /></g>
+          <g fill={`url(#${id}-ha)`}><HaStickerLine /></g>
+          <g fill="#f7fdff" opacity="0.72">
+            <ellipse cx="3.1" cy="3.2" rx="1.15" ry="1.7" />
+            <ellipse cx="10.3" cy="3.2" rx="1.15" ry="1.7" />
+            <ellipse cx="20.2" cy="2.6" rx="1.3" ry="1.15" />
+          </g>
+        </g>
+        <g transform="translate(3.4 18.2) scale(0.76)">
+          <g {...glyphPartData("ha-bottom", motion?.laughBottom)} opacity={motion?.laughBottom?.opacity} transform={glyphMotionTransform(motion?.laughBottom)}>
+            <g fill="#0057c8" transform="translate(0.45 0.55)"><HaStickerLine /></g>
+            <g fill={`url(#${id}-ha)`}><HaStickerLine /></g>
+          </g>
+        </g>
+      </svg>
     );
   }
   if (type === "emphasize") {
@@ -186,13 +249,18 @@ export function TapbackGlyph({ type, emoji, size, onAccent = false, className, s
     return (
       <svg data-slot="tapback-glyph" data-glyph="emphasize" className={className} style={base} width={w} height={h} viewBox="0 0 18 26.67" aria-hidden="true">
         <defs><linearGradient id={`${id}-e`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ff8c6e" /><stop offset="0.6" stopColor="#ff4f3f" /><stop offset="1" stopColor="#ff2a34" /></linearGradient></defs>
-        {[0, 10].map(x => (
-          <g key={x} transform={`translate(${x} 0)`}>
-            <path d="M0.2,3.6 A3.8,3.8 0 0 1 7.8,3.6 L6.3,16.3 A2.3,2.3 0 0 1 1.7,16.3 Z" fill={`url(#${id}-e)`} />
-            <circle cx="4" cy="23.1" r="3.5" fill={`url(#${id}-e)`} />
-            <ellipse cx="3" cy="3.8" rx="1.3" ry="2" fill="#fff" opacity="0.45" />
-          </g>
-        ))}
+        {[0, 10].map(x => {
+          const mark = x === 0 ? motion?.emphasizeFirst : motion?.emphasizeSecond;
+          return (
+            <g key={x} transform={`translate(${x} 0)`}>
+              <g {...glyphPartData(x === 0 ? "emphasize-first" : "emphasize-second", mark)} opacity={mark?.opacity} transform={mark ? `translate(${mark.x} ${mark.y}) scale(${mark.scaleX} ${mark.scaleY})` : undefined}>
+                <path d="M0.2,3.6 A3.8,3.8 0 0 1 7.8,3.6 L6.3,16.3 A2.3,2.3 0 0 1 1.7,16.3 Z" fill={`url(#${id}-e)`} />
+                <circle cx="4" cy="23.1" r="3.5" fill={`url(#${id}-e)`} />
+                <ellipse cx="3" cy="3.8" rx="1.3" ry="2" fill="#fff" opacity="0.45" />
+              </g>
+            </g>
+          );
+        })}
       </svg>
     );
   }
@@ -201,9 +269,11 @@ export function TapbackGlyph({ type, emoji, size, onAccent = false, className, s
     return (
       <svg data-slot="tapback-glyph" data-glyph="question" className={className} style={base} width={w} height={h} viewBox="0 0 14.33 25" aria-hidden="true">
         <defs><linearGradient id={`${id}-q`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c4a8ff" /><stop offset="0.6" stopColor="#9b7cf5" /><stop offset="1" stopColor="#7a5ee0" /></linearGradient></defs>
-        <path d="M2.4,7.4 A4.9,4.9 0 1 1 8.1,12.1 C7.3,12.6 7.2,13.4 7.2,15.4" fill="none" stroke={`url(#${id}-q)`} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="7.2" cy="22.4" r="2.5" fill={`url(#${id}-q)`} />
-        <path d="M4.4,5.4 A3.2,3.2 0 0 1 7.6,3.6" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <g {...glyphPartData("question", motion?.question)} opacity={motion?.question?.opacity} transform={motion?.question ? `translate(${motion.question.x} ${motion.question.y}) scale(${motion.question.scaleX} ${motion.question.scaleY})` : undefined}>
+          <path d="M2.4,7.4 A4.9,4.9 0 1 1 8.1,12.1 C7.3,12.6 7.2,13.4 7.2,15.4" fill="none" stroke={`url(#${id}-q)`} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="7.2" cy="22.4" r="2.5" fill={`url(#${id}-q)`} />
+          <path d="M4.4,5.4 A3.2,3.2 0 0 1 7.6,3.6" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        </g>
       </svg>
     );
   }
@@ -256,7 +326,7 @@ export function Tapback({ reaction = "love", emoji, own = true, side = "left", s
     const element = host.current;
     if (!element || !animateIn) return;
     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-    if (reduced) return;
+    if (reduced && appearProgress === undefined) return;
     // The trailing circles are children, so the one scale below carries them: the capture shows them
     // at the balloon's own scale in every frame, with no delay to animate separately.
     const grow = tapbackAppear.growth / tapbackAppear.duration;

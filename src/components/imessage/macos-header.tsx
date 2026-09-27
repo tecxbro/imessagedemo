@@ -3,6 +3,7 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/imessage/avatar";
+import { GroupAvatar, groupAvatarMetrics } from "@/components/imessage/group-avatar";
 
 /**
  * macOS 26 Messages conversation header. Measured from `references/macos/captures/conversation-pane-dark.png`
@@ -29,6 +30,30 @@ import { Avatar } from "@/components/imessage/avatar";
  *   dark: rgba(30,30,30) wash) for the top 50 pt, fading back to full content by ~95 pt.
  * Light theme (conversation-pane-light.png): buttons and pill are #fcfcfc/#fdfdfd discs with a 1 px white
  * rim and a soft downward shadow (−15/255 just below, −8 above), text #000000, chevron #b1b1b1, glyphs #262626.
+ *
+ * **How the pill grows.** 52.6 × 27.1 is the box for "Ben"; everything around the name is fixed, so the
+ * pill is that name's advance plus a constant **28.25** (11 before the text, 4.7 after it, the 3.55
+ * chevron box, 9 after that). Chrome renders "Ben" at 13px/700 `-apple-system` in a 24.766 box, which
+ * puts the whole pill at 53.0 against the measured 52.6, and the extra 0.4 is that one string's advance,
+ * the same 1.5-on-a-bubble difference `SPEC.md` records for "Second of two". The height never moves. The
+ * pill is centred under the avatar on the pane's centre, so a longer name grows it by half each way and
+ * the chevron keeps its 9 to the pill's right edge: the checked render of a 22-character group name
+ * comes out 179.2 wide, still centred on 315, with the chevron's box still ending 9 inside it.
+ * **Unverified**: where it stops growing. Nothing in a capture bounds it, so `maxWidthInset` is
+ * judgement: the pill stops 8 short of the video button, whose 48 (right inset 8 plus width 40) is the
+ * wider of the two ends, and the name truncates. That keeps the growth symmetric about the centre.
+ *
+ * **Groups** (`members`). A group's header draws `CKAvatarButton._avatarView` handed every
+ * participant, which is `ContactsUICore.SnowglobeUIView`'s stack of circles in the same Ø40 box, and
+ * the pill carries the group's name. That stack lives in `group-avatar.tsx`; this file used to carry
+ * its own copy of the table and no plate at all. The two copies were identical to 0.000 across all
+ * seven rows once both were expressed on the same 44-unit box, so nothing moved when they were
+ * merged — what the shared component adds is the `UIBlurEffect` plate behind the faces, which is
+ * measured (`groupAvatarPlate`) and which the private copy deliberately did not draw.
+ *
+ * The box is `-[CKUIBehaviorMac conversationListContactImageDiameter]` = 40 (Catalyst probe,
+ * ChatKit 26.5), which is `macHeaderMetrics.avatar.size` measured off the captures, so the framework
+ * and the capture agree and `groupAvatarMetrics.mac.conversationList` is used as the assertion.
  */
 export const macHeaderMetrics = {
   height: 55,
@@ -43,7 +68,11 @@ export const macHeaderMetrics = {
   avatar: { top: 8, size: 40 },
   pill: { top: 44.4, height: 27.1, textTop: 48, paddingLeft: 11, gap: 4.7, paddingRight: 9, fontSize: 13 },
   video: { right: 8, top: 8, width: 40, height: 36 },
+  /** Judgement, not measured: how much of each end the pill leaves for the buttons before it truncates. */
+  maxWidthInset: 8 + 40 + 8,
 };
+
+export type MacHeaderMember = { initials: string; name?: string; photo?: string };
 
 export type MacHeaderProps = Omit<ComponentProps<"header">, "children"> & {
   name: string;
@@ -51,6 +80,11 @@ export type MacHeaderProps = Omit<ComponentProps<"header">, "children"> & {
   /** Photo URL, or a custom avatar node. */
   photo?: string;
   avatar?: ReactNode;
+  /**
+   * Group conversation: its participants, drawn as the stacked group photo in place of one avatar.
+   * Two or more entries make it a group; the stack shows the first seven. Ignored when `avatar` is set.
+   */
+  members?: MacHeaderMember[];
   onCompose?: () => void;
   onVideoCall?: () => void;
   /** Clicking the name pill opens the conversation details. */
@@ -59,9 +93,10 @@ export type MacHeaderProps = Omit<ComponentProps<"header">, "children"> & {
 
 const glassButton = "absolute block bg-[var(--hd-fill)] p-0 text-[var(--hd-ink)] shadow-[var(--hd-rim)] outline-offset-2 hover:bg-[var(--hd-fill-hover)] focus-visible:outline-2 focus-visible:outline-[#3478f6]";
 
-export function MacHeader({ name, initials, photo, avatar, onCompose, onVideoCall, onOpenDetails, className, style, ...props }: MacHeaderProps) {
+export function MacHeader({ name, initials, photo, avatar, members, onCompose, onVideoCall, onOpenDetails, className, style, ...props }: MacHeaderProps) {
   const m = macHeaderMetrics;
   const fallbackInitials = initials ?? name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? "").join("");
+  const group = members && members.length > 1 ? members : null;
   return (
     <header
       data-slot="mac-header"
@@ -106,13 +141,22 @@ export function MacHeader({ name, initials, photo, avatar, onCompose, onVideoCal
         </svg>
       </button>
 
-      <div data-slot="header-contact" className="absolute left-1/2 -translate-x-1/2" style={{ top: m.avatar.top }}>
+      <div data-slot="header-contact" className="absolute left-1/2 -translate-x-1/2" style={{ top: m.avatar.top, maxWidth: `calc(100% - ${m.maxWidthInset * 2}px)` }}>
         <div className="flex flex-col items-center">
-          <span className="relative z-10 flex">{avatar ?? <Avatar size={m.avatar.size} initials={fallbackInitials} src={photo} name={name} />}</span>
+          <span className="relative z-10 flex">
+            {avatar ?? (group
+              ? <GroupAvatar size={groupAvatarMetrics.mac.conversationList} name={name}
+                  participants={group.map(person => ({ name: person.name, initials: person.initials, src: person.photo }))} />
+              : <Avatar size={m.avatar.size} initials={fallbackInitials} src={photo} name={name} />)}
+          </span>
+          {/* The pill sizes to the name: its paddings, the gap and the chevron are fixed, so its width is
+              the name's advance plus 28.25 and it grows half each way about the pane's centre. `maxWidth`
+              stops it before the video button and truncates instead; the chevron never shrinks, so it
+              keeps its 9 to the right edge at every width. */}
           <button type="button" data-slot="name-pill" onClick={onOpenDetails} aria-label={`${name}, show details`}
-            className="flex items-start bg-[var(--hd-pill)] p-0 shadow-[var(--hd-pill-rim)] outline-offset-2 focus-visible:outline-2 focus-visible:outline-[#3478f6]"
+            className="flex max-w-full items-start bg-[var(--hd-pill)] p-0 shadow-[var(--hd-pill-rim)] outline-offset-2 focus-visible:outline-2 focus-visible:outline-[#3478f6]"
             style={{ height: m.pill.height, borderRadius: m.pill.height / 2, marginTop: m.pill.top - m.avatar.top - m.avatar.size, paddingTop: m.pill.textTop - m.pill.top, paddingLeft: m.pill.paddingLeft, paddingRight: m.pill.paddingRight }}>
-            <span data-slot="name" className="whitespace-nowrap font-bold text-[var(--hd-name)]" style={{ fontSize: m.pill.fontSize, lineHeight: "20px", letterSpacing: 0 }}>{name}</span>
+            <span data-slot="name" className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[var(--hd-name)]" style={{ fontSize: m.pill.fontSize, lineHeight: "20px", letterSpacing: 0 }}>{name}</span>
             {/* Chevron, fitted to the dark capture by coverage rather than by a threshold: a round-capped,
                 round-joined polyline whose distance field is rasterised at 12×12 samples per device pixel
                 and least-squares matched to the ink. The fit lands at 0.008 rms coverage and gives a vertex

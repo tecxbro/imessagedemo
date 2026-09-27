@@ -10,7 +10,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 describe("corpus compile", () => {
   it("compiles every scenario on its declared platform and keeps message text", () => {
     const files = readdirSync(path.join(root, "scenarios")).filter((file) => file.endsWith(".json")).sort();
-    expect(files).toHaveLength(36);
+    expect(files).toHaveLength(38);
     for (const file of files) {
       const raw = JSON.parse(readFileSync(path.join(root, "scenarios", file), "utf8")) as DemoFlow;
       const validated = validateDemo(raw);

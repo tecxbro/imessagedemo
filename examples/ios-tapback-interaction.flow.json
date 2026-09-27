@@ -1,0 +1,53 @@
+{
+  "id": "ios-tapback-interaction",
+  "title": "iOS tapback interaction",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Contact",
+    "initials": "C"
+  },
+  "nowMs": 0,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "target",
+      "text": "Where’d u go?",
+      "direction": "incoming",
+      "atMs": 0
+    }
+  ],
+  "events": [
+    {
+      "type": "overlay",
+      "atMs": 933,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "target"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 3367,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "target",
+        "selected": { "type": "love" }
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 3400,
+      "overlay": { "kind": "closed" }
+    },
+    {
+      "type": "reaction",
+      "atMs": 3867,
+      "messageId": "target",
+      "reactionId": "customer-target",
+      "reaction": { "type": "love", "byMe": true }
+    }
+  ]
+}

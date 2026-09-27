@@ -116,12 +116,12 @@ describe("registry coverage", () => {
     }
   });
 
-  it("does not treat polls or mini apps as coverage", () => {
-    expect(messageKindSchema.options).not.toContain("poll");
-    expect(messageKindSchema.options).not.toContain("system");
-    expect(coverage.items.some((item) => item.item === "polls" || item.item === "mini-apps")).toBe(false);
+  it("covers polls and system messages and still leaves mini apps out of the registry", () => {
+    expect(messageKindSchema.options).toContain("poll");
+    expect(messageKindSchema.options).toContain("system");
+    expect(coverage.items.some((item) => item.item === "mini-apps")).toBe(false);
     const capabilities = readFileSync(path.join(root, "src/contracts/capabilities.json"), "utf8");
-    expect(capabilities).toContain('"id": "polls"');
+    expect(capabilities).toContain('"id": "poll"');
     expect(capabilities).toContain('"id": "mini-apps"');
   });
 });

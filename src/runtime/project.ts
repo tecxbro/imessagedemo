@@ -1,4 +1,6 @@
-import type { AudioControlState, DemoFlow, SystemNotice } from "@/contracts";
+import type { AudioControlState, DemoFlow, PickerSelection, StickerPayload, SystemNotice } from "@/contracts";
+import { applyPollVote } from "@/components/owned/ios-poll";
+import { tapbackMotion } from "@/contracts/tapback-motion";
 import {
   bubbleEffectDuration,
   cueProgress,
@@ -123,6 +125,22 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
   if (message.images) logical.images = message.images.map((item) => ({ ...item }));
   if (message.audio) logical.audio = { ...message.audio, peaks: message.audio.peaks?.slice() };
   if (message.appCard) logical.appCard = { ...message.appCard };
+  if (message.sender !== undefined) logical.sender = message.sender;
+  if (message.senderId !== undefined) logical.senderId = message.senderId;
+  if (message.senderInitials !== undefined) logical.senderInitials = message.senderInitials;
+  if (message.senderPhoto !== undefined) logical.senderPhoto = message.senderPhoto;
+  if (message.conversationId !== undefined) logical.conversationId = message.conversationId;
+  if (message.system) logical.system = { ...message.system };
+  if (message.facetime) logical.facetime = { ...message.facetime };
+  if (message.sticker) logical.sticker = { ...message.sticker };
+  if (message.stickers) logical.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+  if (message.poll) {
+    logical.poll = {
+      question: message.poll.question,
+      options: message.poll.options.map((option) => ({ ...option })),
+      ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
+    };
+  }
   if (message.replyTo) {
     logical.replyTo = {
       id: message.replyTo.id,
@@ -140,7 +158,18 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
 }
 
 function emptyConversation(id: string, contact: DemoFlow["contact"]): ConversationState {
-  return { id, contact: { ...contact }, messages: [], draft: "", typing: false, scroll: 0 };
+  return {
+    id,
+    contact: { ...contact },
+    messages: [],
+    draft: "",
+    typing: false,
+    scroll: 0,
+    overlay: { kind: "closed" },
+    audio: null,
+    timeReveal: 0,
+    notices: [],
+  };
 }
 
 function convertConversation(id: string, contact: DemoFlow["contact"], conversation?: InitialConversation): ConversationState {
@@ -153,6 +182,10 @@ function convertConversation(id: string, contact: DemoFlow["contact"], conversat
     draft: conversation?.draft ?? "",
     typing: conversation?.typing ?? false,
     scroll: conversation?.scroll ?? 0,
+    overlay: { kind: "closed" },
+    audio: null,
+    timeReveal: 0,
+    notices: [],
   };
 }
 
@@ -203,6 +236,17 @@ function projectConversation(conversation: ConversationState): ConversationState
       if (message.images) copy.images = message.images.map((item) => ({ ...item }));
       if (message.audio) copy.audio = { ...message.audio, peaks: message.audio.peaks?.slice() };
       if (message.appCard) copy.appCard = { ...message.appCard };
+      if (message.system) copy.system = { ...message.system };
+      if (message.facetime) copy.facetime = { ...message.facetime };
+      if (message.sticker) copy.sticker = { ...message.sticker };
+      if (message.stickers) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+      if (message.poll) {
+        copy.poll = {
+          question: message.poll.question,
+          options: message.poll.options.map((option) => ({ ...option })),
+          ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
+        };
+      }
       return copy;
     }),
   };
@@ -281,6 +325,12 @@ function conversationTarget(event: SceneEvent, selected: string): string {
   return selected;
 }
 
+function writeSurface(working: Working, patch: Partial<Pick<ConversationState, "overlay" | "audio" | "timeReveal" | "notices">>): Working {
+  const id = working.selectedConversationId;
+  const next = updateConversation(working, id, (conversation) => ({ ...conversation, ...patch }));
+  return { ...next, ...patch };
+}
+
 function reduceEvent(working: Working, event: SceneEvent, fallbackContact: DemoFlow["contact"]): Working {
   switch (event.type) {
     case "message": {
@@ -336,7 +386,15 @@ function reduceEvent(working: Working, event: SceneEvent, fallbackContact: DemoF
       return { ...working, screen: event.screen };
     case "select-conversation": {
       const ensured = ensureConversation(working, event.conversationId, event.contact ?? fallbackContact);
-      return { ...withContact(ensured, event.conversationId, event.contact), selectedConversationId: event.conversationId };
+      const switched = { ...withContact(ensured, event.conversationId, event.contact), selectedConversationId: event.conversationId };
+      const selected = switched.conversations.find((conversation) => conversation.id === event.conversationId);
+      return {
+        ...switched,
+        overlay: selected ? copyOverlay(selected.overlay) : { kind: "closed" },
+        audio: selected?.audio ? { ...selected.audio } : null,
+        timeReveal: selected?.timeReveal ?? 0,
+        notices: selected ? selected.notices.map((notice) => ({ ...notice })) : [],
+      };
     }
     case "scroll": {
       const conversationId = conversationTarget(event, working.selectedConversationId);
@@ -346,23 +404,45 @@ function reduceEvent(working: Working, event: SceneEvent, fallbackContact: DemoF
     case "window-active":
       return { ...working, windowActive: event.active };
     case "overlay":
-      return { ...working, overlay: copyOverlay(event.overlay) };
+      return writeSurface(working, { overlay: copyOverlay(event.overlay) });
     case "screen-effect":
       return working;
     case "audio-control":
-      return {
-        ...working,
+      return writeSurface(working, {
         audio: {
           messageId: event.messageId,
           position: event.position,
           playing: event.playing,
           ...(event.seeking !== undefined ? { seeking: event.seeking } : {}),
         },
-      };
+      });
     case "time-reveal":
-      return { ...working, timeReveal: event.progress };
+      return writeSurface(working, { timeReveal: event.progress });
     case "notice":
-      return { ...working, notices: [...working.notices, { ...event.notice }] };
+      return writeSurface(working, { notices: [...working.notices, { ...event.notice }] });
+    case "poll-option":
+      return mapMessage(working, event.messageId, (message) => {
+        if (!message.poll) return message;
+        if (message.poll.options.some((option) => option.id === event.optionId) || message.poll.options.length >= 12) return message;
+        return {
+          ...message,
+          poll: { ...message.poll, options: [...message.poll.options, { id: event.optionId, text: event.text }] },
+        };
+      });
+    case "poll-vote":
+      return mapMessage(working, event.messageId, (message) => {
+        if (!message.poll || !message.poll.options.some((option) => option.id === event.optionId)) return message;
+        const votes = applyPollVote(message.poll.votes ?? [], { participantId: event.participantId, optionId: event.optionId }, event.voted);
+        return { ...message, poll: { ...message.poll, votes } };
+      });
+    case "sticker":
+      return mapMessage(working, event.messageId, (message) => {
+        if (event.sticker === null) return { ...message, stickers: [] };
+        const next: StickerPayload = { ...event.sticker };
+        const stickers = message.stickers ?? [];
+        if (stickers.some((sticker) => sticker.id === next.id)) return message;
+        return { ...message, stickers: [...stickers, next] };
+      });
     default:
       return working;
   }
@@ -396,6 +476,12 @@ function overlayMotion(overlay: OverlayState, phase: "enter" | "exit"): number {
       return phase === "enter" ? pendingCueDurations.photoPickerEnter : pendingCueDurations.photoPickerExit;
     case "selection":
       return phase === "enter" ? pendingCueDurations.selectionEnter : pendingCueDurations.selectionExit;
+    case "search":
+    case "recorder":
+    case "tapback-details":
+    case "sticker-picker":
+    case "poll-details":
+      return phase === "enter" ? pendingCueDurations.plusMenuEnter : pendingCueDurations.plusMenuExit;
   }
 }
 
@@ -408,7 +494,7 @@ function copyOverlay(overlay: OverlayState): OverlayState {
     case "thread":
       return { kind: "thread", rootId: overlay.rootId };
     case "long-press":
-      return { kind: "long-press", messageId: overlay.messageId };
+      return copyLongPress(overlay);
     case "context-menu":
       return { kind: "context-menu", messageId: overlay.messageId, x: overlay.x, y: overlay.y };
     case "effects-picker":
@@ -419,18 +505,75 @@ function copyOverlay(overlay: OverlayState): OverlayState {
         ...(overlay.effect !== undefined ? { effect: overlay.effect } : {}),
       };
     case "image-viewer":
-      return { kind: "image-viewer", messageId: overlay.messageId, index: overlay.index };
+      return {
+        kind: "image-viewer",
+        messageId: overlay.messageId,
+        index: overlay.index,
+        ...(overlay.zoom !== undefined ? { zoom: overlay.zoom } : {}),
+        ...(overlay.chrome !== undefined ? { chrome: overlay.chrome } : {}),
+        ...(overlay.dismiss !== undefined ? { dismiss: overlay.dismiss } : {}),
+      };
     case "details":
       return { kind: "details" };
     case "photo-picker":
-      return overlay.selectedId !== undefined ? { kind: "photo-picker", selectedId: overlay.selectedId } : { kind: "photo-picker" };
+      return {
+        kind: "photo-picker",
+        ...(overlay.selectedId !== undefined ? { selectedId: overlay.selectedId } : {}),
+        ...(overlay.selectedIds ? { selectedIds: [...overlay.selectedIds] } : {}),
+        ...(overlay.detent ? { detent: overlay.detent } : {}),
+      };
     case "selection":
       return { kind: "selection", messageIds: [...overlay.messageIds] };
+    case "search":
+      return { kind: "search", query: overlay.query };
+    case "recorder":
+      return {
+        kind: "recorder",
+        state: overlay.state,
+        ...(overlay.position !== undefined ? { position: overlay.position } : {}),
+        ...(overlay.duration !== undefined ? { duration: overlay.duration } : {}),
+      };
+    case "tapback-details":
+      return {
+        kind: "tapback-details",
+        messageId: overlay.messageId,
+        ...(overlay.filter !== undefined ? { filter: overlay.filter } : {}),
+      };
+    case "sticker-picker":
+      return { kind: "sticker-picker", ...(overlay.tab ? { tab: overlay.tab } : {}) };
+    case "poll-details":
+      return { kind: "poll-details", messageId: overlay.messageId };
   }
 }
 
+function copyLongPress(overlay: Extract<OverlayState, { kind: "long-press" }>): OverlayState {
+  const copy: Extract<OverlayState, { kind: "long-press" }> = { kind: "long-press", messageId: overlay.messageId };
+  if (overlay.selected === null) copy.selected = null;
+  else if (overlay.selected) copy.selected = copyPickerSelection(overlay.selected);
+  return copy;
+}
+
+function copyPickerSelection(selected: PickerSelection): PickerSelection {
+  return "emoji" in selected ? { emoji: selected.emoji } : { type: selected.type };
+}
+
+function selectionKey(selected: PickerSelection | null | undefined): string {
+  if (selected === undefined) return "absent";
+  if (selected === null) return "null";
+  return "emoji" in selected ? `emoji:${selected.emoji}` : `type:${selected.type}`;
+}
+
+/** Long-press identity is the message. A selection update is not a close/reopen. */
 function sameOverlay(left: OverlayState, right: OverlayState): boolean {
+  if (left.kind === "long-press" && right.kind === "long-press") return left.messageId === right.messageId;
   return JSON.stringify(copyOverlay(left)) === JSON.stringify(copyOverlay(right));
+}
+
+function longPressSelectionUpdate(left: OverlayState, right: OverlayState): boolean {
+  return left.kind === "long-press"
+    && right.kind === "long-press"
+    && left.messageId === right.messageId
+    && selectionKey(left.selected) !== selectionKey(right.selected);
 }
 
 function seed(partial: CueSeed): CueSeed | null {
@@ -438,7 +581,13 @@ function seed(partial: CueSeed): CueSeed | null {
   return partial;
 }
 
-function cuesFor(compiled: DemoSource, working: Working, prepared: Prepared, origin: LogicalState): CueSeed[] {
+function cuesFor(
+  compiled: DemoSource,
+  working: Working,
+  prepared: Prepared,
+  origin: LogicalState,
+  gesture: { current: { messageId: string; startedAtMs: number } | null },
+): CueSeed[] {
   const event = prepared.event;
   const seeds: Array<CueSeed | null> = [];
   const stamp = { startedAtMs: prepared.atMs, sourceIndex: prepared.sourceIndex };
@@ -472,7 +621,7 @@ function cuesFor(compiled: DemoSource, working: Working, prepared: Prepared, ori
       ...stamp,
       id: `reaction:${event.reactionId}:${prepared.atMs}:${prepared.sourceIndex}`,
       kind: "reaction",
-      durationMs: messageMotion().reaction,
+      durationMs: next ? tapbackMotion.reactionLandingMs : messageMotion().reaction,
       subjectId: event.messageId,
       detail: { reactionId: event.reactionId, reaction: next, previousReaction: previous ? { ...previous } : null },
     }));
@@ -511,8 +660,22 @@ function cuesFor(compiled: DemoSource, working: Working, prepared: Prepared, ori
       detail: { fromConversationId: working.selectedConversationId, toConversationId: event.conversationId },
     }));
   }
-  if (event.type === "overlay" && !sameOverlay(working.overlay, event.overlay)) {
+  if (event.type === "overlay" && longPressSelectionUpdate(working.overlay, event.overlay)) {
+    const messageId = event.overlay.kind === "long-press" ? event.overlay.messageId : undefined;
+    seeds.push(seed({
+      ...stamp,
+      id: `overlay-select:${messageId ?? "long-press"}:${prepared.atMs}:${prepared.sourceIndex}`,
+      kind: "overlay-select",
+      durationMs: tapbackMotion.selectionFeedbackMs,
+      subjectId: messageId,
+      detail: {
+        overlay: copyOverlay(event.overlay),
+        ...(gesture.current ? { longPressEntranceStartedAtMs: gesture.current.startedAtMs } : {}),
+      },
+    }));
+  } else if (event.type === "overlay" && !sameOverlay(working.overlay, event.overlay)) {
     if (working.overlay.kind !== "closed") {
+      const entranceStarted = working.overlay.kind === "long-press" ? gesture.current?.startedAtMs : undefined;
       seeds.push(seed({
         ...stamp,
         id: `overlay-exit:${working.overlay.kind}:${prepared.atMs}:${prepared.sourceIndex}`,
@@ -520,7 +683,10 @@ function cuesFor(compiled: DemoSource, working: Working, prepared: Prepared, ori
         durationMs: overlayMotion(working.overlay, "exit"),
         subjectId: "rootId" in working.overlay ? working.overlay.rootId : "messageId" in working.overlay ? working.overlay.messageId : working.overlay.kind,
         beforeState: origin,
-        detail: { overlay: copyOverlay(working.overlay) },
+        detail: {
+          overlay: copyOverlay(working.overlay),
+          ...(entranceStarted !== undefined ? { longPressEntranceStartedAtMs: entranceStarted } : {}),
+        },
       }));
     }
     if (event.overlay.kind !== "closed") {
@@ -533,6 +699,8 @@ function cuesFor(compiled: DemoSource, working: Working, prepared: Prepared, ori
         detail: { overlay: copyOverlay(event.overlay) },
       }));
     }
+    if (event.overlay.kind === "long-press") gesture.current = { messageId: event.overlay.messageId, startedAtMs: prepared.atMs };
+    else gesture.current = null;
   }
   if (event.type === "screen-effect") {
     seeds.push(seed({
@@ -551,10 +719,13 @@ function projectAt(compiled: DemoSource, timeMs: number): { state: LogicalState;
   const t = queryTime(timeMs);
   let working = createWorking(compiled);
   const seeds: CueSeed[] = [];
+  const gesture: { current: { messageId: string; startedAtMs: number } | null } = {
+    current: working.overlay.kind === "long-press" ? { messageId: working.overlay.messageId, startedAtMs: 0 } : null,
+  };
   for (const prepared of prepare(readEvents(compiled))) {
     if (prepared.atMs > t) break;
     const origin = finish(compiled, working, prepared.atMs);
-    seeds.push(...cuesFor(compiled, working, prepared, origin));
+    seeds.push(...cuesFor(compiled, working, prepared, origin, gesture));
     working = reduceEvent(working, prepared.event, compiled.contact);
   }
   return { state: finish(compiled, working, t), seeds };

@@ -29,7 +29,7 @@ Authoring:
 Exit codes:
   0  success
   1  usage or unexpected error
-  2  validation (schema, polls, unsupported features)
+  2  validation (schema, malformed polls, unsupported features)
   3  environment (assets, port, browser)
 `;
 
@@ -40,7 +40,7 @@ Print the same capability manifest the compiler uses (src/contracts/capabilities
 `,
   validate: `Usage: npm run demo -- validate <file> [--json] [--platform ios|macos]
 
-Load unknown JSON, reject polls and unsupported features, preflight local assets
+Load unknown JSON, reject malformed polls and unsupported features, preflight local assets
 under public/demo-assets, then validate every declared target.
 `,
   compile: `Usage: npm run demo -- compile <file> [--json] [--out <dir>] [--platform ios|macos]

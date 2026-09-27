@@ -33,10 +33,13 @@ export function loadAuthoring(args: ParsedArgs, deps: CliDeps): LoadedDocument {
   }
   const parsed = authoringDocumentSchema.safeParse(raw);
   if (!parsed.success) {
-    const issues: ValidationIssue[] = parsed.error.issues.map((issue) => ({
-      path: issue.path.join("."),
-      message: issue.message,
-    }));
+    const issues: ValidationIssue[] = parsed.error.issues.map((issue) => {
+      const keys = "keys" in issue && Array.isArray(issue.keys) ? issue.keys.filter((key): key is string => typeof key === "string") : [];
+      return {
+        path: issue.path.length > 0 ? issue.path.join(".") : keys[0] ?? "/",
+        message: issue.message,
+      };
+    });
     throw new CliError("Demo file failed schema validation", EXIT_VALIDATION, { issues });
   }
   preflightAssets(parsed.data, deps.repoRoot);

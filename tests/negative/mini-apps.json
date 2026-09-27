@@ -31,7 +31,7 @@
   "issues": [
     {
       "path": "messages.0.kind",
-      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\""
+      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\"|\"system\"|\"facetime\"|\"sticker\"|\"poll\""
     },
     {
       "path": "photon",

@@ -27,6 +27,13 @@ export type ScreenTransitionPose = {
   to?: IosScreenName;
 };
 
+export type ReactionLanding = {
+  messageId: string;
+  reactionId: string;
+  elapsedMs: number;
+  progress: number;
+};
+
 export type CueState = {
   send?: ArrivalPose;
   receive?: ArrivalPose;
@@ -37,6 +44,8 @@ export type CueState = {
   screenEffect?: ScreenEffectPose | null;
   /** Surfaced from `frameAt` screen-transition cues; omitted when settled. */
   screenTransition?: ScreenTransitionPose | null;
+  /** Active reaction cues. Settled reactions are absent so the badge rests. */
+  reactions: ReactionLanding[];
 };
 
 function messageEvents(compiled: CompiledDemo, timeMs: number) {
@@ -129,7 +138,18 @@ export function deriveCues(compiled: CompiledDemo, frame: RenderFrame): CueState
     if (screenCue.detail?.toScreen !== undefined) screenTransition.to = screenCue.detail.toScreen;
   }
 
-  return { send, receive, bubbleEffect, typingElapsed, inkElapsed, screenEffect, screenTransition };
+  const reactions: ReactionLanding[] = [];
+  for (const cue of visual.cues) {
+    if (cue.kind !== "reaction" || !cue.subjectId || !cue.detail?.reactionId) continue;
+    reactions.push({
+      messageId: cue.subjectId,
+      reactionId: cue.detail.reactionId,
+      elapsedMs: cue.elapsedMs,
+      progress: cue.progress,
+    });
+  }
+
+  return { send, receive, bubbleEffect, typingElapsed, inkElapsed, screenEffect, screenTransition, reactions };
 }
 
 export function cueToken(cues: CueState): string {

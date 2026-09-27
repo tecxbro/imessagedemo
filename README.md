@@ -54,17 +54,17 @@ Only one tag is needed. `$make-imessage-demo` can also route a company-only requ
 
 ## 1. Write and validate a flow
 
-Create a JSON file matching `DemoFlow` in `src/contracts/index.ts`, plus optional CLI fields from `src/cli/authoring.ts`. `platform` is `ios` or `macos`. `theme` is `light` or `dark`. Each message needs `direction` `incoming` or `outgoing`; `kind`, when supplied, is `text`, `link`, `attachment`, `image`, `audio`, or (iOS only) `app-card`. Typing is the flow field `typing`, not a message kind. Local images are files in `public/demo-assets/` referenced as `/demo-assets/<file>`.
+Create a JSON file matching `DemoFlow` in `src/contracts/index.ts`, plus optional CLI fields from `src/cli/authoring.ts`. `platform` is `ios` or `macos`. `theme` is `light` or `dark`. Each message needs `direction` `incoming` or `outgoing`. Shared kinds are `text`, `link`, `attachment`, `image`, and `audio`. iOS also accepts `app-card`, `system`, `facetime`, `sticker`, and `poll`. Typing is the flow field `typing`, not a message kind. Local images are files in `public/demo-assets/` referenced as `/demo-assets/<file>`. The coverage matrix is [docs/ios-feature-coverage.md](docs/ios-feature-coverage.md).
 
 ```sh
 npm run demo -- validate ./your-flow.json --json
 ```
 
-Exit `0` means valid. Exit `1` means usage error. Exit `2` means invalid or unsupported flow content, including polls and mini apps. Exit `3` means an asset, browser, or environment failure. Supported image formats are PNG, JPEG, GIF, and WebP; SVG needs preparation as a supported image.
+Exit `0` means valid. Exit `1` means usage error. Exit `2` means invalid or unsupported flow content, including malformed polls and mini apps other than the checkout card. Exit `3` means an asset, browser, or environment failure. Supported image formats are PNG, JPEG, GIF, and WebP; SVG needs preparation as a supported image. Optional audible audio uses a local `/demo-assets/` file with an `m4a`, `mp3`, `wav`, `aac`, or `caf` extension.
 
 `screen` is `conversation` for ordinary demos. On iOS it may also be `list` or `new-message`; macOS accepts `conversation` only. Customer messages are outgoing and company messages are incoming. Turn typing on before a company reply and explicitly turn it off when that message arrives. Reactions target stable message ids. `examples/typing-reactions.flow.json` is a small runnable example of both. `examples/agent-walkover.flow.json` has a reply arriving at playback `1000`, matching `after-reply`. Use `1690` for a post-arrival settled capture of that example.
 
-`examples/unsupported-poll.flow.json` fails validation with exit `2`. It does not open a browser or write an image.
+`examples/ios-poll.flow.json` is a valid group poll. `examples/unsupported-poll.flow.json` is a poll with no options and fails validation with exit `2`. It does not open a browser or write an image.
 
 ## 2. Preview and capture
 
@@ -107,7 +107,7 @@ npm run test:e2e
 
 ## Current boundaries
 
-Polls, Photon mini apps, FaceTime, group chats, and provider send/receive are out of scope. The one exception is a live Photon checkout embedded as an iOS `app-card`: its Apple Pay button opens a recreation of the recorded Apple Pay sheet over the phone, with the checkout's own values, and never calls native Apple Pay or charges anything. Its configuration (`VITE_PHOTON_CHECKOUT_ORIGINS`), bridge, provisional card picker, and measured visual differences are in [the presentation notes](docs/apple-pay-presentation.md). Do not rewrite a required unsupported interaction as text or a picture. Group avatars, group details, stickers, and the larger `imessage.swerdlow.dev` registry are not in this pin. Do not author `tail`, `gapBefore`, or pixel positions.
+The pin is the current `imessage.swerdlow.dev` registry. iOS flows can author groups, search, stickers, the recorder, Tapback details, FaceTime cards, and polls. A FaceTime card does not place a call. Photon mini apps other than the checkout card, and provider send/receive, stay out of scope. The live Photon checkout is an iOS `app-card`: its Apple Pay button opens a recreation of the recorded Apple Pay sheet over the phone, with the checkout's own values, and never calls native Apple Pay or charges anything. Its configuration (`VITE_PHOTON_CHECKOUT_ORIGINS`), bridge, provisional card picker, and measured visual differences are in [the presentation notes](docs/apple-pay-presentation.md). Do not rewrite a required unsupported interaction as text or a picture. Do not author `tail`, `gapBefore`, or pixel positions.
 
 The current flow has contact name/initials, not an avatar-logo field, chat wallpaper, or outer presentation settings. Researching an asset does not add its placement to the renderer. Keep prepared versus visibly applied branding clear. There is no built-in MP4 or publish command; export/publication requires actual supported tooling, not a claim based on a development URL.
 

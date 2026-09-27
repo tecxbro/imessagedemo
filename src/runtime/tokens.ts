@@ -1,4 +1,5 @@
 import motionTokens from "@/contracts/motion-tokens.json";
+import { tapbackMotion } from "@/contracts/tapback-motion";
 import type { BubbleEffectName, IosScreenName, ScreenEffectName } from "@/contracts";
 import type { ScreenTransitionKind } from "@/runtime/types";
 
@@ -47,7 +48,7 @@ export function screenEffectDuration(effect: ScreenEffectName): number {
  * Exit and overlay timings present as literals in the pin but absent from motion-tokens.json.
  * context-menu.tsx dismissal is 120. macos-plus-menu.tsx motion is enter 160 / exit 120.
  * message-reply.tsx replyThreadMotion is enter 260 / exit 200.
- * message-actions.tsx messageActionsTiming is total 600 / exit 220.
+ * Long-press enter/exit come from tapback-motion.ts (fitted entrance and dismissal).
  * ios-effects-picker.tsx timing is enter 260 / exit 200.
  * image-viewer.tsx timing.zoom is 300.
  */
@@ -57,8 +58,8 @@ export const pendingCueDurations = {
   plusMenuExit: 120,
   threadEnter: 260,
   threadExit: 200,
-  longPressEnter: 600,
-  longPressExit: 220,
+  longPressEnter: tapbackMotion.entranceMs,
+  longPressExit: tapbackMotion.exitMs,
   effectsPickerEnter: 260,
   effectsPickerExit: 200,
   imageViewer: 300,

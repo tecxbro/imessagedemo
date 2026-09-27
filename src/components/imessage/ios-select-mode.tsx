@@ -327,7 +327,7 @@ export function MessageSelectionRow({ selected = false, onChange, shift = 0, lab
     const root = row.current;
     if (!root) return;
     const measure = () => {
-      const body = [...root.querySelectorAll<HTMLElement>('[data-slot="bubble"], [data-slot="emoji"], [data-slot="image-grid"], [data-slot="link-preview"], [data-slot="message-attachment"]')].find((element) => !element.closest("[data-stub]"));
+      const body = root.querySelector<HTMLElement>('[data-slot="bubble"], [data-slot="emoji"]');
       const box = root.getBoundingClientRect();
       const centre = body ? body.getBoundingClientRect().top + body.getBoundingClientRect().height / 2 - box.top : box.height / 2;
       root.style.setProperty("--ios-sel-centre", `${centre.toFixed(2)}px`);

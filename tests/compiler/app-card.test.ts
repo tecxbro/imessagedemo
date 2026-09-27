@@ -115,7 +115,7 @@ describe("app-card flows", () => {
     );
   });
 
-  it("passes the CLI schema and unsupported-feature gate, which still stops polls and generic mini apps", () => {
+  it("passes the CLI schema and unsupported-feature gate, which still stops generic mini apps", () => {
     const document = flow();
     expect(findUnsupported(document)).toEqual([]);
     const parsed = authoringDocumentSchema.safeParse(document);
@@ -126,7 +126,8 @@ describe("app-card flows", () => {
 
   it("declares the narrow capability and keeps polls and mini apps unsupported", () => {
     expect(capabilities.supported.map((entry) => entry.id)).toContain("app-card");
-    expect(capabilities.unsupported.map((entry) => entry.id)).toEqual(["polls", "mini-apps"]);
+    expect(capabilities.unsupported.map((entry) => entry.id)).toContain("mini-apps");
+    expect(capabilities.supported.map((entry) => entry.id)).toContain("poll");
   });
 
   it("validates the checked-in example flow", () => {

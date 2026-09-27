@@ -77,6 +77,20 @@
     ]
   },
   {
+    "item": "tapback-details",
+    "target": "components/imessage/tapback-details.tsx",
+    "exports": [
+      "TapbackDetailsPlatterMetrics",
+      "tapbackDetailsPlatterMetrics",
+      "tapbackGlyphInk",
+      "tapbackDetailsPlatterMotion",
+      "TapbackReactor",
+      "TapbackDetailsPlatterProps",
+      "reactionKeyOf",
+      "TapbackDetailsPlatter"
+    ]
+  },
+  {
     "item": "typing-indicator",
     "target": "components/imessage/typing-indicator.tsx",
     "exports": [
@@ -182,7 +196,11 @@
     "target": "components/imessage/macos-sidebar.tsx",
     "exports": [
       "SidebarConversation",
+      "GroupMember",
       "MacSidebarProps",
+      "macSidebarSearchStrings",
+      "conversationMatchesQuery",
+      "searchMatchRanges",
       "macSidebarMetrics",
       "MacSidebar"
     ]
@@ -192,6 +210,7 @@
     "target": "components/imessage/macos-header.tsx",
     "exports": [
       "macHeaderMetrics",
+      "MacHeaderMember",
       "MacHeaderProps",
       "MacHeader"
     ]
@@ -239,6 +258,7 @@
     "target": "components/imessage/message-actions.tsx",
     "exports": [
       "messageActionsTiming",
+      "messageActionsDim",
       "messageActionsMetrics",
       "Rect",
       "liftScale",
@@ -353,6 +373,8 @@
     "exports": [
       "macScreen",
       "macTransitions",
+      "macAttachmentPopovers",
+      "macShortcuts",
       "nextMessageSelection",
       "MacMessagesAppProps",
       "MacMessagesApp"
@@ -368,6 +390,28 @@
       "MacPlusMenuProps",
       "MacPlusMenu",
       "PlusMenuIcon"
+    ]
+  },
+  {
+    "item": "macos-details",
+    "target": "components/imessage/macos-details.tsx",
+    "exports": [
+      "macDetailsMetrics",
+      "macDetailsUnmeasured",
+      "macDetailsMotion",
+      "MacDetailsTab",
+      "MacDetailsAction",
+      "MacDetailsPhoto",
+      "MacDetailsLink",
+      "MacDetailsAttachment",
+      "MacDetailsHandle",
+      "MacDetailsParticipant",
+      "MacDetailsLocationAction",
+      "MacDetailsMapPin",
+      "MacDetailsProps",
+      "MacCheckboxProps",
+      "MacCheckbox",
+      "MacDetails"
     ]
   },
   {
@@ -433,6 +477,8 @@
       "MessageImage",
       "MessageImagesProps",
       "photoBox",
+      "balloonMaxWidthPercent",
+      "balloonMaxWidth",
       "MessageImages",
       "photoTailFill"
     ]
@@ -449,7 +495,11 @@
       "fitPhotoRect",
       "rubberBand",
       "zoomPose",
-      "ImageViewer"
+      "doubleTapTarget",
+      "pageWindow",
+      "ImageViewer",
+      "ImageViewerChrome",
+      "imageViewerChromeBands"
     ]
   },
   {
@@ -485,13 +535,34 @@
     "target": "components/imessage/ios-details.tsx",
     "exports": [
       "IosDetailsAction",
+      "IosDetailsPhoto",
+      "IosDetailsItem",
+      "IosDetailsSection",
       "IosDetailsProps",
       "iosDetailsMotion",
       "iosDetailsMorph",
+      "iosDetailsCollapse",
       "IosSwitchProps",
       "IosSwitch",
       "subpixel",
       "IosDetails"
+    ]
+  },
+  {
+    "item": "group-details",
+    "target": "components/imessage/group-details.tsx",
+    "exports": [
+      "groupDetailsMetrics",
+      "groupDetailsCopy",
+      "removeParticipantPrompt",
+      "groupCountText",
+      "GroupDetailsParticipant",
+      "GroupDetailsAction",
+      "GroupDetailsPhoto",
+      "GroupDetailsItem",
+      "GroupDetailsSection",
+      "GroupDetailsProps",
+      "GroupDetails"
     ]
   },
   {
@@ -518,9 +589,31 @@
     "exports": [
       "photoPickerMetrics",
       "PhotoPickerPhoto",
+      "PhotoPickerDetent",
       "photoPickerSamples",
       "PhotoPickerProps",
-      "PhotoPicker"
+      "PhotoPickerSelectionBadge",
+      "PhotoPicker",
+      "photoPickerChipMetrics",
+      "PhotoPickerAttachmentsProps",
+      "PhotoPickerAttachments"
+    ]
+  },
+  {
+    "item": "sticker-picker",
+    "target": "components/imessage/sticker-picker.tsx",
+    "exports": [
+      "stickerPickerMetrics",
+      "stickerGridColumns",
+      "StickerKind",
+      "Sticker",
+      "StickerTabIcon",
+      "StickerTab",
+      "stickerPickerTabs",
+      "stickerLandingRotation",
+      "StickerPlacement",
+      "StickerPickerProps",
+      "StickerPicker"
     ]
   },
   {
@@ -541,6 +634,32 @@
       "IosSelectionCloseButton",
       "IosSelectionToolbarProps",
       "IosSelectionToolbar"
+    ]
+  },
+  {
+    "item": "ios-search",
+    "target": "components/imessage/ios-search.tsx",
+    "exports": [
+      "IosSearchSectionKind",
+      "IosSearchConversationResult",
+      "IosSearchMessageResult",
+      "IosSearchPhotoResult",
+      "IosSearchLinkResult",
+      "IosSearchDocumentResult",
+      "IosSearchResult",
+      "IosSearchSection",
+      "iosSearchMetrics",
+      "iosSearchMotion",
+      "iosSearchSectionTitles",
+      "iosSearchUnmodelledSectionTitles",
+      "iosSearchStrings",
+      "iosSearchDetailsTitle",
+      "iosSearchRowHeight",
+      "IosSearchProps",
+      "matchRanges",
+      "trimAroundMatch",
+      "splitAroundMatch",
+      "IosSearch"
     ]
   },
   {
@@ -574,15 +693,65 @@
     "exports": [
       "SystemMessageMetrics",
       "systemMessageMetrics",
+      "systemMessageMotion",
+      "statusTemplates",
       "unknownSenderText",
       "reactionVerbs",
-      "MissedCallKind",
+      "tapbackSummary",
+      "SystemActor",
       "SystemMessageEvent",
       "SystemMessageSegment",
+      "isErrorEvent",
+      "formatTemplate",
       "formatSystemMessage",
       "systemMessageText",
       "SystemMessageProps",
       "SystemMessage"
+    ]
+  },
+  {
+    "item": "group-avatar",
+    "target": "components/imessage/group-avatar.tsx",
+    "exports": [
+      "GroupParticipant",
+      "StackSlot",
+      "snowglobeBaseSize",
+      "snowglobeMaxFaces",
+      "snowglobeStack",
+      "snowglobeTypingStack",
+      "snowglobeClearance",
+      "snowglobeSlots",
+      "snowglobeFrame",
+      "groupAvatarMetrics",
+      "groupAvatarSize",
+      "groupAvatarPlate",
+      "groupAvatarPlateFit",
+      "GroupAvatarProps",
+      "GroupAvatar",
+      "SenderAvatarPlatform",
+      "senderAvatarMetricsFor",
+      "senderAvatarMetrics",
+      "senderAvatarMetricsForPlatform",
+      "senderAvatarMotion",
+      "SenderAvatarProps",
+      "SenderAvatar"
+    ]
+  },
+  {
+    "item": "audio-recorder",
+    "target": "components/imessage/audio-recorder.tsx",
+    "exports": [
+      "audioRecorderMetrics",
+      "audioRecorderWaveform",
+      "audioRecorderMotion",
+      "audioRecorderPower",
+      "audioLevelForPower",
+      "AudioRecorderState",
+      "AudioTake",
+      "audioTakeToPeaks",
+      "AudioRecorderProps",
+      "audioRecorderFallbackTake",
+      "AudioRecorder"
     ]
   }
 ]

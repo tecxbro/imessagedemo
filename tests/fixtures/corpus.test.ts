@@ -54,7 +54,7 @@ function asMessages(scenario: Scenario): Message[] {
 describe("scenario corpus", () => {
   it("matches the frozen schema keys and validates every authored flow", () => {
     expect(frozenSchemaKeysMatch()).toBe(true);
-    expect(scenarios.length).toBe(36);
+    expect(scenarios.length).toBe(38);
     for (const scenario of scenarios) {
       expect(diagnoseDemo(scenario)).toEqual([]);
       const validated = validateDemoDouble(scenario);

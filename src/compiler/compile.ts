@@ -1,9 +1,12 @@
-import type { CompiledDemo, CompiledEvent, DemoFlow, DemoMessage, Reaction } from "@/contracts";
+import type { CompiledDemo, CompiledEvent, DemoFlow, DemoMessage, OverlayState, PickerSelection, Reaction } from "@/contracts";
+import { tapbackMotion } from "@/contracts/tapback-motion";
 import { arrivalWindow } from "./motion";
 
 function copyContact(contact: DemoFlow["contact"]): DemoFlow["contact"] {
   const copy: DemoFlow["contact"] = { name: contact.name };
   if (contact.initials !== undefined) copy.initials = contact.initials;
+  if (contact.photo !== undefined) copy.photo = contact.photo;
+  if (contact.silhouette !== undefined) copy.silhouette = contact.silhouette;
   return copy;
 }
 
@@ -61,7 +64,24 @@ function copyMessage(message: DemoMessage, messages: readonly DemoMessage[]): De
   if (message.audio !== undefined) {
     const audio: NonNullable<DemoMessage["audio"]> = { duration: message.audio.duration };
     if (message.audio.peaks !== undefined) audio.peaks = [...message.audio.peaks];
+    if (message.audio.src !== undefined) audio.src = message.audio.src;
     copy.audio = audio;
+  }
+  if (message.sender !== undefined) copy.sender = message.sender;
+  if (message.senderId !== undefined) copy.senderId = message.senderId;
+  if (message.senderInitials !== undefined) copy.senderInitials = message.senderInitials;
+  if (message.senderPhoto !== undefined) copy.senderPhoto = message.senderPhoto;
+  if (message.conversationId !== undefined) copy.conversationId = message.conversationId;
+  if (message.system !== undefined) copy.system = { ...message.system };
+  if (message.facetime !== undefined) copy.facetime = { ...message.facetime };
+  if (message.sticker !== undefined) copy.sticker = { ...message.sticker };
+  if (message.stickers !== undefined) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+  if (message.poll !== undefined) {
+    copy.poll = {
+      question: message.poll.question,
+      options: message.poll.options.map((option) => ({ ...option })),
+      ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
+    };
   }
   if (message.appCard !== undefined) {
     const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: "checkout" };
@@ -105,7 +125,7 @@ function copyEvent(event: CompiledEvent, baseline: number): CompiledEvent {
         reaction: event.reaction === null ? null : { ...event.reaction },
       };
     case "overlay":
-      return { ...event, atMs, overlay: event.overlay.kind === "selection" ? { ...event.overlay, messageIds: [...event.overlay.messageIds] } : { ...event.overlay } };
+      return { ...event, atMs, overlay: copyOverlay(event.overlay) };
     case "notice":
       return { ...event, atMs, notice: { ...event.notice } };
     default:
@@ -113,17 +133,42 @@ function copyEvent(event: CompiledEvent, baseline: number): CompiledEvent {
   }
 }
 
+function copyPickerSelection(selected: PickerSelection): PickerSelection {
+  return "emoji" in selected ? { emoji: selected.emoji } : { type: selected.type };
+}
+
+function copyOverlay(overlay: OverlayState): OverlayState {
+  if (overlay.kind === "selection") return { kind: "selection", messageIds: [...overlay.messageIds] };
+  if (overlay.kind !== "long-press") return { ...overlay };
+  const copy: Extract<OverlayState, { kind: "long-press" }> = { kind: "long-press", messageId: overlay.messageId };
+  if (overlay.selected === null) copy.selected = null;
+  else if (overlay.selected) copy.selected = copyPickerSelection(overlay.selected);
+  return copy;
+}
+
+function selectionKey(selected: PickerSelection | null | undefined): string {
+  if (selected === undefined) return "absent";
+  if (selected === null) return "null";
+  return "emoji" in selected ? `emoji:${selected.emoji}` : `type:${selected.type}`;
+}
+
 export function compileDemo(demo: DemoFlow): CompiledDemo {
   const baseline = demo.messages[0]?.atMs ?? demo.events?.[0]?.atMs ?? 0;
   const events: CompiledDemo["events"] = [];
   let durationMs = 0;
+  let openLongPress: { messageId: string; selectedKey: string } | null = null;
 
   for (const message of demo.messages) {
     if (message.removed === true) continue;
     const atMs = message.atMs - baseline;
     const copied = copyMessage(message, demo.messages);
     delete copied.removed;
-    events.push({ type: "message", atMs, message: copied });
+    events.push({
+      type: "message",
+      atMs,
+      message: copied,
+      ...(message.conversationId ? { conversationId: message.conversationId } : {}),
+    });
     durationMs = Math.max(durationMs, atMs);
     const window = arrivalWindow(message);
     if (window) durationMs = Math.max(durationMs, window.end - baseline);
@@ -133,6 +178,26 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
     const copied = copyEvent(event, baseline);
     events.push(copied);
     durationMs = Math.max(durationMs, copied.atMs);
+    if (copied.type === "reaction" && copied.reaction) {
+      durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.reactionLandingMs);
+    }
+    if (copied.type !== "overlay") continue;
+    if (copied.overlay.kind === "long-press") {
+      const nextKey = selectionKey(copied.overlay.selected);
+      if (openLongPress && openLongPress.messageId === copied.overlay.messageId) {
+        if (openLongPress.selectedKey !== nextKey) {
+          durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.selectionFeedbackMs);
+        }
+        openLongPress = { messageId: copied.overlay.messageId, selectedKey: nextKey };
+      } else {
+        if (openLongPress) durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.exitMs);
+        durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.entranceMs);
+        openLongPress = { messageId: copied.overlay.messageId, selectedKey: nextKey };
+      }
+    } else if (openLongPress) {
+      durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.exitMs);
+      openLongPress = null;
+    }
   }
 
   // Initialization shares time zero with authored events. Give it an earlier source
@@ -155,5 +220,10 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
     nowMs: demo.nowMs,
     screen: demo.screen,
     events,
+    ...(demo.participants ? { participants: demo.participants.map((person) => ({ ...person })) } : {}),
+    ...(demo.group ? { group: { ...demo.group } } : {}),
+    ...(demo.conversations ? { conversations: demo.conversations.map((conversation) => ({ ...conversation, contact: { ...conversation.contact } })) } : {}),
+    ...(demo.selectedConversationId ? { selectedConversationId: demo.selectedConversationId } : {}),
+    ...(demo.library ? { library: demo.library.map((photo) => ({ ...photo })) } : {}),
   };
 }

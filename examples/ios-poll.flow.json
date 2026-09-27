@@ -1,0 +1,49 @@
+{
+  "id": "ios-poll",
+  "title": "Harvest bowl poll",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Alex Morgan", "initials": "AM" },
+  "participants": [
+    { "id": "me", "name": "You", "me": true },
+    { "id": "alex", "name": "Alex Morgan", "initials": "AM" },
+    { "id": "jordan", "name": "Jordan Lee", "initials": "JL" }
+  ],
+  "group": { "name": "Lunch" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "ask",
+      "text": "Where should we eat?",
+      "direction": "incoming",
+      "atMs": 1790008740000,
+      "sender": "Alex Morgan",
+      "senderId": "alex"
+    },
+    {
+      "id": "poll",
+      "text": "Lunch?",
+      "direction": "outgoing",
+      "atMs": 1790008742000,
+      "kind": "poll",
+      "poll": {
+        "question": "Lunch?",
+        "options": [
+          { "id": "harvest", "text": "Harvest bowl" },
+          { "id": "salad", "text": "Kale Caesar" }
+        ],
+        "votes": [{ "participantId": "alex", "optionId": "harvest" }]
+      }
+    }
+  ],
+  "events": [
+    { "type": "poll-vote", "atMs": 1790008744000, "messageId": "poll", "participantId": "me", "optionId": "harvest", "voted": true },
+    { "type": "poll-vote", "atMs": 1790008745000, "messageId": "poll", "participantId": "me", "optionId": "salad", "voted": true },
+    { "type": "poll-vote", "atMs": 1790008746000, "messageId": "poll", "participantId": "alex", "optionId": "harvest", "voted": false },
+    { "type": "poll-option", "atMs": 1790008748000, "messageId": "poll", "optionId": "later", "text": "Later" },
+    { "type": "overlay", "atMs": 1790008750000, "overlay": { "kind": "poll-details", "messageId": "poll" } }
+  ]
+}

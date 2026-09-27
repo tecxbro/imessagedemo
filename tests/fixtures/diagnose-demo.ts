@@ -5,14 +5,14 @@ import { demoFlowSchema, demoMessageSchema, type ValidationIssue } from "@/contr
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-const FLOW_KEYS = ["id", "title", "platform", "theme", "contact", "nowMs", "draft", "typing", "screen", "messages", "events"] as const;
-const CONTACT_KEYS = ["name", "initials"] as const;
-const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio", "appCard", "reactions", "replyTo", "edited", "readAt", "revealed", "removed"] as const;
+const FLOW_KEYS = ["id", "title", "platform", "theme", "contact", "nowMs", "draft", "typing", "screen", "messages", "events", "participants", "group", "conversations", "selectedConversationId", "library"] as const;
+const CONTACT_KEYS = ["name", "initials", "photo", "silhouette"] as const;
+const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio", "appCard", "reactions", "replyTo", "edited", "readAt", "revealed", "removed", "sender", "senderId", "senderInitials", "senderPhoto", "conversationId", "system", "facetime", "sticker", "stickers", "poll"] as const;
 const LINK_KEYS = ["url", "title", "host", "image"] as const;
 const ATTACHMENT_KEYS = ["name", "size", "href"] as const;
 const REACTION_KEYS = ["id", "type", "byMe", "emoji", "messageId", "targetId"] as const;
 const IMAGE_KEYS = ["src", "alt", "width", "height"] as const;
-const AUDIO_KEYS = ["duration", "peaks"] as const;
+const AUDIO_KEYS = ["duration", "peaks", "src"] as const;
 const APP_CARD_KEYS = ["url", "live", "app", "height"] as const;
 
 const LOCAL_PNG = /^\/demo-assets\/[a-z0-9-]+\.png$/;
@@ -109,7 +109,8 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
   const parsed = demoFlowSchema.safeParse(input);
   if (!parsed.success) {
     for (const issue of parsed.error.issues) {
-      issues.push({ path: issue.path.join("."), message: issue.message });
+      const keys = "keys" in issue && Array.isArray(issue.keys) ? issue.keys.filter((key): key is string => typeof key === "string") : [];
+      issues.push({ path: issue.path.length > 0 ? issue.path.join(".") : keys[0] ?? "/", message: issue.message });
     }
   }
 
@@ -184,7 +185,7 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
       message.images.forEach((image, imageIndex) => checkImage(issues, `${base}.images.${imageIndex}`, image));
     }
     if (message.replyTo !== undefined) {
-      const replyId = isRecord(message.replyTo) ? message.replyTo.id : undefined;
+      const replyId = typeof message.replyTo === "string" ? message.replyTo : isRecord(message.replyTo) ? message.replyTo.id : undefined;
       const target = typeof replyId === "string" ? messages.find((item) => isRecord(item) && item.id === replyId) : undefined;
       const removed = isRecord(target) && (target.removed === true || typeof target.removedAtMs === "number");
       if (typeof replyId !== "string" || !target || removed) {
@@ -193,7 +194,13 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
     }
   });
 
-  return issues;
+  const unique = new Set<string>();
+  return issues.filter((entry) => {
+    const key = `${entry.path}\0${entry.message}`;
+    if (unique.has(key)) return false;
+    unique.add(key);
+    return true;
+  });
 }
 
 function sameKeys(actual: string[], expected: readonly string[]): boolean {

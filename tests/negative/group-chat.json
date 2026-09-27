@@ -1,7 +1,7 @@
 {
   "id": "group-chat",
-  "silentOnFrozenDouble": true,
-  "note": "MessageList can show sender names, and group-avatar/group-details are absent from the pin. This object must not be stored as a 1:1 chat.",
+  "silentOnFrozenDouble": false,
+  "note": "Participants must be objects with stable ids. A string list is not a group.",
   "input": {
     "id": "negative",
     "title": "Negative",
@@ -24,21 +24,16 @@
         "sender": "Jordan Lee"
       }
     ],
-    "group": {
-      "participants": [
-        "Alex Morgan",
-        "Jordan Lee"
-      ]
-    }
+    "participants": ["Alex Morgan", "Jordan Lee"]
   },
   "issues": [
     {
-      "path": "group",
-      "message": "Unrecognized key: \"group\""
+      "path": "participants.0",
+      "message": "Invalid input: expected object, received string"
     },
     {
-      "path": "messages.0.sender",
-      "message": "Unrecognized key: \"sender\""
+      "path": "participants.1",
+      "message": "Invalid input: expected object, received string"
     }
   ]
 }

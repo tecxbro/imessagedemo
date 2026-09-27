@@ -1,0 +1,541 @@
+--- a/src/components/imessage/tapback.tsx
++++ b/src/components/imessage/tapback.tsx
+@@ -52,85 +52,17 @@
+  * CSS variables the tapback UI reads (with fallbacks to the light iOS values). Spread on a frame
+  * next to `paletteVars`. Glass fills were solved from the captures: the pill over the dimmed white
+  * list is #ededef and over the dimmed green bubble ≈#b4efc6 (brighter than the dimmed content, hence
+- * the brightness term); over the dimmed black list it is #1f1e21.
+- *
+- * The dim is one material in both themes at alpha 0.21 over ≈(22, 21.5, 42), and it is measured, not
+- * guessed: `longpress-ok-light.png` is `conv3-light.png` with one message pressed, so regressing one
+- * capture on the other over the clean rows gives it directly - slope 0.7895/0.8067/0.7889, residual
+- * rms 0.17/0.29/0.26 per channel. `conv2-dark.png` -> `longpress-ok-selected-dark.png` returns alpha
+- * 0.217/0.210/0.213 over (22.5, 19.1, 42.3), i.e. the same dim. The (22,18,44) this used to carry
+- * rendered white as (206,205,210) where every light capture reads (206,206,210).
+- *
+- * The two themes then carry different green channels (22 light, 21 dark) because no single 8-bit
+- * value serves both in Chrome, which quantizes the 0.21 alpha to 54/255 = 0.211765 before
+- * compositing. Green 21.5 lands half a level either side of a rounding boundary at both ends of the
+- * range: over white it composites to 205.55, and the light captures read 206 (G 22 gives 205.66, G 21
+- * gives 205.45); over black it composites to 4.55, and the dark captures read 4 (G 21 gives 4.45,
+- * G 22 gives 4.66). R 22 and B 42 clear their boundaries at both ends and need no such split. Over
+- * `longpress-ok-light.png` the light nudge takes the frame's interior from -0.9 to -0.1 mean signed
+- * green and 1.30 to 1.15 levels of mean absolute error; over `longpress-dark.png` holding dark at 21
+- * keeps it at 1.21 rather than 1.46. `messageActionsDim`'s fallback carries the dark value.
+- *
+- * `--im-menu-glass` was refitted against the captures rather than guessed. Because the tint, the
+- * alpha and the brightness term all trade off against each other, only two things are actually
+- * determined by a capture: the constant the material contributes, and how much of the backdrop
+- * survives it. Both were solved by rendering the menu twice at a fixed alpha and filter, once with a
+- * black tint and once with a white one, which makes the output linear in the tint, and then solving
+- * for the tint that lands on the capture.
+- *
+- * The solve runs on the menu's lower 55% only. Above that the menu laps the message it was opened
+- * on, and there NO tint at this alpha can reach the capture: at y 610 of `longpress-ok-light.png` the
+- * glass reads (181,238,198) over a dimmed bubble the filter turns into ≈(84,238,128), so at alpha 0.8
+- * the tint would have to be (-59,218,14). Native carries far more of the bubble's colour through than
+- * a flat fill plus `wash` can, and that is a `context-menu.tsx` / `message-actions.tsx` question
+- * (the `tint` gradient the menu already supports and the overlay never passes), not a material one.
+- * Ours runs +18 R / +12 B over that band and matches to 1-3 levels everywhere below it.
+- *
+- * The light value was confirmed first, against the old 0.16 shadow: with `longpress-two-line`
+- * reconstructing, ok / incoming / two-line solve to (240.0,243.6,243.7), (240.2,240.8,244.0) and
+- * (241.2,244.4,244.7), i.e. rgba(241,243,244,0.8) holds and two-line, which used to sit seven levels
+- * off, now agrees with the other two. The number in the table below is 4 levels lower than that only
+- * because the shadow underneath it changed; see the next paragraph.
+- *
+- * Both values are then re-solved at the measured shadow, because `context-menu.tsx` paints
+- * `menu-shadow` INSIDE the menu, under the glass, so the glass's own backdrop carries it and the
+- * tint absorbs whatever it contributes. Taking the shadow from 0.16 to the measured 0.098 lightens
+- * that backdrop and drops the solved tint by 4 levels; the slope is 64.5 tint levels per unit of
+- * shadow alpha, so a `context-menu.tsx` that masked its own shape out of the shadow (which is what
+- * native draws - a drop shadow is not visible under the menu) would want ≈(231,233,234) instead.
+- * At 0.098 the three light captures solve to (236.2,239.9,239.9), (236.3,236.9,240.0) and
+- * (237.2,240.5,240.7): rgba(237,239,240,0.8), residuals 1.75 / 1.84 / 1.52 levels.
+- *
+- * Dark is rgba(20,22,23,0.8), fitted the same way now that the dark scenes reconstruct:
+- * `longpress-first` -> `longpress-dark.png` (19.4,22.2,22.7), `longpress-last` ->
+- * `longpress-last-bubble-dark.png` (20.2,20.5,23.2) and `longpress-selected` ->
+- * `longpress-ok-selected-dark.png` (20.4,21.8,23.9), i.e. three captures inside 1.7 levels of each
+- * other. It takes the same band from 2.76/2.45/2.43 levels of mean absolute error to 1.61/1.31/1.36.
+- * The rgba(20,25,25,0.8) it used to carry was 3 levels green-heavy.
+- *
+- * `--im-menu-shadow` is the menu's drop shadow, and 0.098 is measured, not the 0.16 the component
+- * defaults to. `longpress-ok-light.png` divided by `conv3-light.png` and the dim gives the shadow's
+- * alpha directly on every pixel around the menu; fitting a Gaussian to the ring below and beside it
+- * returns alpha 0.0992, sigma 17.52 pt, offset 7.00 pt down (rms 0.0025 alpha), and
+- * `longpress-incoming-light.png` over `incoming-light.png` returns 0.0971 / 17.18 / 7.00. It is a
+- * pure black shadow: the three channels' alphas agree to 0.001. NOTE for `context-menu.tsx`: its
+- * `blur(11px)` is a sigma of 11 and needs to be 17.4 for the falloff to match - the shadow reaches
+- * 41 pt below the menu in the capture and 28 in ours. The alpha is right either way (fitting it at
+- * the wrong sigma returns 0.1012), so this value stands on its own.
+- *
+- * The dark theme's shadow is UNVERIFIED: every dark capture puts the menu over a near-black ground,
+- * where a black shadow at any alpha is invisible. It carries the light value rather than the
+- * component's unmeasured 0.16.
++ * the brightness term); over the dimmed black list it is #1f1e21. The dim itself is rgba(22,18,44,0.21).
+  */
+ export function tapbackVars(theme: "light" | "dark", platform: Platform = "ios"): Record<string, string> {
+   const ios: Record<string, string> = theme === "light" ? {
+-    "--im-dim": "rgba(22,22,42,0.21)", "--im-glass": "rgba(229,229,231,0.69)", "--im-glass-filter": "blur(9px) brightness(1.32) saturate(1.35)", "--im-glass-solid": "#ededef", "--im-glass-rim": "rgba(255,255,255,0.55)",
+-    "--im-glass-shadow": "0 6px 24px rgba(0,0,0,0.10)", "--im-picker-icon": "#aeaeb2", "--im-menu-glass": "rgba(237,239,240,0.8)", "--im-menu-glass-filter": "blur(9px) brightness(1.32) saturate(1.35)", "--im-menu-bg": "#edeff1", "--im-menu-text": "#000000", "--im-menu-shadow": "rgba(0,0,0,0.098)",
++    "--im-dim": "rgba(22,18,44,0.21)", "--im-glass": "rgba(229,229,231,0.69)", "--im-glass-filter": "blur(9px) brightness(1.32) saturate(1.35)", "--im-glass-solid": "#ededef", "--im-glass-rim": "rgba(255,255,255,0.55)",
++    "--im-glass-shadow": "0 6px 24px rgba(0,0,0,0.10)", "--im-picker-icon": "#aeaeb2", "--im-menu-glass": "rgba(229,229,231,0.69)", "--im-menu-glass-filter": "blur(9px) brightness(1.32) saturate(1.35)", "--im-menu-bg": "#edeff1", "--im-menu-text": "#000000",
+     "--im-menu-separator": "rgba(0,0,0,0.12)", "--im-menu-destructive": "#ff3b30", "--im-tapback-own": tapbackColors.own, "--im-tapback-ring": tapbackColors.selectedRing,
+   } : {
+-    "--im-dim": "rgba(22,21,42,0.21)", "--im-glass": "rgba(38,37,39,0.8)", "--im-glass-filter": "blur(9px) saturate(1.6)", "--im-glass-solid": "#1f1e21", "--im-glass-rim": "rgba(255,255,255,0.10)",
+-    "--im-glass-shadow": "0 6px 24px rgba(0,0,0,0.5)", "--im-picker-icon": "#8e8e93", "--im-menu-glass": "rgba(20,22,23,0.8)", "--im-menu-glass-filter": "blur(9px) saturate(2)", "--im-menu-bg": "#121316", "--im-menu-text": "#ffffff", "--im-menu-shadow": "rgba(0,0,0,0.098)",
+-    "--im-menu-separator": "rgba(255,255,255,0.15)", "--im-menu-destructive": "#ff453a", "--im-tapback-own": tapbackColors.ownDark, "--im-tapback-theirs": "#3b3b3d", "--im-tapback-ring": tapbackColors.selectedRingDark,
++    "--im-dim": "rgba(22,18,44,0.21)", "--im-glass": "rgba(38,37,39,0.8)", "--im-glass-filter": "blur(9px) saturate(1.6)", "--im-glass-solid": "#1f1e21", "--im-glass-rim": "rgba(255,255,255,0.10)",
++    "--im-glass-shadow": "0 6px 24px rgba(0,0,0,0.5)", "--im-picker-icon": "#8e8e93", "--im-menu-glass": "rgba(20,25,25,0.8)", "--im-menu-glass-filter": "blur(9px) saturate(2)", "--im-menu-bg": "#121316", "--im-menu-text": "#ffffff",
++    "--im-menu-separator": "rgba(255,255,255,0.15)", "--im-menu-destructive": "#ff453a", "--im-tapback-own": tapbackColors.ownDark, "--im-tapback-theirs": "#262629", "--im-tapback-ring": tapbackColors.selectedRingDark,
+   };
+   if (platform === "ios") return ios;
+   const macos = { "--im-tapback-own": macosBalloonFill, "--im-tapback-own-surface": macosBalloonSurface };
+@@ -197,7 +129,22 @@
+   );
+ }
+ 
+-const glossyText = (gradient: string): CSSProperties => ({ backgroundImage: gradient, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" });
++/** One line of the laugh sticker: inflated H and A, the shape in the reference picker. */
++function HaStickerLine() {
++  return (
++    <g>
++      <rect x="0.4" y="0.3" width="5.4" height="13.4" rx="2.7" />
++      <rect x="7.6" y="0.3" width="5.4" height="13.4" rx="2.7" />
++      <rect x="0.4" y="5.1" width="12.6" height="3.8" rx="1.9" />
++      <path fillRule="evenodd" d="M20.2 0.5c1 0 1.6.8 1.9 1.8l3.2 10.6c.3.9-.3 1.7-1.2 1.7h-2.2l-.6-2.4h-2.2l-.6 2.4h-2.2c-.9 0-1.5-.8-1.2-1.7l3.2-10.6c.3-1 .9-1.8 1.9-1.8z M20.2 4.7c-.55 0-.8.45-.7.95l.45 2.15h1.5l.45-2.15c.1-.5-.15-.95-.7-.95h-1z" />
++    </g>
++  );
++}
++
++function glyphMotionTransform(part: GlyphPartPose | undefined): string | undefined {
++  if (!part) return undefined;
++  return `translate(${part.x} ${part.y}) scale(${part.scaleX} ${part.scaleY})`;
++}
+ 
+ /**
+  * Heart ramps, sampled at matching heights on every capture. On a gray or white balloon Apple's heart
+@@ -215,7 +162,32 @@
+  * `size` is the glyph box: 25.33 in the iOS tapback bar, 18.34 in a Ø34 balloon.
+  * `onAccent` picks the lighter artwork Apple uses on the blue balloon and the blue selected disc.
+  */
+-export function TapbackGlyph({ type, emoji, size, onAccent = false, className, style }: { type?: TapbackType; emoji?: string; size: number; onAccent?: boolean; className?: string; style?: CSSProperties }) {
++/** Fitted sub-glyph pose. Absent motion leaves the settled artwork unchanged. */
++export type GlyphPartPose = { opacity: number; scaleX: number; scaleY: number; x: number; y: number };
++export type TapbackGlyphMotion = {
++  whole?: GlyphPartPose;
++  laughTop?: GlyphPartPose;
++  laughBottom?: GlyphPartPose;
++  emphasizeFirst?: GlyphPartPose;
++  emphasizeSecond?: GlyphPartPose;
++  question?: GlyphPartPose;
++};
++
++function glyphPartStyle(part: GlyphPartPose | undefined): CSSProperties | undefined {
++  if (!part) return undefined;
++  return {
++    opacity: part.opacity,
++    transform: `translate(${part.x}px, ${part.y}px) scale(${part.scaleX}, ${part.scaleY})`,
++    transformOrigin: "50% 50%",
++  };
++}
++
++function glyphPartData(name: string, part: GlyphPartPose | undefined): Record<string, string | number> {
++  if (!part) return { "data-glyph-part": name };
++  return { "data-glyph-part": name, "data-opacity": part.opacity, "data-scale-x": part.scaleX, "data-scale-y": part.scaleY };
++}
++
++export function TapbackGlyph({ type, emoji, size, onAccent = false, className, style, motion }: { type?: TapbackType; emoji?: string; size: number; onAccent?: boolean; className?: string; style?: CSSProperties; motion?: TapbackGlyphMotion }) {
+   const id = useId().replace(/:/g, "");
+   const base: CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", lineHeight: 1, userSelect: "none", ...style };
+   if (emoji || !type) {
+@@ -227,7 +199,7 @@
+     // and each flank is one cubic to the tip (rmse 0.03 against 15 sampled rows).
+     const w = size, h = size * 0.8906;
+     return (
+-      <svg data-slot="tapback-glyph" data-glyph="love" className={className} style={base} width={w} height={h} viewBox="0 0 18 16.03" aria-hidden="true">
++      <svg data-slot="tapback-glyph" data-glyph="love" className={className} style={{ ...base, ...glyphPartStyle(motion?.whole) }} width={w} height={h} viewBox="0 0 18 16.03" aria-hidden="true" {...glyphPartData("love", motion?.whole)}>
+         <defs>
+           <radialGradient id={`${id}-h`} cx="0.5" cy="0.18" r="0.8">
+             {(onAccent ? heartRamp.onAccent : heartRamp.plain).map(([offset, color]) => <stop key={offset} offset={offset} stopColor={color} />)}
+@@ -240,13 +212,36 @@
+   if (type === "like" || type === "dislike") {
+     // The 👎 face sits 1.84 higher than native in a 25.33 slot; 👍 lands right. Push it back down.
+     const drop = type === "dislike" ? size * 0.145 : 0;
+-    return <span data-slot="tapback-glyph" data-glyph={type} className={className} style={{ ...base, marginTop: (typeof base.marginTop === "number" ? base.marginTop : 0) + drop, fontSize: size * 0.987, fontFamily: emojiFontStack, width: size, height: size }}>{type === "like" ? "👍" : "👎"}</span>;
++    return <span data-slot="tapback-glyph" data-glyph={type} className={className} style={{ ...base, marginTop: (typeof base.marginTop === "number" ? base.marginTop : 0) + drop, fontSize: size * 0.987, fontFamily: emojiFontStack, width: size, height: size, ...glyphPartStyle(motion?.whole) }} {...glyphPartData(type, motion?.whole)}>{type === "like" ? "👍" : "👎"}</span>;
+   }
+   if (type === "laugh") {
++    // Native sticker: inflated cyan letters, top HA larger, lower HA smaller and tucked under it.
++    // Traced from the reference picker, not set in a system font.
+     return (
+-      <span data-slot="tapback-glyph" data-glyph="laugh" className={className} style={{ ...base, flexDirection: "column", width: size, height: size, fontFamily: fontStack, fontWeight: 800, fontSize: size * 0.68, lineHeight: `${size * 0.5}px`, letterSpacing: -size * 0.02, ...glossyText("linear-gradient(#5fc9ff, #0aa6ff 55%, #0090f5)") }}>
+-        <span style={{ WebkitTextStroke: `${size * 0.02}px rgba(255,255,255,0.6)` }}>HA</span><span style={{ WebkitTextStroke: `${size * 0.02}px rgba(255,255,255,0.6)` }}>HA</span>
+-      </span>
++      <svg data-slot="tapback-glyph" data-glyph="laugh" className={className} style={base} width={size} height={size} viewBox="0 0 32 34" aria-hidden="true">
++        <defs>
++          <linearGradient id={`${id}-ha`} x1="0" y1="0" x2="0.2" y2="1">
++            <stop offset="0" stopColor="#c6f4ff" />
++            <stop offset="0.38" stopColor="#3ec0ff" />
++            <stop offset="1" stopColor="#0074ea" />
++          </linearGradient>
++        </defs>
++        <g {...glyphPartData("ha-top", motion?.laughTop)} opacity={motion?.laughTop?.opacity} transform={glyphMotionTransform(motion?.laughTop)}>
++          <g fill="#0057c8" transform="translate(0.45 0.55)"><HaStickerLine /></g>
++          <g fill={`url(#${id}-ha)`}><HaStickerLine /></g>
++          <g fill="#f7fdff" opacity="0.72">
++            <ellipse cx="3.1" cy="3.2" rx="1.15" ry="1.7" />
++            <ellipse cx="10.3" cy="3.2" rx="1.15" ry="1.7" />
++            <ellipse cx="20.2" cy="2.6" rx="1.3" ry="1.15" />
++          </g>
++        </g>
++        <g transform="translate(3.4 18.2) scale(0.76)">
++          <g {...glyphPartData("ha-bottom", motion?.laughBottom)} opacity={motion?.laughBottom?.opacity} transform={glyphMotionTransform(motion?.laughBottom)}>
++            <g fill="#0057c8" transform="translate(0.45 0.55)"><HaStickerLine /></g>
++            <g fill={`url(#${id}-ha)`}><HaStickerLine /></g>
++          </g>
++        </g>
++      </svg>
+     );
+   }
+   if (type === "emphasize") {
+@@ -254,13 +249,18 @@
+     return (
+       <svg data-slot="tapback-glyph" data-glyph="emphasize" className={className} style={base} width={w} height={h} viewBox="0 0 18 26.67" aria-hidden="true">
+         <defs><linearGradient id={`${id}-e`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ff8c6e" /><stop offset="0.6" stopColor="#ff4f3f" /><stop offset="1" stopColor="#ff2a34" /></linearGradient></defs>
+-        {[0, 10].map(x => (
+-          <g key={x} transform={`translate(${x} 0)`}>
+-            <path d="M0.2,3.6 A3.8,3.8 0 0 1 7.8,3.6 L6.3,16.3 A2.3,2.3 0 0 1 1.7,16.3 Z" fill={`url(#${id}-e)`} />
+-            <circle cx="4" cy="23.1" r="3.5" fill={`url(#${id}-e)`} />
+-            <ellipse cx="3" cy="3.8" rx="1.3" ry="2" fill="#fff" opacity="0.45" />
+-          </g>
+-        ))}
++        {[0, 10].map(x => {
++          const mark = x === 0 ? motion?.emphasizeFirst : motion?.emphasizeSecond;
++          return (
++            <g key={x} transform={`translate(${x} 0)`}>
++              <g {...glyphPartData(x === 0 ? "emphasize-first" : "emphasize-second", mark)} opacity={mark?.opacity} transform={mark ? `translate(${mark.x} ${mark.y}) scale(${mark.scaleX} ${mark.scaleY})` : undefined}>
++                <path d="M0.2,3.6 A3.8,3.8 0 0 1 7.8,3.6 L6.3,16.3 A2.3,2.3 0 0 1 1.7,16.3 Z" fill={`url(#${id}-e)`} />
++                <circle cx="4" cy="23.1" r="3.5" fill={`url(#${id}-e)`} />
++                <ellipse cx="3" cy="3.8" rx="1.3" ry="2" fill="#fff" opacity="0.45" />
++              </g>
++            </g>
++          );
++        })}
+       </svg>
+     );
+   }
+@@ -269,9 +269,11 @@
+     return (
+       <svg data-slot="tapback-glyph" data-glyph="question" className={className} style={base} width={w} height={h} viewBox="0 0 14.33 25" aria-hidden="true">
+         <defs><linearGradient id={`${id}-q`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c4a8ff" /><stop offset="0.6" stopColor="#9b7cf5" /><stop offset="1" stopColor="#7a5ee0" /></linearGradient></defs>
+-        <path d="M2.4,7.4 A4.9,4.9 0 1 1 8.1,12.1 C7.3,12.6 7.2,13.4 7.2,15.4" fill="none" stroke={`url(#${id}-q)`} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
+-        <circle cx="7.2" cy="22.4" r="2.5" fill={`url(#${id}-q)`} />
+-        <path d="M4.4,5.4 A3.2,3.2 0 0 1 7.6,3.6" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
++        <g {...glyphPartData("question", motion?.question)} opacity={motion?.question?.opacity} transform={motion?.question ? `translate(${motion.question.x} ${motion.question.y}) scale(${motion.question.scaleX} ${motion.question.scaleY})` : undefined}>
++          <path d="M2.4,7.4 A4.9,4.9 0 1 1 8.1,12.1 C7.3,12.6 7.2,13.4 7.2,15.4" fill="none" stroke={`url(#${id}-q)`} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
++          <circle cx="7.2" cy="22.4" r="2.5" fill={`url(#${id}-q)`} />
++          <path d="M4.4,5.4 A3.2,3.2 0 0 1 7.6,3.6" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
++        </g>
+       </svg>
+     );
+   }
+@@ -324,7 +326,7 @@
+     const element = host.current;
+     if (!element || !animateIn) return;
+     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+-    if (reduced) return;
++    if (reduced && appearProgress === undefined) return;
+     // The trailing circles are children, so the one scale below carries them: the capture shows them
+     // at the balloon's own scale in every frame, with no delay to animate separately.
+     const grow = tapbackAppear.growth / tapbackAppear.duration;
+--- a/src/components/imessage/tapback-bar.tsx
++++ b/src/components/imessage/tapback-bar.tsx
+@@ -3,7 +3,7 @@
+ import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+ import { cn } from "@/lib/utils";
+ import { fontStack } from "@/components/imessage/tokens";
+-import { BalloonTrail, pickerBalloonGeometry, TapbackGlyph, tapbackColors, tapbackLabels, tapbackTypes, type TapbackType } from "@/components/imessage/tapback";
++import { BalloonTrail, pickerBalloonGeometry, TapbackGlyph, tapbackColors, tapbackLabels, tapbackTypes, type TapbackGlyphMotion, type TapbackType } from "@/components/imessage/tapback";
+ 
+ /**
+  * Tapback picker, measured from iOS 26 (`references/ios/captures/longpress-ok-light.png`, 3x) and
+@@ -61,6 +61,12 @@
+   style?: CSSProperties;
+   /** Optional per-glyph style hook, used by the long-press overlay to stagger the entrance. */
+   glyphStyle?: (index: number) => CSSProperties | undefined;
++  /** Fitted sub-glyph pose. Only the iOS picker applies it; badges and macOS stay settled. */
++  glyphMotion?: (index: number, item: { type?: TapbackType; emoji?: string }) => TapbackGlyphMotion | undefined;
++  /** Replaces the pill's inset box when the surface is contracting. */
++  surfaceStyle?: CSSProperties;
++  /** Sibling glyph row. Exit fades this independently of the pill. */
++  scrollStyle?: CSSProperties;
+   children?: ReactNode;
+ };
+ 
+@@ -99,7 +105,7 @@
+   );
+ }
+ 
+-export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, onSelect, onPickEmoji, onClose, pickerX, pickerSide = "left", width, autoFocus = false, className, style, glyphStyle, children }: TapbackBarProps) {
++export function TapbackBar({ layout = "ios", selected, recent = defaultRecent, onSelect, onPickEmoji, onClose, pickerX, pickerSide = "left", width, autoFocus = false, className, style, glyphStyle, glyphMotion, surfaceStyle, scrollStyle, children }: TapbackBarProps) {
+   const root = useRef<HTMLDivElement>(null);
+   const items: Array<{ type?: TapbackType; emoji?: string; label: string }> = [
+     ...tapbackTypes.map(type => ({ type, label: tapbackLabels[type] })),
+@@ -108,24 +114,10 @@
+   const selectedIndex = items.findIndex(item => isSelected(selected, item.type, item.emoji));
+   const [focusIndex, setFocusIndex] = useState(selectedIndex >= 0 ? selectedIndex : 0);
+ 
+-  /**
+-   * Focus the bar, not a glyph.
+-   *
+-   * A glyph focused programmatically while the finger is still down matches `:focus-visible` in
+-   * Chrome and paints a blue ring the captures do not have - two vertical bars inside the pill,
+-   * since its rounding clips the ring's ends. The heuristic is not wrong so much as early: a
+-   * touchStart that is still held has not resolved into a click or a scroll yet, so the modality is
+-   * still whatever it was, and a programmatic focus inherits the keyboard default. Isolated:
+-   * a mouse click then `focus()` does not match, a held touchStart then `focus()` does, and a held
+-   * touchStart whose default is prevented does not.
+-   *
+-   * The container takes no ring, `onKeyDown` below still receives every key because it is on this
+-   * element, and the first arrow key moves to a glyph - where a ring is right, because by then the
+-   * person really is on the keyboard.
+-   */
+   useEffect(() => {
+     if (!autoFocus) return;
+-    root.current?.focus({ preventScroll: true });
++    root.current?.querySelector<HTMLButtonElement>(`[data-index="${focusIndex}"]`)?.focus({ preventScroll: true });
++    // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [autoFocus]);
+ 
+   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+@@ -152,7 +144,7 @@
+         style={{ width: slot, height: "100%", ...extra, ...glyphStyle?.(index) }}>
+         {active && layout === "ios" && <span aria-hidden="true" data-slot="tapback-selected-ring" style={{ position: "absolute", width: tapbackBarMetrics.ios.selectedRing, height: tapbackBarMetrics.ios.selectedRing, borderRadius: "50%", background: "var(--im-tapback-ring, " + tapbackColors.selectedRing + ")" }} />}
+         {active && layout === "macos" && <span aria-hidden="true" data-slot="tapback-selected-ring" style={{ position: "absolute", width: 30, height: 30, borderRadius: "50%", background: "var(--im-tapback-ring, " + tapbackColors.selectedRing + ")" }} />}
+-        <TapbackGlyph type={item.type} emoji={item.emoji} size={size} onAccent={active} style={{ position: "relative" }} />
++        <TapbackGlyph type={item.type} emoji={item.emoji} size={size} onAccent={active} style={{ position: "relative" }} motion={layout === "ios" ? glyphMotion?.(index, item) : undefined} />
+       </button>
+     );
+   };
+@@ -165,7 +157,7 @@
+     // rather than a second menu: `menuitemradio` needs a menu ancestor, and a nested `menu` would be
+     // reported as a submenu that has no parent item.
+     return (
+-      <div ref={root} role="group" aria-label="Tapback" data-slot="tapback-bar" data-layout="macos" tabIndex={-1} className={cn("select-none outline-none", className)} onKeyDown={onKeyDown}
++      <div ref={root} role="group" aria-label="Tapback" data-slot="tapback-bar" data-layout="macos" className={cn("select-none", className)} onKeyDown={onKeyDown}
+         style={{ fontFamily: fontStack, paddingInline: m.inset, ...style }}>
+         <div data-slot="tapback-row" style={{ display: "flex", height: m.row1, alignItems: "center" }}>
+           {classics.map((item, i) => glyphButton(item, i, m.glyph, m.slot, { height: m.rowHeight }))}
+@@ -191,10 +183,10 @@
+     boxShadow: "var(--im-glass-shadow, 0 6px 24px rgba(0,0,0,0.10)), inset 0 0 0 0.5px var(--im-glass-rim, rgba(255,255,255,0.55))",
+   };
+   return (
+-    <div ref={root} role="menu" aria-label="Tapback" data-slot="tapback-bar" data-layout="ios" tabIndex={-1} className={cn("select-none outline-none", className)} onKeyDown={onKeyDown}
++    <div ref={root} role="menu" aria-label="Tapback" data-slot="tapback-bar" data-layout="ios" className={cn("select-none", className)} onKeyDown={onKeyDown}
+       style={{ position: "relative", height, width, borderRadius: height / 2, fontFamily: fontStack, ...style }}>
+-      <div data-slot="tapback-pill" style={{ position: "absolute", inset: 0, borderRadius: height / 2, ...glass }} />
+-      <div data-slot="tapback-scroll" className="scrollbar-none" style={{ position: "absolute", inset: 0, borderRadius: height / 2, overflowX: "auto", overflowY: "hidden", display: "flex", alignItems: "center", paddingLeft: m.firstCenter - m.slot / 2, scrollbarWidth: "none" }}>
++      <div data-slot="tapback-pill" style={surfaceStyle ? { ...glass, ...surfaceStyle } : { position: "absolute", inset: 0, borderRadius: height / 2, ...glass }} />
++      <div data-slot="tapback-scroll" className="scrollbar-none" style={{ position: "absolute", inset: 0, borderRadius: height / 2, overflowX: "auto", overflowY: "hidden", display: "flex", alignItems: "center", paddingLeft: m.firstCenter - m.slot / 2, scrollbarWidth: "none", ...scrollStyle }}>
+         {items.map((item, i) => glyphButton(item, i, item.type ? m.glyph : m.emojiSize, m.slot))}
+         <span aria-hidden="true" style={{ flex: "none", width: m.firstCenter - m.slot / 2 }} />
+       </div>
+--- a/src/components/imessage/message-actions.tsx
++++ b/src/components/imessage/message-actions.tsx
+@@ -3,7 +3,8 @@
+ import { useEffect, useId, useLayoutEffect, useRef, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+ import { cn } from "@/lib/utils";
+ import { fontStack, type Direction, type Service } from "@/components/imessage/tokens";
+-import { BalloonTrail, TapbackGlyph, tapbackLabels, type TapbackType } from "@/components/imessage/tapback";
++import { fittedPillBox, tapbackMotion, tapbackVisualAt, type GlyphPartPose, type TapbackTracks } from "@/contracts/tapback-motion";
++import { BalloonTrail, TapbackGlyph, tapbackLabels, type TapbackGlyphMotion, type TapbackType } from "@/components/imessage/tapback";
+ import { TapbackBar, tapbackBarMetrics, type TapbackSelection } from "@/components/imessage/tapback-bar";
+ import { ContextMenu, contextMenuMetrics, iosContextMenuHeight, iosMessageMenu, type ContextMenuItem } from "@/components/imessage/context-menu";
+ 
+@@ -31,46 +32,29 @@
+  * the bubble's corner over ≈130 ms; the pill expands from the picker circle over ≈200 ms; glyphs fade
+  * in left to right with a 17 ms stagger. `progress` (0..1) scrubs the whole timeline.
+  */
+-export const messageActionsTiming = { total: 600, exit: 220, dim: 150, lift: 130, menu: 130, picker: [60, 200], bar: [100, 320], glyphStart: 250, glyphStagger: 17, glyphDuration: 120 } as const;
++export const messageActionsTiming = { total: tapbackMotion.entranceMs, exit: tapbackMotion.exitMs, dim: 150, lift: 130, menu: 130, picker: [60, 200], bar: [100, 320], glyphStart: 250, glyphStagger: 17, glyphDuration: 120 } as const;
+ 
+-/**
+- * The dim behind the overlay. It covers the whole screen: the status bar and the nav bar go under it
+- * with the list, unblurred and not re-drawn above it. Fitted, not guessed — `longpress-ok-light.png`
+- * is `conv3-light.png` with one message pressed, so one capture over the other measures the dim
+- * directly. Outside the overlay's own furniture (device rows 1356-2349) and the status-bar clock (the
+- * two captures are 24 minutes apart) every pixel of that frame is `capture = screen·0.79 +
+- * (22,21,42)·0.21`, residual 0.14/255 mean and 0.9 max over the nav bar's full 0-255 range. Three more
+- * pairs agree: `incoming-light.png` -> `longpress-incoming-light.png` and `conv2-dark.png` ->
+- * `longpress-last-bubble-dark.png` come back at 0.001/255 mean error — exact after rounding — and the
+- * same value carries `longpress-two-line-light.png`. It is one dim in both themes, and one alpha over
+- * every layer: fitting the bands of the light pair separately gives 0.2103/0.2092/0.2130 over the nav
+- * bar, 0.2105/0.2054/0.2129 over the list and 0.2133/0.2118/0.2172 over the composer.
+- *
+- * The (22,18,44) this used to carry renders white as (206,205,210) where every light capture reads
+- * #ceced2 = (206,206,210): the green channel was a level dark everywhere the dim fell.
+- *
+- * Chrome cannot land both ends of this at once, and the last level is its rounding, not the value.
+- * It composites an overlay as `round(src·(1-a₈)) + round(tint·a₈)` with the alpha quantised to
+- * 54/255, so the tint's contribution is one rounded triple: over black it is (5,4,9), which fixes
+- * white at 201+(5,4,9) = (206,205,210). Native rounds the sum instead and gets (5,4,9) over black and
+- * (206,206,210) over white from the same value. (23,22,43) buys the light end (measured over the lab's
+- * nav band: interior G +0.2 instead of -0.8) and loses the dark one by the same level (+1.0 instead of
+- * 0.0), so this keeps the measured number and wears one level of green over bright grounds.
+- *
+- * `--im-dim` still wins wherever a palette sets it, and `tapback.tsx` sets it for both themes; it now
+- * carries this same value. Two fallbacks elsewhere are still the old one and want correcting:
+- * `message-reply.tsx` (the reply-thread dim) and `tapback-details.tsx` (the details scrim).
+- *
+- * KNOWN WRONG, and not fixable from here: this dim reaches the Dynamic Island, and nothing may. The
+- * island is a hardware cutout the OS composites above the app, so it reads #000000 in every capture
+- * that has an overlay over it — `longpress-*`, `newmsg-light.png`, `plus-menu-open-light.png`,
+- * `details-light.png`, `photo-picker-light.png` — while the status bar around it dims with everything
+- * else (#ceced2 under this dim, #cccccc under the sheet's). Under our dim it goes to (5,4,9), a flat
+- * +6 over the island's 125.33×36.67 pt, which is 6.4% of the 0 0 402 168 band. The fix belongs where
+- * the island is drawn (`ios-status-bar.tsx` plus the app's z-order), not in one overlay: every dim in
+- * the app has the same bug.
+- */
+-export const messageActionsDim = "var(--im-dim, rgba(22,21,42,0.21))";
++export type ScriptedTapback = {
++  phase: "enter" | "open" | "select" | "exit";
++  elapsedMs: number;
++  entranceElapsedMs: number;
++  reduced?: boolean;
++};
++
++function optionStyle(part: GlyphPartPose | undefined): CSSProperties | undefined {
++  if (!part) return undefined;
++  return { opacity: part.opacity, transform: `translate(${part.x}px, ${part.y}px) scale(${part.scaleX}, ${part.scaleY})` };
++}
++
++function glyphMotionFor(type: TapbackType | undefined, tracks: TapbackTracks): TapbackGlyphMotion | undefined {
++  if (type === "laugh") return { laughTop: tracks.glyphs.laughTop, laughBottom: tracks.glyphs.laughBottom };
++  if (type === "emphasize") return { emphasizeFirst: tracks.glyphs.emphasizeFirst, emphasizeSecond: tracks.glyphs.emphasizeSecond };
++  if (type === "question") return { question: tracks.glyphs.question };
++  if (type === "love") return { whole: tracks.glyphs.love };
++  if (type === "like") return { whole: tracks.glyphs.like };
++  if (type === "dislike") return { whole: tracks.glyphs.dislike };
++  return undefined;
++}
+ 
+ export const messageActionsMetrics = {
+   /** The lift widens the bubble by this much, up to `liftMaxScale`; height follows the same factor. */
+@@ -120,6 +104,11 @@
+   onExited?: () => void;
+   /** Move focus into the tapback bar on open (default). */
+   autoFocus?: boolean;
++  /**
++   * Canonical long-press pose. When set, entrance and dismissal are declarative and do not
++   * follow the wall clock, `onExited`, or a shared fade of the whole picker.
++   */
++  scripted?: ScriptedTapback;
+   /** Override the lift scale (default: `liftScale(rect)`, uniform). */
+   scale?: number | [number, number];
+   /** Counter-scale for the text inside the lifted bubble. Native scales it with the bubble, so 1. */
+@@ -151,7 +140,7 @@
+   return { outgoing, lifted, bar, menu, shift, bubbleTranslate: shift + m.liftY, pickerX: pickerCenterX - bar.left };
+ }
+ 
+-export function MessageActions({ rect, frame, direction = "outgoing", service = "imessage", tail = false, children, items = iosMessageMenu, selected, wash, recent, details, onSelect, onAction, onPickEmoji, onClose, progress, open = true, onExited, autoFocus = true, scale: scaleProp, textScale: textScaleProp, className, style }: MessageActionsProps) {
++export function MessageActions({ rect, frame, direction = "outgoing", service = "imessage", tail = false, children, items = iosMessageMenu, selected, wash, recent, details, onSelect, onAction, onPickEmoji, onClose, progress, open = true, onExited, autoFocus = true, scale: scaleProp, textScale: textScaleProp, scripted, className, style }: MessageActionsProps) {
+   const root = useRef<HTMLDivElement>(null);
+   const scrub = useRef<((time: number | null) => void) | null>(null);
+   const id = useId().replace(/:/g, "");
+@@ -160,6 +149,14 @@
+   const textScale = textScaleProp ?? 1;
+   const L = layoutMessageActions({ rect, frame, direction, scale, items, tail });
+   const side = L.outgoing ? "left" : "right";
++  const scriptedMotion = scripted != null;
++  const tracks = scripted ? tapbackVisualAt(scripted) : null;
++  const liftAmount = tracks ? tracks.lift : 1;
++  const liftedTransform = tracks
++    ? `translateY(${liftAmount * L.bubbleTranslate}px) scale(${1 + (scale[0] - 1) * liftAmount}, ${1 + (scale[1] - 1) * liftAmount})`
++    : `translateY(${L.bubbleTranslate}px) scale(${scale[0]}, ${scale[1]})`;
++  const barWidth = L.bar.right - L.bar.left;
++  const pill = tracks ? fittedPillBox(tracks.pillExpand, tracks.pillRemain, barWidth, L.bar.height) : null;
+ 
+   useEffect(() => {
+     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { event.preventDefault(); onClose?.(); } };
+@@ -209,6 +206,7 @@
+ 
+   // Build the entrance timeline once with the Web Animations API so it can be played or scrubbed.
+   useLayoutEffect(() => {
++    if (scriptedMotion) return;
+     const el = root.current;
+     if (!el) return;
+     const t = messageActionsTiming;
+@@ -248,22 +246,24 @@
+     };
+     return () => { list.forEach(a => a.cancel()); scrub.current = null; };
+     // The timeline depends on the final layout only; a new layout remounts via `key` upstream.
++    // Layout is captured when the live timeline is created. Scripted poses do not use this clock.
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+-  }, []);
++  }, [scriptedMotion]);
+ 
+   useEffect(() => {
++    if (scriptedMotion) return;
+     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+     if (progress !== undefined) scrub.current?.(Math.min(1, Math.max(0, progress)) * messageActionsTiming.total);
+     else if (reduced) scrub.current?.(messageActionsTiming.total);
+     else scrub.current?.(null);
+-  }, [progress]);
++  }, [progress, scriptedMotion]);
+ 
+   // Dismissal. The entrance animations are cancelled once they settle (so the glass keeps its
+   // backdrop), so this is a fresh, shorter timeline that folds everything back toward the bubble.
+   const exited = useRef(onExited);
+   useEffect(() => { exited.current = onExited; }, [onExited]);
+   useEffect(() => {
+-    if (open) return;
++    if (scriptedMotion || open) return;
+     const overlay = root.current;
+     const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+     if (!overlay || reduced) { exited.current?.(); return; }
+@@ -281,31 +281,35 @@
+     if (!running.length) { finish(); return; }
+     Promise.allSettled(running.map(a => a.finished)).then(finish);
+     return () => running.forEach(a => { try { a.cancel(); } catch { /* already gone */ } });
+-  }, [open]);
++  }, [open, scriptedMotion]);
+ 
+   return (
+     // z-20 clears the reaction balloons the list paints at z-10, so they dim and blur with everything else.
+-    <div ref={root} data-slot="message-actions" data-direction={direction} role="dialog" aria-modal="true" aria-label="Message options"
+-      onKeyDown={onRootKeyDown} className={cn("absolute inset-0 z-20 select-none outline-none", className)} style={{ fontFamily: fontStack, ...style }}>
++      <div ref={root} data-slot="message-actions" data-direction={direction} data-phase={scripted?.phase} data-lift={tracks ? tracks.lift : undefined} data-glyph-row={tracks ? tracks.glyphRowOpacity : undefined} data-pill-remain={tracks ? tracks.pillRemain : undefined} data-menu-opacity={tracks ? tracks.menuOpacity : undefined} role="dialog" aria-modal="true" aria-label="Message options"
++      onKeyDown={onRootKeyDown} className={cn("absolute inset-0 z-20 select-none outline-none", className)} style={{ fontFamily: fontStack, pointerEvents: tracks && tracks.backdrop <= 0.02 && tracks.pillOpacity <= 0.02 && tracks.glyphRowOpacity <= 0.02 ? "none" : undefined, ...style }}>
+       {/* The lift is a transform, so the bubble's own shrink-to-fit measures its line boxes in scaled
+           screen pixels and would set a frame that is `scale` too wide. Pin it to the measured body. */}
+       <style>{`[data-actions="${id}"] [data-slot="bubble"] > span:last-child { display: inline-block; transform-origin: 50% 50%; transform: scale(var(--im-lift-text, 1)); }
+ [data-actions="${id}"] [data-slot="bubble-frame"] { max-width: ${rect.width}px !important; }`}</style>
+-      <div data-slot="backdrop" aria-hidden="true" onClick={onClose} style={{ position: "absolute", inset: 0, background: messageActionsDim }} />
++      <div data-slot="backdrop" aria-hidden="true" onClick={onClose} style={{ position: "absolute", inset: 0, background: "var(--im-dim, rgba(22,18,44,0.21))", opacity: tracks?.backdrop, pointerEvents: tracks && tracks.backdrop <= 0.02 ? "none" : undefined }} />
+       {/* The lifted bubble casts its own shadow onto the dimmed list. Fitted beside the "Ok" bubble in
+           `longpress-ok-light.png`, where nothing else contributes: the dim (#ceced2 over white) reads
+           194 at 0.7 pt out, 196 at 4, 198 at 7.3, 201 at 12.3 and 202 at 14, and 188 just under the body.
+           One tight layer carries the edge and one wide layer the falloff; both reproduce within 1/255.
+           `drop-shadow` rather than `box-shadow` so the tail and the reaction balloon cast it too. */}
+-      <div data-slot="lifted-bubble" data-actions={id} data-service={service} style={{ position: "absolute", left: rect.x, top: rect.y, width: rect.width, height: rect.height, transformOrigin: L.outgoing ? "100% 50%" : "0% 50%", transform: `translateY(${L.bubbleTranslate}px) scale(${scale[0]}, ${scale[1]})`, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.07)) drop-shadow(0 6px 24px rgba(0,0,0,0.13))", "--im-lift-text": String(textScale) } as CSSProperties}>
++      <div data-slot="lifted-bubble" data-actions={id} data-service={service} style={{ position: "absolute", left: rect.x, top: rect.y, width: rect.width, height: rect.height, transformOrigin: L.outgoing ? "100% 50%" : "0% 50%", transform: liftedTransform, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.07)) drop-shadow(0 6px 24px rgba(0,0,0,0.13))", "--im-lift-text": String(textScale) } as CSSProperties}>
+         {children}
+       </div>
+-      <TapbackBar layout="ios" selected={selected} recent={recent} onSelect={onSelect} onPickEmoji={onPickEmoji} autoFocus={autoFocus}
+-        pickerX={L.pickerX} pickerSide={side} width={L.bar.right - L.bar.left}
++      <TapbackBar layout="ios" selected={selected} recent={recent} onSelect={onSelect} onPickEmoji={onPickEmoji} autoFocus={autoFocus && !scriptedMotion}
++        pickerX={L.pickerX} pickerSide={side} width={barWidth}
++        glyphStyle={tracks ? (index) => index < 0 ? { opacity: tracks.bubbleOpacity, transform: `scale(${tracks.bubbleScale})` } : optionStyle(tracks.options[index]) : undefined}
++        glyphMotion={tracks ? (_index, item) => glyphMotionFor(item.type, tracks) : undefined}
++        surfaceStyle={pill && tracks ? { position: "absolute", left: pill.left, top: pill.top, width: pill.width, height: pill.height, borderRadius: pill.radius, ...(pill.opacity * tracks.pillOpacity < 0.999 ? { opacity: pill.opacity * tracks.pillOpacity } : {}) } : undefined}
++        scrollStyle={tracks ? { opacity: tracks.glyphRowOpacity, visibility: tracks.glyphRowOpacity <= 0.02 ? "hidden" : undefined, pointerEvents: tracks.glyphRowOpacity <= 0.02 ? "none" : undefined } : undefined}
+         style={{ position: "absolute", left: L.bar.left, top: L.bar.top + L.shift }} />
+       <ContextMenu variant="ios" items={items} onAction={onAction}
+         wash={wash === undefined ? (service === "sms" ? "var(--im-green-bottom, #31c355)" : L.outgoing ? "var(--im-blue-bottom, #3583f6)" : "var(--im-gray-bottom, #e9e9eb)") : wash ?? undefined}
+-        style={{ position: "absolute", left: L.menu.left, top: L.menu.top + L.shift, transformOrigin: L.outgoing ? "100% 0%" : "0% 0%" }} />
++        style={{ position: "absolute", left: L.menu.left, top: L.menu.top + L.shift, transformOrigin: L.outgoing ? "100% 0%" : "0% 0%", ...(tracks ? { ...(tracks.menuOpacity < 0.999 ? { opacity: tracks.menuOpacity } : {}), ...(Math.abs(tracks.menuScale - 1) > 0.001 ? { transform: `scale(${tracks.menuScale})` } : {}), visibility: tracks.menuOpacity <= 0.02 ? "hidden" : undefined } : {}) }} />
+       {selected && details && <TapbackDetails selection={selected} initials={details.initials} name={details.name} style={{ position: "absolute", left: frame.width / 2 - tapbackDetailsMetrics.width / 2, top: tapbackDetailsMetrics.top }} />}
+     </div>
+   );

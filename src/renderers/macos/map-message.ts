@@ -17,7 +17,15 @@ export function mapDemoMessage(message: DemoMessage): Message {
     direction: message.direction,
     sentAt: message.atMs,
     // Validation keeps app cards off macOS; the pinned MessageKind has no such row.
-    kind: message.kind === "app-card" ? undefined : message.kind,
+    kind:
+      message.kind === "text" ||
+      message.kind === "link" ||
+      message.kind === "attachment" ||
+      message.kind === "image" ||
+      message.kind === "audio" ||
+      message.kind === "system"
+        ? message.kind
+        : undefined,
     service: message.service,
     status: message.status,
     effect: message.effect,

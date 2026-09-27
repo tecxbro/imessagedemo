@@ -1,0 +1,116 @@
+{
+  "id": "sweetgreen-harvest",
+  "title": "sweetgreen Autumn Harvest",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "sweetgreen",
+    "initials": "SG"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "ask",
+      "text": "What's warm near Spring St? I've got 20 minutes.",
+      "direction": "outgoing",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "bowl",
+      "text": "Autumn Harvest Bowl is on the fall menu. Blackened chicken, maple brussels, sweet potatoes, apples, and wild rice. Spring St has it.",
+      "direction": "incoming",
+      "atMs": 1790008742800
+    },
+    {
+      "id": "hold-ask",
+      "text": "Want one held for 12:30 under Maya?",
+      "direction": "incoming",
+      "atMs": 1790008749600
+    },
+    {
+      "id": "yes",
+      "text": "Yes. No bacon.",
+      "direction": "outgoing",
+      "atMs": 1790008750800,
+      "status": "delivered"
+    },
+    {
+      "id": "held",
+      "text": "Held for 12:30, no bacon. I'll text when it's at the counter.",
+      "direction": "incoming",
+      "atMs": 1790008753200
+    }
+  ],
+  "events": [
+    {
+      "type": "typing",
+      "atMs": 1790008740900,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008742800,
+      "typing": false
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008743600,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "bowl"
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008745600,
+      "overlay": {
+        "kind": "long-press",
+        "messageId": "bowl",
+        "selected": {
+          "type": "love"
+        }
+      }
+    },
+    {
+      "type": "overlay",
+      "atMs": 1790008745633,
+      "overlay": {
+        "kind": "closed"
+      }
+    },
+    {
+      "type": "reaction",
+      "atMs": 1790008746100,
+      "messageId": "bowl",
+      "reactionId": "love-bowl",
+      "reaction": {
+        "type": "love",
+        "byMe": true
+      }
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008747800,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008749600,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008751600,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790008753200,
+      "typing": false
+    }
+  ]
+}

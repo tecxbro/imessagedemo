@@ -1,6 +1,6 @@
 {
   "pin": "vendor/upstream/lock.json",
-  "registryUrl": "https://imessage-ui.swerdlowbenjamin.workers.dev/r/registry.json",
+  "registryUrl": "https://imessage.swerdlow.dev/r/registry.json",
   "supported": [
     { "id": "text", "anchors": ["MessageKind", "Message", "MessageList"] },
     { "id": "link", "anchors": ["MessageKind", "LinkPreview"] },
@@ -31,27 +31,27 @@
     { "id": "audio-control", "anchors": ["MessageAudio"] },
     { "id": "time-reveal", "anchors": ["useSwipeToRevealTimes"] },
     { "id": "notice", "anchors": ["UnknownSenderNotice", "SystemMessage"] },
+    { "id": "system-message", "anchors": ["SystemMessage", "SystemMessageEvent"] },
+    { "id": "group", "anchors": ["GroupAvatar", "GroupDetails"] },
+    { "id": "ios-search", "anchors": ["IosSearch"] },
+    { "id": "sticker", "anchors": ["StickerPicker"] },
+    { "id": "audio-recorder", "anchors": ["AudioRecorder"] },
+    { "id": "tapback-details", "anchors": ["TapbackDetailsPlatter"] },
+    { "id": "facetime-card", "anchors": ["FaceTimeCard"] },
+    { "id": "poll", "anchors": ["IosPoll"] },
+    { "id": "conversation-list", "anchors": ["IosConversationList"] },
+    { "id": "new-message", "anchors": ["IosNewMessageSheet"] },
     { "id": "app-card", "anchors": ["MessageList", "IosMessagesApp"], "note": "iOS only. kind \"app-card\" with appCard { url, live: true, app: \"checkout\", height? } embeds one live Photon checkout in the thread from an origin listed in VITE_PHOTON_CHECKOUT_ORIGINS; its Apple Pay button opens the recreated full-phone Apple Pay presentation. Repo-owned renderer code, not a pinned component." }
   ],
   "catalogueOnly": [
-    { "id": "facetime-card", "anchors": ["FaceTimeCard"], "reason": "Standalone component. It is not a MessageKind in the pin." },
-    { "id": "system-message", "anchors": ["SystemMessage", "SystemMessageEvent"], "reason": "Group-chat system rows stay catalogue-only. Non-group notices use a notice event." },
-    { "id": "ios-list", "anchors": ["IosScreen", "IosConversationList"], "reason": "Not a message kind. Author the conversation list with screen \"list\" on an iOS flow; ios-shell covers that screen." },
-    { "id": "mac-context-menu", "anchors": ["ContextMenu"], "reason": "Caller-owned." },
-    { "id": "mac-plus-menu", "anchors": ["MacPlusMenu"], "reason": "Caller-owned." }
+    { "id": "mac-context-menu", "anchors": ["ContextMenu"], "reason": "macOS caller-owned menu. It is not an iOS authoring surface." },
+    { "id": "mac-plus-menu", "anchors": ["MacPlusMenu"], "reason": "macOS caller-owned menu. The iOS plus menu is supported." },
+    { "id": "macos-details", "anchors": ["MacDetails"], "reason": "macOS details stay on the macOS shell. iOS details and group details are supported." }
   ],
   "unsupported": [
-    { "id": "polls", "reason": "No poll symbol in the pinned registry or its docs. Not added because a human mentioned polls." },
-    { "id": "mini-apps", "reason": "No Photon or mini-app package is installed, and the pin has no mini-app module. The only exception is the live Photon checkout card (kind \"app-card\", app \"checkout\", iOS), which the renderer hosts itself." }
+    { "id": "mini-apps", "reason": "No Photon or mini-app package is installed. The only exception is the live Photon checkout card (kind \"app-card\", app \"checkout\", iOS), which the renderer hosts itself." },
+    { "id": "native-call", "reason": "A FaceTime card shows a visual state. It does not place a call." },
+    { "id": "native-payment", "reason": "Apple Cash and Apple Pay controls do not move money. The checkout card stays a presentation." }
   ],
-  "absentFromPin": [
-    { "id": "audio-recorder", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "group-avatar", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "group-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "ios-search", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "macos-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "sticker-picker", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "tapback-details", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },
-    { "id": "system-message-kind", "reason": "imessage.swerdlow.dev MessageKind includes system. The pinned MessageKind does not." }
-  ]
+  "absentFromPin": []
 }

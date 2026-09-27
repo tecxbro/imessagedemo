@@ -16,6 +16,7 @@ import {
 import { renderIosOverlays, renderNotices, renderSwipeTimes } from "@/renderers/ios/overlays";
 import { MessageBubble } from "@/components/imessage/message-bubble";
 import { MessageList } from "@/components/imessage/message-list";
+import { MessageSelectionRow } from "@/components/imessage/ios-select-mode";
 
 const contact = { name: "Alex Morgan", initials: "AM" };
 const sentAt = 1_758_470_000_000;
@@ -214,10 +215,11 @@ describe("iOS overlays render from canonical state", () => {
 
   it("wraps the live message row instead of an empty selection placeholder", () => {
     const html = renderToStaticMarkup(
-      <MessageList
-        messages={[{ id: "m1", text: "Are you close?", direction: "incoming", sentAt }]}
-        iosSelection={{ active: true, progress: 1, messageIds: ["m1"] }}
-      />,
+      <MessageSelectionRow selected active progress={1} label="Are you close?">
+        <MessageList
+          messages={[{ id: "m1", text: "Are you close?", direction: "incoming", sentAt }]}
+        />
+      </MessageSelectionRow>,
     );
     expect(html).toContain("data-slot=\"message-selection-row\"");
     expect(html).toContain("data-message-id=\"m1\"");
@@ -236,7 +238,7 @@ describe("iOS overlays render from canonical state", () => {
     const state = stateAt(compiled, 200);
     const noticeHtml = renderToStaticMarkup(<>{renderNotices(state)}</>);
     expect(noticeHtml).toContain("data-slot=\"unknown-sender-notice\"");
-    expect(noticeHtml).toContain("Missed Call");
+    expect(noticeHtml).toContain("Missed FaceTime audio call");
 
     const swipeHtml = renderToStaticMarkup(
       <>{renderSwipeTimes(state, "4:41", <MessageBubble direction="incoming" tail>Swipe</MessageBubble>)}</>,

@@ -48,6 +48,10 @@ export type ConversationState = {
   draft: string;
   typing: boolean;
   scroll: number;
+  overlay: OverlayState;
+  audio: AudioControlState | null;
+  timeReveal: number;
+  notices: SystemNotice[];
 };
 
 export type RuntimeDemo = CompiledDemo;
@@ -88,7 +92,8 @@ export type CueKind =
   | "conversation"
   | "selection-text"
   | "overlay-enter"
-  | "overlay-exit";
+  | "overlay-exit"
+  | "overlay-select";
 
 export type CueDetail = {
   direction?: Direction;
@@ -101,6 +106,8 @@ export type CueDetail = {
   fromConversationId?: string;
   toConversationId?: string;
   overlay?: OverlayState;
+  /** Canonical open time of the long-press gesture this cue dismisses or updates. */
+  longPressEntranceStartedAtMs?: number;
 };
 
 export type Cue = {

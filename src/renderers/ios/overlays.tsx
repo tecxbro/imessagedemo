@@ -46,7 +46,7 @@ export function noticeToSystemEvent(notice: SystemNotice): SystemMessageEvent | 
     case "unknown-sender":
       return { type: "unknownSender" };
     case "missed-call":
-      return { type: "missedCall", kind: notice.call };
+      return null;
     case "not-delivered":
       return null;
   }
@@ -60,7 +60,11 @@ export function renderNotice(notice: SystemNotice, key?: string): ReactNode {
     return <NotDelivered key={key ?? `${notice.kind}:${notice.messageId}`} />;
   }
   if (notice.kind === "missed-call") {
-    return <SystemMessage key={key ?? `${notice.kind}:${notice.call}`} event={{ type: "missedCall", kind: notice.call }} platform="ios" />;
+    return (
+      <div key={key ?? `${notice.kind}:${notice.call}`} data-slot="system-message" data-event="missed-call" data-call={notice.call}>
+        Missed FaceTime {notice.call} call
+      </div>
+    );
   }
   return null;
 }

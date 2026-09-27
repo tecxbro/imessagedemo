@@ -23,7 +23,7 @@ describe("source integrity", () => {
     expect(lock.source).toBe("live");
     const native = lock.unavailable.find((item) => item.id === "native-captures");
     expect(native).toMatchObject({ archived: false, reason: "No native capture set was supplied. None is claimed." });
-    const result = spawnSync(process.execPath, ["scripts/check-upstream.mjs"], { cwd: root, encoding: "utf8" });
+    const result = spawnSync(process.execPath, ["node_modules/tsx/dist/cli.mjs", "scripts/check-upstream.ts"], { cwd: root, encoding: "utf8" });
     expect(result.status).toBe(0);
   });
 });

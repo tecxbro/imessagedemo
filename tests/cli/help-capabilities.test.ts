@@ -36,7 +36,7 @@ describe("CLI help and capabilities", () => {
     expect(code).toBe(0);
     const payload = parseStdoutJson(io.stdout()) as { ok: boolean; unsupported: { id: string }[] };
     expect(payload.ok).toBe(true);
-    expect(payload.unsupported.map((item) => item.id)).toEqual(["polls", "mini-apps"]);
+    expect(payload.unsupported.map((item) => item.id)).toEqual(["mini-apps", "native-call", "native-payment"]);
     expect(io.stdout().trim().split("\n")).toHaveLength(1);
   });
 
@@ -51,7 +51,8 @@ describe("CLI spawn entry", () => {
     const result = await spawnDemo(["capabilities", "--json"]);
     expect(result.code).toBe(0);
     const payload = JSON.parse(result.stdout.trim()) as { unsupported: { id: string }[] };
-    expect(payload.unsupported[0]?.id).toBe("polls");
+    expect(payload.unsupported.map((item) => item.id)).toContain("mini-apps");
+    expect(payload.unsupported.map((item) => item.id)).not.toContain("polls");
   });
 });
 

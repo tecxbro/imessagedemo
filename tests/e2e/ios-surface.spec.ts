@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator } from "@playwright/test";
+import { tapbackMotion } from "../../src/contracts/tapback-motion";
 import { installObservers, openFlow, projectAxes, seek } from "./harness";
 import type { Scenario } from "./harness";
 
@@ -12,8 +13,8 @@ const cue = {
   threadEnter: 260,
   threadExit: 200,
   imageViewer: 300,
-  longPressEnter: 600,
-  longPressExit: 220,
+  longPressEnter: tapbackMotion.entranceMs,
+  longPressExit: tapbackMotion.exitMs,
   effectsPickerEnter: 260,
   confetti: 4200,
   undo: 420,

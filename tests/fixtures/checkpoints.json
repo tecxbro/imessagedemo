@@ -1809,7 +1809,7 @@
       {
         "id": "emoji-ios-light__emoji-ios-light-m01",
         "atMs": 1790008740000,
-        "label": "🎉",
+        "label": "\ud83c\udf89",
         "messageIds": [
           "emoji-ios-light-m01"
         ]
@@ -1817,7 +1817,7 @@
       {
         "id": "emoji-ios-light__emoji-ios-light-m02",
         "atMs": 1790008800000,
-        "label": "👍",
+        "label": "\ud83d\udc4d",
         "messageIds": [
           "emoji-ios-light-m01",
           "emoji-ios-light-m02"
@@ -1831,7 +1831,7 @@
       {
         "id": "emoji-ios-dark__emoji-ios-dark-m01",
         "atMs": 1790008740000,
-        "label": "🎉",
+        "label": "\ud83c\udf89",
         "messageIds": [
           "emoji-ios-dark-m01"
         ]
@@ -1839,7 +1839,7 @@
       {
         "id": "emoji-ios-dark__emoji-ios-dark-m02",
         "atMs": 1790008800000,
-        "label": "👍",
+        "label": "\ud83d\udc4d",
         "messageIds": [
           "emoji-ios-dark-m01",
           "emoji-ios-dark-m02"
@@ -1853,7 +1853,7 @@
       {
         "id": "emoji-macos-light__emoji-macos-light-m01",
         "atMs": 1790008740000,
-        "label": "🎉",
+        "label": "\ud83c\udf89",
         "messageIds": [
           "emoji-macos-light-m01"
         ]
@@ -1861,7 +1861,7 @@
       {
         "id": "emoji-macos-light__emoji-macos-light-m02",
         "atMs": 1790008800000,
-        "label": "👍",
+        "label": "\ud83d\udc4d",
         "messageIds": [
           "emoji-macos-light-m01",
           "emoji-macos-light-m02"
@@ -1875,7 +1875,7 @@
       {
         "id": "emoji-macos-dark__emoji-macos-dark-m01",
         "atMs": 1790008740000,
-        "label": "🎉",
+        "label": "\ud83c\udf89",
         "messageIds": [
           "emoji-macos-dark-m01"
         ]
@@ -1883,7 +1883,7 @@
       {
         "id": "emoji-macos-dark__emoji-macos-dark-m02",
         "atMs": 1790008800000,
-        "label": "👍",
+        "label": "\ud83d\udc4d",
         "messageIds": [
           "emoji-macos-dark-m01",
           "emoji-macos-dark-m02"
@@ -2173,6 +2173,209 @@
           "ios-surface-ios-dark-m7",
           "ios-surface-ios-dark-m8",
           "ios-surface-ios-dark-m9"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "everything-exposed",
+    "checkpoints": [
+      {
+        "id": "everything-exposed__hi",
+        "atMs": 1790008800000,
+        "label": "Are you close?",
+        "messageIds": [
+          "hi"
+        ]
+      },
+      {
+        "id": "everything-exposed__wave",
+        "atMs": 1790008800900,
+        "label": "\ud83d\udc4b",
+        "messageIds": [
+          "hi",
+          "wave"
+        ]
+      },
+      {
+        "id": "everything-exposed__way",
+        "atMs": 1790008802000,
+        "label": "On my way",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way"
+        ]
+      },
+      {
+        "id": "everything-exposed__note",
+        "atMs": 1790008803600,
+        "label": "The gate is on the south side, past the fountain.",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note"
+        ]
+      },
+      {
+        "id": "everything-exposed__reply",
+        "atMs": 1790008809800,
+        "label": "Leaving now",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply"
+        ]
+      },
+      {
+        "id": "everything-exposed__link",
+        "atMs": 1790008811000,
+        "label": "https://example.com/notes",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link"
+        ]
+      },
+      {
+        "id": "everything-exposed__file",
+        "atMs": 1790008811800,
+        "label": "file",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link",
+          "file"
+        ]
+      },
+      {
+        "id": "everything-exposed__photos",
+        "atMs": 1790008812600,
+        "label": "photos",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link",
+          "file",
+          "photos"
+        ]
+      },
+      {
+        "id": "everything-exposed__voice",
+        "atMs": 1790008813600,
+        "label": "voice",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link",
+          "file",
+          "photos",
+          "voice"
+        ]
+      },
+      {
+        "id": "everything-exposed__there",
+        "atMs": 1790008816800,
+        "label": "See you there",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link",
+          "file",
+          "photos",
+          "voice",
+          "there"
+        ]
+      },
+      {
+        "id": "everything-exposed__sms",
+        "atMs": 1790008831600,
+        "label": "Texted you the gate code.",
+        "messageIds": [
+          "hi",
+          "wave",
+          "way",
+          "note",
+          "reply",
+          "link",
+          "file",
+          "photos",
+          "voice",
+          "there",
+          "sms"
+        ]
+      }
+    ]
+  },
+  {
+    "scenarioId": "sweetgreen-harvest",
+    "checkpoints": [
+      {
+        "id": "sweetgreen-harvest__ask",
+        "atMs": 1790008740000,
+        "label": "What's warm near Spring St? I've got 20 minutes.",
+        "messageIds": [
+          "ask"
+        ]
+      },
+      {
+        "id": "sweetgreen-harvest__bowl",
+        "atMs": 1790008742800,
+        "label": "Autumn Harvest Bowl is on the fall menu. Blackened chicken, maple brussels, sweet potatoes, apples, and wild rice. Spring St has it.",
+        "messageIds": [
+          "ask",
+          "bowl"
+        ]
+      },
+      {
+        "id": "sweetgreen-harvest__hold-ask",
+        "atMs": 1790008749600,
+        "label": "Want one held for 12:30 under Maya?",
+        "messageIds": [
+          "ask",
+          "bowl",
+          "hold-ask"
+        ]
+      },
+      {
+        "id": "sweetgreen-harvest__yes",
+        "atMs": 1790008750800,
+        "label": "Yes. No bacon.",
+        "messageIds": [
+          "ask",
+          "bowl",
+          "hold-ask",
+          "yes"
+        ]
+      },
+      {
+        "id": "sweetgreen-harvest__held",
+        "atMs": 1790008753200,
+        "label": "Held for 12:30, no bacon. I'll text when it's at the counter.",
+        "messageIds": [
+          "ask",
+          "bowl",
+          "hold-ask",
+          "yes",
+          "held"
         ]
       }
     ]

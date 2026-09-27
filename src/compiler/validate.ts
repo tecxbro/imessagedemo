@@ -12,6 +12,7 @@ import type {
   MessageKind,
   MessageStatus,
   OverlayState,
+  PickerSelection,
   Reaction,
   ScreenEffectName,
   Service,
@@ -21,9 +22,10 @@ import type {
 } from "@/contracts";
 import capabilities from "@/contracts/capabilities.json";
 import { isPlainObject, issue, pointer } from "./issues";
+import { readMessageExtras } from "./message-extras";
 import { arrivalWindow, bubbleEffectDurationMs } from "./motion";
 
-const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card"]);
+const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll"]);
 /** Decorations the thread would draw on the hidden placeholder row rather than on the live card. */
 const APP_CARD_EXCLUDED_FIELDS = ["status", "reactions", "replyTo", "edited"] as const;
 /** Query parameters the renderer appends to an app card URL itself. */
@@ -45,6 +47,11 @@ const IOS_ONLY_OVERLAYS = new Set<OverlayState["kind"]>([
   "details",
   "photo-picker",
   "selection",
+  "search",
+  "recorder",
+  "tapback-details",
+  "sticker-picker",
+  "poll-details",
 ]);
 
 const ROOT_FIELDS = new Set([
@@ -59,6 +66,11 @@ const ROOT_FIELDS = new Set([
   "screen",
   "messages",
   "events",
+  "participants",
+  "group",
+  "conversations",
+  "selectedConversationId",
+  "library",
 ]);
 
 const MESSAGE_FIELDS = new Set([
@@ -84,14 +96,22 @@ const MESSAGE_FIELDS = new Set([
   "revealed",
   "replyCount",
   "platforms",
+  "sender",
+  "senderId",
+  "senderInitials",
+  "senderPhoto",
+  "conversationId",
+  "system",
+  "facetime",
+  "sticker",
+  "stickers",
+  "poll",
 ]);
 
 const unsupportedReason = new Map(capabilities.unsupported.map((entry) => [entry.id, entry.reason]));
 const catalogueReason = new Map(capabilities.catalogueOnly.map((entry) => [entry.id, entry.reason]));
 
 const unsupportedKinds = new Map<string, string>([
-  ["poll", "polls"],
-  ["polls", "polls"],
   ["mini-app", "mini-apps"],
   ["mini-apps", "mini-apps"],
   ["miniapp", "mini-apps"],
@@ -100,11 +120,6 @@ const unsupportedKinds = new Map<string, string>([
 ]);
 
 const catalogueKinds = new Map<string, string>([
-  ["system", "system-message"],
-  ["system-message", "system-message"],
-  ["facetime", "facetime-card"],
-  ["face-time", "facetime-card"],
-  ["facetime-card", "facetime-card"],
   ["ios-list", "ios-list"],
   ["mac-context-menu", "mac-context-menu"],
   ["mac-plus-menu", "mac-plus-menu"],
@@ -274,9 +289,91 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
   }
 
   const demo: DemoFlow = { id, title, platform, theme, contact, nowMs, draft, typing, screen, messages };
+  const roster = readRoster(input, issues, platform);
+  if (roster.participants) demo.participants = roster.participants;
+  if (roster.group) demo.group = roster.group;
+  if (roster.conversations) demo.conversations = roster.conversations;
+  if (roster.selectedConversationId) demo.selectedConversationId = roster.selectedConversationId;
+  if (roster.library) demo.library = roster.library;
   const timeline = [...derived, ...events];
   if (timeline.length > 0) demo.events = timeline;
   return { issues, demo };
+}
+
+function readRoster(input: Record<string, unknown>, issues: ValidationIssue[], platform: DemoPlatform | undefined): Pick<DemoFlow, "participants" | "group" | "conversations" | "selectedConversationId" | "library"> {
+  const roster: Pick<DemoFlow, "participants" | "group" | "conversations" | "selectedConversationId" | "library"> = {};
+  const iosOnly = (path: string, label: string) => {
+    if (platform === "macos") issues.push(issue(path, "PLATFORM_MISMATCH", `${label} is an iOS conversation feature and is not a macOS target`));
+  };
+  if (Object.hasOwn(input, "participants")) {
+    iosOnly(pointer(["participants"]), "participants");
+    if (!Array.isArray(input.participants)) issues.push(issue(pointer(["participants"]), "INVALID_TYPE", "participants must be an array"));
+    else {
+      const people = [];
+      const ids = new Set<string>();
+      for (const [index, person] of input.participants.entries()) {
+        if (!isPlainObject(person) || typeof person.id !== "string" || typeof person.name !== "string" || person.id.length === 0 || person.name.length === 0) {
+          issues.push(issue(pointer(["participants", index]), "INVALID_VALUE", "each participant needs an id and a name"));
+          continue;
+        }
+        if (ids.has(person.id)) issues.push(issue(pointer(["participants", index, "id"]), "DUPLICATE_ID", `duplicate participant id ${JSON.stringify(person.id)}`));
+        ids.add(person.id);
+        people.push({
+          id: person.id,
+          name: person.name,
+          ...(typeof person.initials === "string" ? { initials: person.initials } : {}),
+          ...(typeof person.photo === "string" ? { photo: person.photo } : {}),
+          ...(typeof person.me === "boolean" ? { me: person.me } : {}),
+        });
+      }
+      roster.participants = people;
+    }
+  }
+  if (Object.hasOwn(input, "group")) {
+    iosOnly(pointer(["group"]), "group");
+    if (!isPlainObject(input.group)) issues.push(issue(pointer(["group"]), "INVALID_TYPE", "group must be an object"));
+    else {
+      roster.group = {
+        ...(typeof input.group.name === "string" ? { name: input.group.name } : {}),
+        ...(typeof input.group.photo === "string" ? { photo: input.group.photo } : {}),
+      };
+    }
+  }
+  if (Object.hasOwn(input, "conversations")) {
+    iosOnly(pointer(["conversations"]), "conversations");
+    if (!Array.isArray(input.conversations)) issues.push(issue(pointer(["conversations"]), "INVALID_TYPE", "conversations must be an array"));
+    else {
+      roster.conversations = input.conversations.flatMap((conversation, index) => {
+        if (!isPlainObject(conversation) || typeof conversation.id !== "string" || !isPlainObject(conversation.contact) || typeof conversation.contact.name !== "string") {
+          issues.push(issue(pointer(["conversations", index]), "INVALID_VALUE", "each conversation needs an id and a contact name"));
+          return [];
+        }
+        return [{
+          id: conversation.id,
+          contact: {
+            name: conversation.contact.name,
+            ...(typeof conversation.contact.initials === "string" ? { initials: conversation.contact.initials } : {}),
+            ...(typeof conversation.contact.photo === "string" ? { photo: conversation.contact.photo } : {}),
+            ...(typeof conversation.contact.silhouette === "boolean" ? { silhouette: conversation.contact.silhouette } : {}),
+          },
+        }];
+      });
+    }
+  }
+  if (typeof input.selectedConversationId === "string") roster.selectedConversationId = input.selectedConversationId;
+  if (Object.hasOwn(input, "library")) {
+    if (!Array.isArray(input.library)) issues.push(issue(pointer(["library"]), "INVALID_TYPE", "library must be an array"));
+    else {
+      roster.library = input.library.flatMap((photo, index) => {
+        if (!isPlainObject(photo) || typeof photo.id !== "string" || typeof photo.src !== "string" || typeof photo.alt !== "string") {
+          issues.push(issue(pointer(["library", index]), "INVALID_VALUE", "each library photo needs an id, src, and alt"));
+          return [];
+        }
+        return [{ id: photo.id, src: photo.src, alt: photo.alt }];
+      });
+    }
+  }
+  return roster;
 }
 
 function readMessages(
@@ -450,6 +547,12 @@ function readMessage(
     if (audio) normalized.audio = audio;
     if (appCard) normalized.appCard = appCard;
     if (typeof value.revealed === "boolean") normalized.revealed = value.revealed;
+    const extras = readMessageExtras(value, base, kind, flowPlatform, issues);
+    if (extras === "invalid") return meta;
+    Object.assign(normalized, extras);
+    if (normalized.audio && isPlainObject(value.audio) && typeof value.audio.src === "string") {
+      normalized.audio = { ...normalized.audio, src: value.audio.src };
+    }
     meta.normalized = normalized;
   }
   return meta;
@@ -1124,7 +1227,7 @@ function readAudio(
     }
   }
   for (const key of Object.keys(audio)) {
-    if (key === "duration" || key === "peaks") continue;
+    if (key === "duration" || key === "peaks" || key === "src") continue;
     issues.push(issue(`${base}/audio/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
     invalid = true;
   }
@@ -1240,13 +1343,27 @@ function readContact(
       initials = value.initials;
     }
   }
+  let photo: string | undefined;
+  let silhouette: boolean | undefined;
+  if (Object.hasOwn(value, "photo")) {
+    if (typeof value.photo !== "string" || value.photo.length === 0) {
+      issues.push(issue(pointer(["contact", "photo"]), "INVALID_ASSET", "contact photo must be a non-empty asset path"));
+    } else photo = value.photo;
+  }
+  if (Object.hasOwn(value, "silhouette")) {
+    if (typeof value.silhouette !== "boolean") {
+      issues.push(issue(pointer(["contact", "silhouette"]), "INVALID_TYPE", "silhouette must be a boolean"));
+    } else silhouette = value.silhouette;
+  }
   for (const key of Object.keys(value)) {
-    if (key === "name" || key === "initials") continue;
+    if (key === "name" || key === "initials" || key === "photo" || key === "silhouette") continue;
     issues.push(issue(pointer(["contact", key]), "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
   }
   if (name === undefined) return undefined;
   const contact: DemoFlow["contact"] = { name };
   if (initials !== undefined) contact.initials = initials;
+  if (photo !== undefined) contact.photo = photo;
+  if (silhouette !== undefined) contact.silhouette = silhouette;
   return contact;
 }
 
@@ -1427,6 +1544,9 @@ const EVENT_TYPES = new Set([
   "audio-control",
   "time-reveal",
   "notice",
+  "poll-option",
+  "poll-vote",
+  "sticker",
 ]);
 
 const EVENT_FIELDS: Record<string, string[]> = {
@@ -1447,6 +1567,9 @@ const EVENT_FIELDS: Record<string, string[]> = {
   "audio-control": ["type", "atMs", "sourceIndex", "messageId", "position", "playing", "seeking"],
   "time-reveal": ["type", "atMs", "sourceIndex", "progress"],
   notice: ["type", "atMs", "sourceIndex", "notice"],
+  "poll-option": ["type", "atMs", "sourceIndex", "conversationId", "messageId", "optionId", "text"],
+  "poll-vote": ["type", "atMs", "sourceIndex", "conversationId", "messageId", "participantId", "optionId", "voted"],
+  sticker: ["type", "atMs", "sourceIndex", "conversationId", "messageId", "sticker"],
 };
 
 type LiveMessage = {
@@ -1670,7 +1793,16 @@ function parseTimelineEvent(
     }
     case "notice":
       return parseNoticeEvent(value, base, issues, live, removed, atMs);
+    case "poll-option":
+      return parsePollOptionEvent(value, base, issues, platform, live, removed, atMs);
+    case "poll-vote":
+      return parsePollVoteEvent(value, base, issues, platform, live, removed, atMs);
+    case "sticker":
+      return parseStickerEvent(value, base, issues, platform, live, removed, atMs);
     default:
+      if (typeof value.type === "string") {
+        issues.push(issue(`${base}/type`, "INVALID_VALUE", `unknown event ${JSON.stringify(value.type)}`));
+      }
       return undefined;
   }
 }
@@ -1737,6 +1869,43 @@ function parseReactionEvent(
   return { type: "reaction", atMs, messageId: value.messageId, reactionId: value.reactionId, reaction };
 }
 
+const CLASSIC_TAPBACKS = new Set(["love", "like", "dislike", "laugh", "emphasize", "question"]);
+
+function parsePickerSelection(
+  value: unknown,
+  path: string,
+  issues: ValidationIssue[],
+): PickerSelection | null | undefined | "invalid" {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (!isPlainObject(value)) {
+    issues.push(issue(path, "INVALID_TYPE", "long-press selected must be a classic tapback, a custom emoji, or null"));
+    return "invalid";
+  }
+  for (const key of Object.keys(value)) {
+    if (key === "type" || key === "emoji") continue;
+    issues.push(issue(`${path}/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
+  }
+  const hasType = Object.hasOwn(value, "type");
+  const hasEmoji = Object.hasOwn(value, "emoji");
+  if (hasType && hasEmoji) {
+    issues.push(issue(path, "INVALID_VALUE", "long-press selected is either a classic type or a custom emoji"));
+    return "invalid";
+  }
+  if (hasType) {
+    if (typeof value.type !== "string" || !CLASSIC_TAPBACKS.has(value.type)) {
+      issues.push(issue(`${path}/type`, "INVALID_VALUE", "long-press selected type must be a classic tapback"));
+      return "invalid";
+    }
+    return { type: value.type as PickerSelection extends { type: infer Type } ? Type : never };
+  }
+  if (typeof value.emoji !== "string" || value.emoji.length === 0) {
+    issues.push(issue(`${path}/emoji`, "INVALID_VALUE", "long-press selected emoji must be a non-empty string"));
+    return "invalid";
+  }
+  return { emoji: value.emoji };
+}
+
 function parseOverlayEvent(
   value: Record<string, unknown>,
   base: string,
@@ -1771,9 +1940,18 @@ function parseOverlayEvent(
     case "thread":
       if (!requireLive(live, removed, overlay.rootId, atMs, `${base}/overlay/rootId`, issues, "thread")) return undefined;
       return { type: "overlay", atMs, overlay: { kind: "thread", rootId: String(overlay.rootId) } };
-    case "long-press":
+    case "long-press": {
       if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "long-press")) return undefined;
-      return { type: "overlay", atMs, overlay: { kind: "long-press", messageId: String(overlay.messageId) } };
+      for (const key of Object.keys(overlay)) {
+        if (key === "kind" || key === "messageId" || key === "selected") continue;
+        issues.push(issue(`${base}/overlay/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
+      }
+      const selected = parsePickerSelection(overlay.selected, `${base}/overlay/selected`, issues);
+      if (selected === "invalid") return undefined;
+      const next: Extract<OverlayState, { kind: "long-press" }> = { kind: "long-press", messageId: String(overlay.messageId) };
+      if (selected !== undefined) next.selected = selected;
+      return { type: "overlay", atMs, overlay: next };
+    }
     case "context-menu":
       if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "context-menu")) return undefined;
       if (typeof overlay.x !== "number" || typeof overlay.y !== "number") return undefined;
@@ -1807,16 +1985,60 @@ function parseOverlayEvent(
         issues.push(issue(`${base}/overlay/index`, "INVALID_VALUE", "image viewer index must point at an image on the target message"));
         return undefined;
       }
-      return { type: "overlay", atMs, overlay: { kind: "image-viewer", messageId: message.id, index: overlay.index } };
+      const viewer: Extract<OverlayState, { kind: "image-viewer" }> = { kind: "image-viewer", messageId: message.id, index: overlay.index };
+      if (typeof overlay.zoom === "number" && overlay.zoom > 0) viewer.zoom = overlay.zoom;
+      if (typeof overlay.chrome === "boolean") viewer.chrome = overlay.chrome;
+      if (typeof overlay.dismiss === "number") viewer.dismiss = overlay.dismiss;
+      return { type: "overlay", atMs, overlay: viewer };
     }
     case "details":
       return { type: "overlay", atMs, overlay: { kind: "details" } };
-    case "photo-picker":
+    case "photo-picker": {
+      const selectedIds = Array.isArray(overlay.selectedIds) ? overlay.selectedIds.filter((id): id is string => typeof id === "string" && id.length > 0) : undefined;
       return {
         type: "overlay",
         atMs,
-        overlay: typeof overlay.selectedId === "string" ? { kind: "photo-picker", selectedId: overlay.selectedId } : { kind: "photo-picker" },
+        overlay: {
+          kind: "photo-picker",
+          ...(typeof overlay.selectedId === "string" ? { selectedId: overlay.selectedId } : {}),
+          ...(selectedIds ? { selectedIds } : {}),
+          ...(overlay.detent === "collapsed" || overlay.detent === "expanded" ? { detent: overlay.detent } : {}),
+        },
       };
+    }
+    case "search":
+      return { type: "overlay", atMs, overlay: { kind: "search", query: typeof overlay.query === "string" ? overlay.query : "" } };
+    case "recorder":
+      if (overlay.state !== "recording" && overlay.state !== "stopped" && overlay.state !== "playing") {
+        issues.push(issue(`${base}/overlay/state`, "INVALID_VALUE", "recorder state must be recording, stopped, or playing"));
+        return undefined;
+      }
+      return {
+        type: "overlay",
+        atMs,
+        overlay: {
+          kind: "recorder",
+          state: overlay.state,
+          ...(typeof overlay.position === "number" ? { position: overlay.position } : {}),
+          ...(typeof overlay.duration === "number" ? { duration: overlay.duration } : {}),
+        },
+      };
+    case "tapback-details":
+      if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "tapback-details")) return undefined;
+      return {
+        type: "overlay",
+        atMs,
+        overlay: {
+          kind: "tapback-details",
+          messageId: String(overlay.messageId),
+          ...(overlay.filter === null || typeof overlay.filter === "string" ? { filter: overlay.filter as string | null } : {}),
+        },
+      };
+    case "sticker-picker":
+      return { type: "overlay", atMs, overlay: { kind: "sticker-picker", ...(typeof overlay.tab === "string" ? { tab: overlay.tab } : {}) } };
+    case "poll-details":
+      if (!requireLive(live, removed, overlay.messageId, atMs, `${base}/overlay/messageId`, issues, "poll-details")) return undefined;
+      return { type: "overlay", atMs, overlay: { kind: "poll-details", messageId: String(overlay.messageId) } };
     case "selection": {
       if (!Array.isArray(overlay.messageIds)) {
         issues.push(issue(`${base}/overlay/messageIds`, "INVALID_TYPE", "selection messageIds must be an array"));
@@ -1861,6 +2083,82 @@ function parseAudioEvent(
     position: value.position,
     playing: value.playing,
     ...(typeof value.seeking === "boolean" ? { seeking: value.seeking } : {}),
+  };
+}
+
+function requireIos(platform: DemoPlatform | undefined, base: string, label: string, issues: ValidationIssue[]): boolean {
+  if (platform === "macos") {
+    issues.push(issue(base, "PLATFORM_MISMATCH", `${label} is an iOS event and is not a macOS target`));
+    return false;
+  }
+  return true;
+}
+
+function parsePollOptionEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  if (!requireIos(platform, base, "poll-option", issues)) return undefined;
+  const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "poll-option");
+  if (!message || atMs === undefined || typeof value.optionId !== "string" || typeof value.text !== "string" || typeof value.messageId !== "string") return undefined;
+  if (message.kind !== "poll") {
+    issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "poll-option target must be a poll"));
+    return undefined;
+  }
+  return { type: "poll-option", atMs, messageId: value.messageId, optionId: value.optionId, text: value.text };
+}
+
+function parsePollVoteEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  if (!requireIos(platform, base, "poll-vote", issues)) return undefined;
+  const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "poll-vote");
+  if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.participantId !== "string" || typeof value.optionId !== "string" || typeof value.voted !== "boolean") return undefined;
+  if (message.kind !== "poll") {
+    issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "poll-vote target must be a poll"));
+    return undefined;
+  }
+  return { type: "poll-vote", atMs, messageId: value.messageId, participantId: value.participantId, optionId: value.optionId, voted: value.voted };
+}
+
+function parseStickerEvent(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  platform: DemoPlatform | undefined,
+  live: Map<string, LiveMessage>,
+  removed: Set<string>,
+  atMs: number | undefined,
+): CompiledEvent | undefined {
+  if (!requireIos(platform, base, "sticker", issues)) return undefined;
+  const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "sticker");
+  if (!message || atMs === undefined || typeof value.messageId !== "string") return undefined;
+  if (value.sticker === null) return { type: "sticker", atMs, messageId: value.messageId, sticker: null };
+  if (!isPlainObject(value.sticker) || typeof value.sticker.id !== "string" || typeof value.sticker.glyph !== "string" || typeof value.sticker.label !== "string") {
+    issues.push(issue(`${base}/sticker`, "INVALID_VALUE", "sticker event requires a sticker or null"));
+    return undefined;
+  }
+  return {
+    type: "sticker",
+    atMs,
+    messageId: value.messageId,
+    sticker: {
+      id: value.sticker.id,
+      glyph: value.sticker.glyph,
+      label: value.sticker.label,
+      ...(typeof value.sticker.rotation === "number" ? { rotation: value.sticker.rotation } : {}),
+    },
   };
 }
 
