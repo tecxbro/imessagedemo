@@ -5,11 +5,15 @@ import { createPlayer } from "@/runtime";
 import { IosDemoRenderer } from "@/renderers/ios";
 import { MacDemoRenderer, type MacRendererHandle } from "@/renderers/macos";
 import { CatalogueRoute, CatalogueSceneById, isCatalogueSceneId } from "@/player/catalogue";
-import { checkpointAt, createRuntimeSession } from "@/player/controller";
+import { createRuntimeSession } from "@/player/controller";
+import { playbackBarHeightPx, playbackControlLabel, runPlaybackControl } from "@/player/playback";
 import type { DemoRunManifest, NamedCheckpoint } from "@/player/types";
 
 export type DemoPlayerViewProps = DemoPlayerProps & {
+  /** Minimal viewer: playback button only, no scenario/platform/theme toolbar. */
   clean?: boolean;
+  /** Automated capture: no visible controls and no automatic playback. */
+  capture?: boolean;
   checkpoints?: NamedCheckpoint[];
   scenarioId?: string;
   onScenario?: (id: string) => void;
@@ -22,6 +26,7 @@ export function DemoPlayer({
   compiled,
   ref,
   clean = false,
+  capture = false,
   checkpoints = [],
   scenarioId,
   onScenario,
@@ -101,44 +106,56 @@ export function DemoPlayer({
     return () => cancelAnimationFrame(frameId);
   }, [player]);
 
+  useEffect(() => {
+    const active = player;
+    return () => {
+      active.pause();
+    };
+  }, [player]);
+
   const state = player.state();
   const frame = { ...session.frame(), platform, theme };
   const profile = profiles[platform];
   const compiledView = { ...compiled, platform, theme };
+  const playbackLabel = playbackControlLabel(state);
+  const onPlayback = () => {
+    void runPlaybackControl(player.state(), session);
+  };
 
   return (
-    <div data-demo-player="" data-clean={clean ? "true" : "false"} data-tick={tick}>
-      {clean ? null : (
+    <div
+      data-demo-player=""
+      data-clean={clean ? "true" : "false"}
+      data-capture={capture ? "true" : "false"}
+      data-tick={tick}
+    >
+      {capture ? null : clean ? (
+        <div
+          data-playback-bar=""
+          style={{
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            width: profile.width,
+            height: playbackBarHeightPx,
+            padding: "0 12px",
+            fontFamily: "ui-sans-serif, system-ui, sans-serif",
+          }}
+        >
+          <PlaybackButton label={playbackLabel} onClick={onPlayback} />
+        </div>
+      ) : (
         <PlayerChrome
-          compiledId={compiled.id}
           platform={platform}
           theme={theme}
-          playing={state.playing}
-          timeMs={state.timeMs}
-          durationMs={state.durationMs}
-          checkpoints={checkpoints}
+          playbackLabel={playbackLabel}
           inspect={session.inspect().messageId}
           scenarioId={scenarioId ?? compiled.id}
           scenarios={scenarios ?? [{ id: compiled.id, title: compiled.id }]}
           onScenario={onScenario}
           onPlatform={setPlatform}
           onTheme={setTheme}
-          onPlay={() => {
-            void session.play();
-            setTick((value) => value + 1);
-          }}
-          onPause={() => {
-            void session.pause();
-            setTick((value) => value + 1);
-          }}
-          onReset={() => {
-            void session.reset();
-            setTick((value) => value + 1);
-          }}
-          onSeek={(timeMs) => {
-            void session.seek(timeMs);
-            setTick((value) => value + 1);
-          }}
+          onPlayback={onPlayback}
         />
       )}
       <div
@@ -160,24 +177,25 @@ export function DemoPlayer({
   );
 }
 
+function PlaybackButton({ label, onClick }: { label: ReturnType<typeof playbackControlLabel>; onClick: () => void }) {
+  return (
+    <button type="button" data-playback-control="" onClick={onClick}>
+      {label}
+    </button>
+  );
+}
+
 function PlayerChrome(props: {
-  compiledId: string;
   platform: DemoPlatform;
   theme: DemoTheme;
-  playing: boolean;
-  timeMs: number;
-  durationMs: number;
-  checkpoints: NamedCheckpoint[];
+  playbackLabel: ReturnType<typeof playbackControlLabel>;
   inspect: string | null;
   scenarioId: string;
   scenarios: { id: string; title: string }[];
   onScenario?: (id: string) => void;
   onPlatform: (platform: DemoPlatform) => void;
   onTheme: (theme: DemoTheme) => void;
-  onPlay: () => void;
-  onPause: () => void;
-  onReset: () => void;
-  onSeek: (timeMs: number) => void;
+  onPlayback: () => void;
 }) {
   return (
     <div data-player-chrome="">
@@ -207,44 +225,7 @@ function PlayerChrome(props: {
           Dark
         </button>
       </div>
-      <button type="button" onClick={props.onPlay} disabled={props.playing}>
-        Play
-      </button>
-      <button type="button" onClick={props.onPause} disabled={!props.playing}>
-        Pause
-      </button>
-      <button type="button" onClick={props.onReset}>
-        Reset
-      </button>
-      <label>
-        Seek
-        <input
-          aria-label="Seek"
-          type="range"
-          min={0}
-          max={props.durationMs}
-          value={props.timeMs}
-          onChange={(event) => props.onSeek(Number(event.target.value))}
-        />
-      </label>
-      <label>
-        Checkpoint
-        <select
-          aria-label="Checkpoint"
-          defaultValue=""
-          onChange={(event) => {
-            if (!event.target.value) return;
-            props.onSeek(checkpointAt(props.checkpoints, event.target.value).atMs);
-          }}
-        >
-          <option value="">Named checkpoints</option>
-          {props.checkpoints.map((checkpoint) => (
-            <option key={checkpoint.id} value={checkpoint.id}>
-              {checkpoint.id}
-            </option>
-          ))}
-        </select>
-      </label>
+      <PlaybackButton label={props.playbackLabel} onClick={props.onPlayback} />
       {props.inspect ? <p data-inspect-id={props.inspect}>Inspect {props.inspect}</p> : null}
     </div>
   );
@@ -252,12 +233,13 @@ function PlayerChrome(props: {
 
 export function PlayerHost({ manifest }: { manifest: DemoRunManifest }) {
   const [scenarioId, setScenarioId] = useState(manifest.approvedScenarioId);
-  const clean = manifest.clean || manifest.mode === "capture";
+  const capture = manifest.mode === "capture";
+  const clean = manifest.clean || capture;
   const catalogue = isCatalogueSceneId(scenarioId) || manifest.mode === "catalogue";
 
   if (catalogue) {
     return (
-      <div data-demo-player="" data-clean={clean ? "true" : "false"}>
+      <div data-demo-player="" data-clean={clean ? "true" : "false"} data-capture={capture ? "true" : "false"}>
         {clean ? null : (
           <div data-player-chrome="">
             <p>Catalogue</p>
@@ -286,6 +268,7 @@ export function PlayerHost({ manifest }: { manifest: DemoRunManifest }) {
     <DemoPlayer
       compiled={manifest.compiled}
       clean={clean}
+      capture={capture}
       checkpoints={manifest.checkpoints}
       scenarioId={scenarioId}
       onScenario={setScenarioId}

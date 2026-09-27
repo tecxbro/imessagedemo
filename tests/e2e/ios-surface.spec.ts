@@ -97,7 +97,13 @@ test("the authored iOS surface renders in light and dark", async ({ page }, test
 
   await seek(page, 1790008885000);
   await expect(row("m8").locator('[data-slot="message-audio"]')).toBeVisible();
+  const audioButton = row("m8").getByRole("button", { name: "Pause audio message" });
+  await expect(audioButton).toBeVisible();
+  await expect(page.locator("[data-demo-frame]").getByRole("button", { name: "Pause audio message" })).toBeVisible();
+  await expect(page.locator("[data-demo-frame] [data-playback-control], [data-demo-frame] input[type='range']")).toHaveCount(0);
+  await audioButton.click();
   await expect(row("m8").getByRole("button", { name: "Pause audio message" })).toBeVisible();
+  await expect(row("m8").locator('[data-slot="waveform"]')).toBeVisible();
 
   await seek(page, 1790008887000 + cue.longPressEnter / 2);
   await expect(page.locator('[data-slot="message-actions"]')).toBeVisible();

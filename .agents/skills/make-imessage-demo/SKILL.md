@@ -45,7 +45,7 @@ Match `DemoFlow` plus optional CLI `targets` and `checkpoints`. Start from the e
 
 Local images belong in `public/demo-assets/<company>/` and use `/demo-assets/<company>/<file>` paths. Preflight accepts PNG, JPEG, GIF, and WebP; SVG needs conversion to a supported image format without redrawing the logo. Preserve supplied assets and their order. Remote media and filesystem paths outside this root are not supported. A displayed `link.url` is label data, not permission to fetch during rendering. Keep provenance/research notes outside the flow JSON.
 
-Playback time is `message.atMs - firstMessage.atMs`. Checkpoints use that relative clock. Do not confuse display timestamps with playback delays. The example reply begins at 1000 ms; 1690 ms is after its 690 ms outgoing arrival. A checkpoint at message arrival is not proof of settled motion. Use reading-length pauses, inspect transitions, and place proof checkpoints after the intended content settles and within compiled duration.
+Playback time is `message.atMs - firstMessage.atMs`. Checkpoints use that relative clock. Do not confuse display timestamps with playback delays. The example reply begins at 1000 ms; 1690 ms is after its 690 ms outgoing arrival. A checkpoint at message arrival is not proof of settled motion. Use reading-length pauses, inspect transitions, and place proof checkpoints after the intended content settles and within compiled duration. Viewers start that timeline with one Play click. Author the pauses, typing, and reactions so the conversation is readable without scrubbing. Named checkpoints stay available for capture and tests.
 
 ## 3. Validate and compile
 
@@ -71,7 +71,9 @@ npm run demo -- preview examples/agent-walkover.flow.json --json --platform ios
 
 With no port specified the server selects an available port. CLI JSON returns the actual bound URL; do not invent one. An explicit `--port` already in use fails instead of attaching to another server. Keep the owning process alive. `IMESSAGE_DEMO_PREVIEW_ONCE=1` closes it and must not be used for a persistent handoff.
 
-Preview displays player controls. Before calling a demo ready, open that preview and check Play, Pause, and Reset. Typing dots should move while Play is running, stop when typing turns off, and hold still on Pause. Seek and Reset must show the authored state. For screen recording, crop to the Messages frame as needed; there is no documented clean/fullscreen CLI flag. A server-ready response alone is not visual or playback verification.
+Preview shows one playback button outside the Messages frame. It reads Play at the authored opening, Pause while the timeline is running, Resume from the paused time, and Replay after the conversation finishes. Replay returns to the opening and starts again. Playback does not loop. One Play click runs messages, typing, and reactions on the compiled timestamps. The viewer has no timeline slider and no checkpoint menu. Pause holds the current time. Typing dots should move during an authored typing interval, clear on the explicit typing-off event, and hold still on Pause.
+
+Generated `/?flow=` links are a clean viewer: the same button, without the scenario, platform, or theme toolbar. An explicit `t` value stays on that playback time until the viewer starts it. Capture shows no controls and does not start playback. Seek, reset, and named checkpoints remain on `window.IMESSAGE_DEMO` for capture and tests. For screen recording, crop to the Messages frame as needed; there is no documented clean/fullscreen CLI flag. A server-ready response alone is not visual or playback verification.
 
 ```sh
 npm run demo -- validate examples/typing-reactions.flow.json --json

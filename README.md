@@ -72,7 +72,7 @@ Exit `0` means valid. Exit `1` means usage error. Exit `2` means invalid or unsu
 npm run demo -- preview ./your-flow.json --json --platform ios
 ```
 
-Use the actual local URL returned by the CLI and keep its process alive. Preview has playback controls. A specified `--port` must be free. Capture uses the same renderer from another terminal/session:
+Use the actual local URL returned by the CLI and keep its process alive. Preview has one playback button outside the Messages frame: Play, Pause, Resume, or Replay. It follows the compiled timeline. A specified `--port` must be free. Capture uses the same renderer from another terminal/session:
 
 ```sh
 npm run demo -- capture ./your-flow.json --json --platform ios --checkpoint after-reply --out artifacts/captures/run
@@ -103,7 +103,7 @@ npm run build
 npm run test:e2e
 ```
 
-`check-demo-skills` checks instructions and example timing; `check-agent-bootstrap` checks setup routing and handoff requirements. Neither executes the renderer or proves browser output. `npm run dev -- --host 127.0.0.1 --port 4173` serves the app. `/?foundation=ios` and `/?foundation=macos` are stock shell smoke routes. `/?flow=basic-ios-light&t=0` plays a corpus scenario; `t` is playback milliseconds.
+`check-demo-skills` checks instructions and example timing; `check-agent-bootstrap` checks setup routing and handoff requirements. Neither executes the renderer or proves browser output. `npm run dev -- --host 127.0.0.1 --port 4173` serves the app. `/?foundation=ios` and `/?foundation=macos` are stock shell smoke routes. `/?flow=basic-ios-light&t=0` opens a corpus scenario paused at that playback time, with Play outside the Messages frame. `t` is playback milliseconds and is not forced back to zero.
 
 ## Current boundaries
 

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { compileDemo, validateDemo } from "@/compiler";
 import { authoringDocumentSchema, toDemoFlow } from "@/cli/authoring";
 import type { CompiledDemo } from "@/contracts";
+import { createPlayer, type LogicalClock } from "@/runtime";
 import { effectiveSourceIndex, frameAt } from "@/runtime/project";
 import { toUpstreamMessage } from "@/renderers/ios/adapt";
 import { deriveCues, typingDotPhaseMs } from "@/renderers/ios/cues";
@@ -186,6 +187,45 @@ describe("reaction timeline", () => {
     const reset = at(1000);
     expect(reset.every((message) => (message.reactions ?? []).length === 0)).toBe(true);
   });
+
+  it("plays replacement and removal on the compiled clock, then replay clears them", () => {
+    const compiled = compile({
+      messages: [
+        { id: "customer-1", text: "Hello", direction: "outgoing", atMs: 0, status: "delivered" },
+        { id: "company-1", text: "Hi", direction: "incoming", atMs: 1000 },
+      ],
+      events: [
+        { type: "reaction", atMs: 1500, messageId: "company-1", reactionId: "tap-company", reaction: { type: "love", byMe: true } },
+        { type: "reaction", atMs: 1800, messageId: "customer-1", reactionId: "emoji-customer", reaction: { type: "custom", emoji: "🎉", byMe: false } },
+        { type: "reaction", atMs: 2200, messageId: "company-1", reactionId: "tap-company", reaction: { type: "emphasize", byMe: true } },
+        { type: "reaction", atMs: 2600, messageId: "company-1", reactionId: "tap-company", reaction: null },
+      ],
+    });
+    const clock = new FakeClock();
+    const player = createPlayer(compiled, { clock });
+    player.play();
+    const at = (timeMs: number) => {
+      clock.time = timeMs;
+      clock.fire();
+      return player.frame().messages;
+    };
+    expect(at(1600).find((message) => message.id === "company-1")?.reactions).toEqual([
+      { id: "tap-company", type: "love", byMe: true },
+    ]);
+    expect(at(2400).find((message) => message.id === "company-1")?.reactions).toEqual([
+      { id: "tap-company", type: "emphasize", byMe: true },
+    ]);
+    const removed = at(2600);
+    expect(removed.find((message) => message.id === "company-1")?.reactions ?? []).toEqual([]);
+    expect(removed.find((message) => message.id === "customer-1")?.reactions).toEqual([
+      { id: "emoji-customer", type: "custom", emoji: "🎉", byMe: false },
+    ]);
+    player.reset();
+    expect(player.frame().messages.every((message) => (message.reactions ?? []).length === 0)).toBe(true);
+    player.play();
+    expect(player.state()).toMatchObject({ timeMs: 0, playing: true });
+    expect(clock.pending.size).toBe(1);
+  });
 });
 
 describe("typing and reactions example", () => {
@@ -216,4 +256,88 @@ describe("typing and reactions example", () => {
     expect(frameAt(compiled, 7600).typing).toBe(false);
     expect(frameAt(compiled, 8000).messages.map((message) => message.id)).toEqual(["customer-1", "company-1", "customer-2", "company-2"]);
   });
+
+  it("plays typing, reactions, pause, and replay on the compiled clock", () => {
+    const raw = JSON.parse(readFileSync(new URL("../../examples/typing-reactions.flow.json", import.meta.url), "utf8"));
+    const parsed = authoringDocumentSchema.safeParse(raw);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    const validated = validateDemo(toDemoFlow(parsed.data, "ios"));
+    expect(validated.ok).toBe(true);
+    if (!validated.ok) return;
+    const compiled = compileDemo(validated.demo);
+    const clock = new FakeClock();
+    const player = createPlayer(compiled, { clock });
+    expect(player.state()).toMatchObject({ timeMs: 0, playing: false });
+    player.play();
+    player.play();
+    expect(clock.pending.size).toBe(1);
+
+    const at = (timeMs: number) => {
+      clock.time = timeMs;
+      clock.fire();
+      return player.frame();
+    };
+
+    expect(at(900).typing).toBe(true);
+    const reply = at(2200);
+    expect(reply.typing).toBe(false);
+    expect(reply.messages.find((message) => message.id === "company-1")?.reactions ?? []).toEqual([]);
+    expect(at(3600).messages.find((message) => message.id === "company-1")?.reactions).toEqual([
+      { id: "love-company-1", type: "love", byMe: true },
+    ]);
+    expect(at(4600).messages.find((message) => message.id === "customer-1")?.reactions).toEqual([
+      { id: "emoji-customer-1", type: "custom", emoji: "🎉", byMe: false },
+    ]);
+    player.pause();
+    const held = player.state().timeMs;
+    clock.time = held + 5000;
+    clock.fire();
+    expect(player.state()).toMatchObject({ timeMs: held, playing: false });
+    const anchor = clock.time;
+    player.play();
+    clock.time = anchor + (compiled.durationMs - held);
+    clock.fire();
+    expect(player.state()).toMatchObject({ timeMs: compiled.durationMs, playing: false });
+    expect(player.frame().typing).toBe(false);
+    expect(player.frame().messages.map((message) => message.id)).toEqual(["customer-1", "company-1", "customer-2", "company-2"]);
+    clock.time += 1000;
+    clock.fire();
+    expect(player.state()).toMatchObject({ timeMs: compiled.durationMs, playing: false });
+
+    player.reset();
+    player.play();
+    expect(player.state()).toMatchObject({ timeMs: 0, playing: true });
+    expect(player.frame().typing).toBe(false);
+    expect(player.frame().messages.map((message) => message.id)).toEqual(["customer-1"]);
+    expect(player.frame().messages.every((message) => (message.reactions ?? []).length === 0)).toBe(true);
+    expect(clock.pending.size).toBe(1);
+  });
 });
+
+class FakeClock implements LogicalClock {
+  time = 0;
+  pending = new Map<number, (timestamp: number) => void>();
+  private nextId = 1;
+
+  now() {
+    return this.time;
+  }
+
+  requestFrame(callback: (timestamp: number) => void) {
+    const id = this.nextId;
+    this.nextId += 1;
+    this.pending.set(id, callback);
+    return id;
+  }
+
+  cancelFrame(handle: number) {
+    this.pending.delete(handle);
+  }
+
+  fire() {
+    const queued = [...this.pending.entries()];
+    this.pending.clear();
+    for (const [, callback] of queued) callback(this.time);
+  }
+}

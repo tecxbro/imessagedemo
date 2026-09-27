@@ -29,6 +29,7 @@ export function App() {
 }
 
 function FlowRoute({ id, atMs }: { id: string; atMs: number }) {
+  // Clean viewer: playback button only. Capture is the manifest route and does not use this path.
   const flow = resolveFlow(id);
   if (!flow) {
     return <ScenarioError issues={[{ path: "/id", message: `UNKNOWN_FLOW: no scenario named ${id}` }]} />;

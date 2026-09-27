@@ -5,6 +5,8 @@ import { catalogueSceneIds } from "@/player/catalogue";
 import { compiledFixture } from "../contracts/compiled.fixture";
 import { createPlayerDouble, frameAtDouble } from "../contracts/doubles";
 import { createRuntimeSession } from "@/player/controller";
+import { playbackControlLabel, runPlaybackControl } from "@/player/playback";
+import { createPlayer, type LogicalClock } from "@/runtime";
 
 function fakeElement(width = 402, height = 874): HTMLElement {
   return {
@@ -25,6 +27,82 @@ describe("player catalogue", () => {
     }
   });
 });
+
+describe("playback control", () => {
+  it("names play, pause, resume, and replay from the logical clock", () => {
+    expect(playbackControlLabel({ timeMs: 0, playing: false, durationMs: 8000 })).toBe("Play");
+    expect(playbackControlLabel({ timeMs: 0, playing: true, durationMs: 8000 })).toBe("Pause");
+    expect(playbackControlLabel({ timeMs: 1200, playing: false, durationMs: 8000 })).toBe("Resume");
+    expect(playbackControlLabel({ timeMs: 8000, playing: false, durationMs: 8000 })).toBe("Replay");
+    expect(playbackControlLabel({ timeMs: 0, playing: false, durationMs: 0 })).toBe("Play");
+  });
+
+  it("pauses, resumes from the held time, and replay restarts on one clock", async () => {
+    const clock = new FakeClock();
+    const player = createPlayer({ ...compiledFixture, durationMs: 1000 }, { clock });
+    const session = createRuntimeSession({
+      compiled: compiledFixture,
+      player,
+      getRenderer: () => ({ seek() {}, element: fakeElement() }),
+      getFrameElement: () => fakeElement(),
+    });
+    expect(playbackControlLabel(session.state())).toBe("Play");
+    await runPlaybackControl(session.state(), session);
+    player.play();
+    expect(clock.pending.size).toBe(1);
+    clock.time = 400;
+    clock.fire();
+    expect(session.state()).toMatchObject({ timeMs: 400, playing: true });
+    expect(playbackControlLabel(session.state())).toBe("Pause");
+    await runPlaybackControl(session.state(), session);
+    clock.time = 900;
+    clock.fire();
+    expect(session.state()).toMatchObject({ timeMs: 400, playing: false });
+    expect(clock.pending.size).toBe(0);
+    expect(playbackControlLabel(session.state())).toBe("Resume");
+    await runPlaybackControl(session.state(), session);
+    expect(clock.pending.size).toBe(1);
+    clock.time = 1500;
+    clock.fire();
+    expect(session.state()).toMatchObject({ timeMs: 1000, playing: false });
+    expect(clock.pending.size).toBe(0);
+    clock.time = 4000;
+    clock.fire();
+    expect(session.state().timeMs).toBe(1000);
+    expect(playbackControlLabel(session.state())).toBe("Replay");
+    await runPlaybackControl(session.state(), session);
+    expect(session.state()).toMatchObject({ timeMs: 0, playing: true });
+    expect(session.frame().messages.map((message) => message.id)).toEqual(["in-1"]);
+    expect(clock.pending.size).toBe(1);
+  });
+});
+
+class FakeClock implements LogicalClock {
+  time = 0;
+  pending = new Map<number, (timestamp: number) => void>();
+  private nextId = 1;
+
+  now() {
+    return this.time;
+  }
+
+  requestFrame(callback: (timestamp: number) => void) {
+    const id = this.nextId;
+    this.nextId += 1;
+    this.pending.set(id, callback);
+    return id;
+  }
+
+  cancelFrame(handle: number) {
+    this.pending.delete(handle);
+  }
+
+  fire() {
+    const queued = [...this.pending.entries()];
+    this.pending.clear();
+    for (const [, callback] of queued) callback(this.time);
+  }
+}
 
 describe("runtime session", () => {
   it("delegates play/pause/seek to the runtime player and discards inspect on reset", async () => {

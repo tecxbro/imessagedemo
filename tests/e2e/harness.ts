@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, type Browser, type Page, type TestInfo } from "@playwright/test";
+import { playbackBarHeightPx } from "../../src/player/playback";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -91,7 +92,10 @@ export async function openFlow(page: Page, scenario: Scenario, atMs: number) {
   await page.addInitScript((payload) => {
     window.sessionStorage.setItem("imessage-demo-inline", JSON.stringify(payload));
   }, scenario);
-  await page.setViewportSize({ width: profiles[scenario.platform].width, height: profiles[scenario.platform].height });
+  await page.setViewportSize({
+    width: profiles[scenario.platform].width,
+    height: profiles[scenario.platform].height + playbackBarHeightPx,
+  });
   await page.emulateMedia({ colorScheme: scenario.theme === "dark" ? "dark" : "light" });
   await page.goto(`/?flow=${scenario.id}&t=${playbackMs(scenario, atMs)}`);
   const shell = page.locator(`[data-slot="${shellSlot(scenario.platform)}"]`);
