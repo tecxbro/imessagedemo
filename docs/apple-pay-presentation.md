@@ -6,6 +6,8 @@ Developer notes for the iOS `app-card` flow item and the Apple Pay sheet it open
 
 A flow message with `kind: "app-card"` embeds an existing Photon checkout mini app (the 300 × 240 `renderCheckout(spec)` page from `airial-pay-site`) as an iframe in the Messages thread. When the checkout's Apple Pay button is tapped, the checkout asks the renderer to present, and the renderer shows a recreation of the recorded Apple Pay sheet over the entire phone surface. The checkout stays mounted under a ~50% black dim. Closing (the × control or Escape) tells the checkout to reset, and the thread is exactly as it was. The iframe does not reload.
 
+The external `airial-pay-site` app is optional for an explicitly requested local visual checkout. If it is unavailable, reuse the [local checkout pattern](sunday-tip-demo.md) and follow [the Apple Pay skill](../.agents/skills/recreate-apple-pay/SKILL.md). The card supplies validated checkout data; the existing renderer still owns the sheet and recorded motion.
+
 The visual source is the supplied recording and its analysis package (`apple-pay-recreation-kit`, not in this repository): 512 × 1112, 30 fps, 418 frames, 13.933 s, two presentations and two cancellations.
 
 ## Flow item

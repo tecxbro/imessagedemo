@@ -15,6 +15,9 @@ export type AssetOk = {
 
 export function preflightAssets(document: AuthoringDocument, repoRoot: string): AssetOk[] {
   const assets: AssetOk[] = [];
+  for (const contact of [document.contact, ...(document.conversations ?? []).map(conversation => conversation.contact)]) {
+    if (contact.photo) assets.push(inspectAsset(contact.photo, repoRoot));
+  }
   for (const message of document.messages) {
     for (const image of message.images ?? []) {
       const asset = inspectAsset(image.src, repoRoot);

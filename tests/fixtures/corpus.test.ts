@@ -35,8 +35,11 @@ function readScenario(file: string): Scenario {
 }
 
 const files = readdirSync(scenarioDir).filter((file) => file.endsWith(".json")).sort();
-const scenarios = files.map(readScenario);
 const checkpoints = JSON.parse(readFileSync(path.join(root, "tests/fixtures/checkpoints.json"), "utf8")) as CheckpointFile[];
+// Fixed reference captures own their shared clock and globally unique message IDs.
+// Ordinary authored demos may use their own clocks, IDs, and CLI envelopes.
+const referenceIds = new Set(checkpoints.map((group) => group.scenarioId));
+const scenarios = files.map(readScenario).filter((scenario) => referenceIds.has(scenario.id));
 
 function asMessages(scenario: Scenario): Message[] {
   return scenario.messages.map((message) => ({
@@ -51,8 +54,8 @@ function asMessages(scenario: Scenario): Message[] {
   }));
 }
 
-describe("scenario corpus", () => {
-  it("matches the frozen schema keys and validates every authored flow", () => {
+describe("fixed reference scenario corpus", () => {
+  it("matches the frozen schema keys and validates all 38 reference flows", () => {
     expect(frozenSchemaKeysMatch()).toBe(true);
     expect(scenarios.length).toBe(38);
     for (const scenario of scenarios) {

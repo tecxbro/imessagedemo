@@ -23,6 +23,8 @@ Create one flow per conversation with unique IDs and run outputs. Use the existi
 
 ## Implementation work
 
+An explicit request to add visual Apple Pay checkout or tipping authorizes a scoped local checkout when a compatible one is unavailable. Follow [recreate-apple-pay](.agents/skills/recreate-apple-pay/SKILL.md), reusing the existing sheet and protocol. This exception does not expand company-only authoring or authorize real payments, provider operations, or publication.
+
 For explicitly requested implementation or skill-maintenance tasks, inspect the branch/base, working tree, and current source first. Scope changes to the request and preserve unrelated work. Foundation-era frozen-contract and lane instructions describe the original build; they do not mean the assembled application still throws `NOT_IMPLEMENTED`. Ordinary demo authoring still must not change those contracts. Any later contract or upstream change requires explicit implementation scope and matching tests/docs.
 
 Historical lane ownership:

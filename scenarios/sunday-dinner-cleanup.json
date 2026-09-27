@@ -1,0 +1,210 @@
+{
+  "id": "sunday-dinner-cleanup",
+  "title": "Sunday — Dinner is yours again",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Memo · Sunday",
+    "initials": "S",
+    "photo": "/demo-assets/sunday/avatar.png"
+  },
+  "nowMs": 1790452860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "targets": [
+    "ios"
+  ],
+  "checkpoints": [
+    {
+      "id": "opening",
+      "atMs": 0
+    },
+    {
+      "id": "typing",
+      "atMs": 3200
+    },
+    {
+      "id": "quoted-reply",
+      "atMs": 9690
+    },
+    {
+      "id": "in-progress",
+      "atMs": 18000
+    },
+    {
+      "id": "proof",
+      "atMs": 29000
+    },
+    {
+      "id": "final",
+      "atMs": 30500
+    },
+    {
+      "id": "ready-to-tip",
+      "atMs": 45690
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "text": "Memo, can you clear the table? We're doing bedtime.",
+      "direction": "outgoing",
+      "atMs": 1790452800000,
+      "status": "read"
+    },
+    {
+      "id": "m2",
+      "text": "I've got the dishes. You take bedtime.",
+      "direction": "incoming",
+      "atMs": 1790452804000
+    },
+    {
+      "id": "m3",
+      "text": "The wine glasses too?",
+      "direction": "outgoing",
+      "atMs": 1790452809000,
+      "status": "read",
+      "replyTo": "m2"
+    },
+    {
+      "id": "m4",
+      "text": "Yes. I'll handle them carefully, then load the dishwasher.",
+      "direction": "incoming",
+      "atMs": 1790452813000
+    },
+    {
+      "id": "m5",
+      "text": "Memo handling a wine glass at a dining table — official Sunday demonstration still",
+      "direction": "incoming",
+      "atMs": 1790452816500,
+      "kind": "image",
+      "images": [
+        {
+          "src": "/demo-assets/sunday/memo-dishes.webp",
+          "alt": "Memo handling a wine glass at a dining table — official Sunday demonstration still",
+          "width": 1920,
+          "height": 1080
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "text": "That's one less thing tonight.",
+      "direction": "outgoing",
+      "atMs": 1790452822500,
+      "status": "read"
+    },
+    {
+      "id": "m7",
+      "text": "Table cleared. Dishwasher running. Enjoy your evening.",
+      "direction": "incoming",
+      "atMs": 1790452827500
+    },
+    {
+      "id": "tip-request",
+      "text": "Let me leave a $5 tip. You earned it.",
+      "direction": "outgoing",
+      "atMs": 1790452834000,
+      "status": "read"
+    },
+    {
+      "id": "tip-reply",
+      "text": "That's kind of you. Here's your $5 tip.",
+      "direction": "incoming",
+      "atMs": 1790452837500
+    },
+    {
+      "id": "tip-checkout",
+      "text": "Tip for Memo",
+      "direction": "incoming",
+      "atMs": 1790452840500,
+      "kind": "app-card",
+      "appCard": {
+        "url": "http://127.0.0.1:5174/checkouts/sunday-tip.html",
+        "live": true,
+        "app": "checkout",
+        "height": 240
+      }
+    },
+    {
+      "id": "tip-thanks",
+      "text": "A little thank-you for the help.",
+      "direction": "outgoing",
+      "atMs": 1790452845000,
+      "status": "delivered"
+    }
+  ],
+  "events": [
+    {
+      "type": "typing",
+      "atMs": 1790452802500,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452804000,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452811500,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452813000,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452815000,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452816500,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452826000,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452827500,
+      "typing": false
+    },
+    {
+      "type": "reaction",
+      "atMs": 1790452830500,
+      "messageId": "m7",
+      "reactionId": "dinner-cleanup-thanks",
+      "reaction": {
+        "type": "love",
+        "byMe": true
+      }
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452836200,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452837500,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452839200,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452840500,
+      "typing": false
+    }
+  ]
+}
