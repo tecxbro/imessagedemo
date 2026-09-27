@@ -44,7 +44,14 @@ function rowSelector(id: string): string {
   return `[data-slot="message-row"][data-message-id="${CSS.escape(id)}"]`;
 }
 
-export function AppCardLayer({ messages, frameRef }: { messages: readonly DemoMessage[]; frameRef: RefObject<HTMLElement | null> }) {
+export function AppCardLayer({ messages, frameRef, playing = false, finished = false, timeMs = 0, finalMessageId }: {
+  messages: readonly DemoMessage[]; frameRef: RefObject<HTMLElement | null>;
+  playing?: boolean; finished?: boolean; timeMs?: number; finalMessageId?: string;
+}) {
+  const previousTime = useRef(timeMs);
+  const replayGeneration = useRef(0);
+  if (timeMs === 0 && previousTime.current > 0) replayGeneration.current += 1;
+  previousTime.current = timeMs;
   const overlayRef = useRef<ApplePayOverlayHandle>(null);
   const decisions = useRef<BridgeDecision[]>([]);
   const [bridge] = useState<CheckoutBridge>(() =>
@@ -97,7 +104,8 @@ export function AppCardLayer({ messages, frameRef }: { messages: readonly DemoMe
     <>
       {hideRule ? <style data-slot="app-card-style">{`${hideRule}{display:none !important}`}</style> : null}
       {cards.map((card) => (
-        <AppCardDock key={card.id} message={card} frameRef={frameRef} bridge={bridge} allowed={allowed} />
+        <AppCardDock key={`${card.id}:${replayGeneration.current}`} message={card} frameRef={frameRef} bridge={bridge} allowed={allowed}
+          playing={playing} finished={finished} automatic={card.id === finalMessageId} />
       ))}
       <ApplePayOverlay ref={overlayRef} onClosed={() => bridge.closed()} />
     </>
@@ -109,11 +117,17 @@ function AppCardDock({
   frameRef,
   bridge,
   allowed,
+  playing,
+  finished,
+  automatic,
 }: {
   message: AppCardMessage;
   frameRef: RefObject<HTMLElement | null>;
   bridge: CheckoutBridge;
   allowed: readonly string[];
+  playing: boolean;
+  finished: boolean;
+  automatic: boolean;
 }) {
   const height = message.appCard.height ?? APP_CARD_DEFAULT_HEIGHT;
   const [container] = useState(() => {
@@ -124,6 +138,9 @@ function AppCardDock({
   });
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const loads = useRef(0);
+  const [loaded, setLoaded] = useState(false);
+  const armed = useRef(false);
+  const presented = useRef(false);
   const mounted = useRef(false);
   const embed: CheckoutEmbed = useMemo(
     () => resolveCheckoutEmbed(message.appCard.url, allowed, window.location.origin),
@@ -181,6 +198,18 @@ function AppCardDock({
   }, [bridge, embed, message.id, message.appCard.url]);
 
   const title = message.text.trim() || "Checkout";
+  useEffect(() => {
+    if (playing) armed.current = true;
+    else if (!finished) armed.current = false;
+    if (!automatic || !loaded || !armed.current || presented.current || !embed.ok) return;
+    // Let the last card settle before presenting. Cancellation never re-arms this mount.
+    const timer = setTimeout(() => {
+      if (presented.current) return;
+      presented.current = true;
+      iframeRef.current?.contentWindow?.postMessage({ type: "photon-pay:present", version: 1 }, embed.origin);
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [automatic, loaded, playing, finished, embed]);
   return createPortal(
     embed.ok ? (
       <iframe
@@ -193,6 +222,7 @@ function AppCardDock({
         onLoad={() => {
           loads.current += 1;
           container.dataset.loadCount = String(loads.current);
+          setLoaded(true);
         }}
         style={{ display: "block", width: "100%", height: "100%", border: 0, background: "transparent", colorScheme: "normal" }}
       />

@@ -77,6 +77,7 @@ function copyMessage(message: DemoMessage, messages: readonly DemoMessage[]): De
   if (message.facetime !== undefined) copy.facetime = { ...message.facetime };
   if (message.sticker !== undefined) copy.sticker = { ...message.sticker };
   if (message.stickers !== undefined) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+  if (message.video !== undefined) copy.video = { ...message.video };
   if (message.poll !== undefined) copy.poll = clonePoll(message.poll);
   if (message.appCard !== undefined) {
     const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: "checkout" };
@@ -206,6 +207,10 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
   });
   events.push({ type: "draft", atMs: 0, value: demo.draft, sourceIndex: earliest - 2 });
   events.push({ type: "typing", atMs: 0, typing: demo.typing, sourceIndex: earliest - 1 });
+
+  // A final checkout needs time to settle and present the recorded visual sheet during Play.
+  const lastMessage = events.filter(event => event.type === "message").sort((a, b) => a.atMs - b.atMs).at(-1);
+  if (lastMessage?.message.kind === "app-card") durationMs = Math.max(durationMs, lastMessage.atMs + 5000);
 
   return {
     id: demo.id,

@@ -3,6 +3,7 @@ import type { CompiledDemo, DemoMessage } from "@/contracts";
 import { FaceTimeCard } from "@/components/imessage/facetime-card";
 import { MessageAudio } from "@/components/imessage/message-audio";
 import type { Message } from "@/components/imessage/message-list";
+import { IosVideo } from "./Video";
 import type { VisualFrame } from "@/runtime";
 
 function AudibleAudio({ message, position, playing }: { message: DemoMessage; position: number; playing: boolean }) {
@@ -65,6 +66,10 @@ function stickerMarks(message: DemoMessage, content: ReactNode): ReactNode {
 export function renderOwnedContent(compiled: CompiledDemo, frame: VisualFrame, upstream: Message, content: ReactNode): ReactNode | undefined {
   const message = frame.messages.find((item) => item.id === upstream.id);
   if (!message) return undefined;
+  if (message.kind === "video" && message.video) {
+    const arrival = compiled.events.find(event => event.type === "message" && event.message.id === message.id);
+    return stickerMarks(message, <IosVideo message={message} timeMs={frame.timeMs} arrivalMs={arrival?.atMs ?? 0} />);
+  }
   if (message.kind === "facetime" && message.facetime) {
     return <FaceTimeCard state={message.facetime.state} duration={message.facetime.duration} />;
   }

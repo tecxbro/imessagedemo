@@ -25,7 +25,7 @@ import { isPlainObject, issue, pointer } from "./issues";
 import { readMessageExtras } from "./message-extras";
 import { arrivalWindow, bubbleEffectDurationMs } from "./motion";
 
-const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll"]);
+const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll", "video"]);
 /** Decorations the thread would draw on the hidden placeholder row rather than on the live card. */
 const APP_CARD_EXCLUDED_FIELDS = ["status", "reactions", "replyTo", "edited"] as const;
 /** Query parameters the renderer appends to an app card URL itself. */
@@ -106,6 +106,7 @@ const MESSAGE_FIELDS = new Set([
   "sticker",
   "stickers",
   "poll",
+  "video",
 ]);
 
 const unsupportedReason = new Map(capabilities.unsupported.map((entry) => [entry.id, entry.reason]));

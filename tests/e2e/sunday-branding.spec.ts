@@ -43,10 +43,10 @@ test.describe("Sunday artwork and quoted replies", () => {
       await expect(quote).toContainText(flow.messages.find((message) => message.id === "m2")!.text);
       await phone.screenshot({ path: info.outputPath(`${id}-quoted-reply.png`) });
 
-      await seek(page, 45690);
+      await seek(page, 47690);
       await expectAvatar(page);
       const checkout = page.frameLocator('[data-app-card-id="tip-checkout"] iframe');
-      await checkout.getByRole("button", { name: "Tip $5.00 with Apple Pay", exact: true }).click();
+      await checkout.getByRole("button", { name: "Apple Pay", exact: true }).click();
       const overlay = page.locator("[data-photon-pay-overlay]");
       await expect(overlay).toHaveAttribute("data-visible", "true");
       await expect(overlay.locator('[data-amount="primary"]')).toHaveText("$5.00");

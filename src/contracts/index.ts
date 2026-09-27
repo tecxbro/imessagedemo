@@ -12,7 +12,7 @@ export function notImplemented(symbol: string): never {
   throw new Error(`NOT_IMPLEMENTED: ${symbol}`);
 }
 
-export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll"]);
+export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll", "video"]);
 export const directionSchema = z.enum(["incoming", "outgoing"]);
 export const serviceSchema = z.enum(["imessage", "sms"]);
 export const statusSchema = z.enum(["sending", "sent", "delivered", "read", "failed"]);
@@ -154,6 +154,13 @@ export const appCardPayloadSchema = z.object({
   height: z.number().int().min(APP_CARD_MIN_HEIGHT).max(APP_CARD_MAX_HEIGHT).optional(),
 });
 
+export const videoPayloadSchema = z.object({
+  src: z.string().min(1),
+  poster: z.string().min(1).optional(),
+  width: z.number().positive().optional(),
+  height: z.number().positive().optional(),
+}).strict();
+
 export const demoMessageSchema = z.object({
   id: z.string().min(1),
   text: z.string(),
@@ -171,6 +178,7 @@ export const demoMessageSchema = z.object({
     peaks: z.array(z.number()).optional(),
     src: z.string().min(1).optional(),
   }).optional(),
+  video: videoPayloadSchema.optional(),
   appCard: appCardPayloadSchema.optional(),
   sender: z.string().min(1).optional(),
   senderId: z.string().min(1).optional(),
@@ -477,6 +485,7 @@ export type DemoMessage = {
   attachments?: Array<{ name: string; size?: string; href?: string }>;
   images?: Array<{ src: string; alt: string; width?: number; height?: number }>;
   audio?: { duration: number; peaks?: number[]; src?: string };
+  video?: z.infer<typeof videoPayloadSchema>;
   appCard?: AppCardPayload;
   reactions?: Reaction[];
   replyTo?: ReplySnapshot;

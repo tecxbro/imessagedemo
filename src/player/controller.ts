@@ -65,6 +65,16 @@ export function createRuntimeSession(args: {
     while (true) {
       const element = args.getRenderer()?.element ?? args.getFrameElement();
       if (element) {
+        // A seek updates the logical clock before React commits the corresponding DOM.
+        // Do not accept media readiness measured against the previous rendered frame.
+        const expectedTime = currentFrame().timeMs;
+        const marker = element.closest?.('[data-slot="ios-demo-renderer"]')
+          ?? element.querySelectorAll<HTMLElement>('[data-slot="ios-demo-renderer"]')[0];
+        if (!args.player.state().playing && marker && Math.abs(Number(marker.getAttribute("data-time")) - expectedTime) > 0.001) {
+          if ((args.now ?? Date.now)() - started > 15_000) throw new Error(`Renderer did not commit playback time ${expectedTime}`);
+          await nextTick();
+          continue;
+        }
         await waitForAssets(element);
         return element;
       }
@@ -189,7 +199,7 @@ async function waitForAssets(element: HTMLElement): Promise<void> {
   const deadline = Date.now() + 2500;
   while (Date.now() < deadline) {
     const pending = [...element.querySelectorAll("img")].filter((image) => image.isConnected && !image.complete);
-    if (pending.length === 0) return;
+    if (pending.length === 0) break;
     await Promise.race([
       Promise.all(pending.map((image) => new Promise<void>((resolve) => {
         image.addEventListener("load", () => resolve(), { once: true });
@@ -200,6 +210,23 @@ async function waitForAssets(element: HTMLElement): Promise<void> {
   }
   const stuck = [...element.querySelectorAll("img")].filter((image) => image.isConnected && !image.complete);
   if (stuck.length > 0) throw new Error(`Image failed: ${stuck[0]?.currentSrc || stuck[0]?.src || "image"}`);
+  const videoDeadline = Date.now() + 5000;
+  while (true) {
+    const videos = [...element.querySelectorAll<HTMLVideoElement>('video[data-slot="message-video"]')].filter(video => video.isConnected);
+    const failed = videos.find(video => video.error);
+    if (failed) throw new Error(`Video failed: ${failed.currentSrc || failed.src}`);
+    const playing = typeof window !== "undefined" && window.IMESSAGE_DEMO?.state().playing === true;
+    const pending = videos.filter(video => {
+      if (video.readyState < 2) return true;
+      if (playing || !video.paused) return false;
+      const target = Math.min(Number(video.dataset.targetTime ?? 0), video.duration);
+      return video.seeking || Math.abs(video.currentTime - target) > 0.005;
+    });
+    if (pending.length === 0) break;
+    if (Date.now() >= videoDeadline) throw new Error(`Video did not reach its authored frame: ${pending[0]?.currentSrc || pending[0]?.src}`);
+    await sleep(25);
+  }
+
 }
 
 function sleep(ms: number): Promise<void> {

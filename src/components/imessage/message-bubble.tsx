@@ -86,6 +86,12 @@ function useNativeTextFit(enabled: boolean, paddingX: number, minWidth: number, 
     let raf = 0;
     const measure = () => {
       frameEl.style.width = "";
+      // Range boxes include the incoming bubble's arrival transform (and any outer preview
+      // scale). Fit in layout pixels, or a measurement during that pop permanently narrows
+      // the text after the animation settles.
+      const layoutWidth = Number.parseFloat(getComputedStyle(frameEl).width);
+      const scaleX = frameEl.getBoundingClientRect().width / layoutWidth;
+      if (!Number.isFinite(scaleX) || scaleX <= 0) return;
       const range = document.createRange();
       range.selectNodeContents(textEl);
       const lines: Array<{ top: number; left: number; right: number }> = [];
@@ -96,11 +102,11 @@ function useNativeTextFit(enabled: boolean, paddingX: number, minWidth: number, 
         else lines.push({ top: rect.top, left: rect.left, right: rect.right });
       }
       if (!lines.length) return;
-      const longest = Math.max(...lines.map(l => l.right - l.left));
+      const longest = Math.max(...lines.map(l => l.right - l.left)) / scaleX;
       const bubble = textEl.parentElement as HTMLElement;
       bubble.style.textAlign = lines.length === 1 && longest < minWidth - 2 * paddingX ? "center" : "";
       const hug = Math.ceil((longest + 2 * paddingX) * 100) / 100 + 0.05;
-      if (lines.length > 1 && hug < frameEl.getBoundingClientRect().width - 0.1) frameEl.style.width = `${hug}px`;
+      if (lines.length > 1 && hug < layoutWidth - 0.1) frameEl.style.width = `${hug}px`;
     };
     measure();
     const observer = new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(measure); });

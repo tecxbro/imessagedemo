@@ -19,6 +19,7 @@ import { bubbleMetrics, emojiFontStack, fontStack } from "@/components/imessage/
 import { ReplyThread, replyThreadMetrics, replyThreadMotion } from "@/components/imessage/message-reply";
 import { Tapback, type TapbackType } from "@/components/imessage/tapback";
 import { MessageActions, type Rect, type ScriptedTapback } from "@/components/imessage/message-actions";
+import type { ContextMenuItem } from "@/components/imessage/context-menu";
 import { Avatar } from "@/components/imessage/avatar";
 import { useArrivalAnimation, type ArrivalAnimation } from "@/components/imessage/message-motion";
 import { IosEffectsPicker, type EffectsPickerSelection } from "@/components/imessage/ios-effects-picker";
@@ -42,6 +43,25 @@ import type { SystemMessageEvent } from "@/components/imessage/system-message";
  * last row's ink bottom is at 778 with the composer field starting at 806.
  */
 export const iosScreen = { width: 402, height: 874, statusBar: 54, navBar: 94, listTop: 169.5, composer: 68, listBottom: 96 } as const;
+
+/** Spatially progressive glass: clear at the conversation edge, strongest at the phone's top. */
+function ConversationHeaderGlass() {
+  // Overlapping masked layers change the blur radius itself, not just one blur's opacity.
+  const bands = [
+    [0.5, 0, 12], [1, 12, 28], [2, 28, 44], [4, 44, 60], [8, 60, 78], [16, 78, 98],
+  ];
+  return <div aria-hidden="true" data-slot="conversation-header-glass" className="pointer-events-none absolute left-0 right-0 top-0"
+    style={{ height: iosScreen.listTop + 12 }}>
+    {bands.map(([radius, start, end]) => {
+      const mask = `linear-gradient(to top, transparent ${start}%, #000 ${end}%)`;
+      return <div key={radius} data-slot="header-blur-layer" className="absolute inset-0"
+        style={{ backdropFilter: `blur(${radius}px)`, WebkitBackdropFilter: `blur(${radius}px)`,
+          maskImage: mask, WebkitMaskImage: mask }} />;
+    })}
+    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, color-mix(in srgb, var(--im-bg) 22%, transparent), transparent)" }} />
+  </div>;
+}
+
 
 export type IosScreen = "list" | "conversation" | "new-message";
 
@@ -165,6 +185,10 @@ export type IosMessagesAppProps = {
   onLongPressClose?: () => void;
   onTapback?: (id: string, selection: TapbackSelection) => void;
   onMenuAction?: (id: string, action: string) => void;
+  /** Optional caller-owned menu items; omitted keeps the standard message menu. */
+  messageActionItems?: ContextMenuItem[];
+  /** Open the caller's emoji picker for the pressed message. */
+  onPickReactionEmoji?: (messageId: string) => void;
   /**
    * Select mode: the checkbox multi-select the long-press menu's "Select" row opens, drawn by
    * `ios-select-mode.tsx` and measured on `select-mode-dark.png` — a circle in the leading gutter of
@@ -572,7 +596,7 @@ export function IosMessagesApp({
   messages, typing = false, now, composer, screenTransition, onBack, onSelectConversation, onCompose, onCloseNewMessage, onDetails,
   thread, onOpenThread, onCloseThread,
   sendAnimation, receiveAnimation, onSendAnimationEnd,
-  longPress, longPressPose, onLongPress, onLongPressClose, onTapback, onMenuAction,
+  longPress, longPressPose, onLongPress, onLongPressClose, onTapback, onMenuAction, messageActionItems, onPickReactionEmoji,
   selectMode, onOpenSelectMode, onCloseSelectMode, selectedMessageIds, onSelectMessage, onDeleteMessages, onForwardMessages,
   effectsPicker, onEffectsPickerOpen, onEffectsTabChange, onEffectSelect, onSendWithEffect, onEffectsPickerClose,
   plusMenu, onPlusMenuSelect, onPlusMenuClose, plusMenuItems = defaultPlusMenuItems,
@@ -935,6 +959,7 @@ export function IosMessagesApp({
         insetTop={iosScreen.listTop} insetBottom={iosScreen.listBottom} renderReactions={renderReactions}
         audioControl={audioControl} timeReveal={timeReveal} renderContent={renderContent}
         className="absolute inset-0" />
+      <ConversationHeaderGlass />
       <IosNavBar name={contact.name} initials={contact.initials} avatar={navAvatar} className="absolute left-0" style={{ top: iosScreen.statusBar }} />
       <IosComposer className="absolute bottom-0 left-0" value={composer?.value} placeholder={composer?.placeholder} disabled />
     </div>
@@ -1020,6 +1045,7 @@ export function IosMessagesApp({
                 ))}
               </div>
             )}
+            <ConversationHeaderGlass />
             <IosNavBar name={contact.name} initials={contact.initials} avatar={navAvatar} onBack={onBack}
               onDetails={() => { setOwnDetails(true); onDetails?.(); }} className="absolute left-0" style={{ top: iosScreen.statusBar }} />
             {/* The recorder replaces the field rather than sitting beside it: the two boxes overlap,
@@ -1206,6 +1232,7 @@ export function IosMessagesApp({
         {overlayMessage && pressedBody && <style>{messageBodyHiddenSlots.map(slot => `[data-message-id="${overlayMessage.id}"] [data-slot="${slot}"]`).join(",")}{"{visibility:hidden}"}</style>}
         {overlayMessage && pressedBody && (
           <MessageActions rect={pressedBody.rect} frame={{ width, height }} direction={overlayMessage.direction} service={overlayMessage.service ?? "imessage"}
+            items={messageActionItems} onPickEmoji={onPickReactionEmoji && (() => onPickReactionEmoji(overlayMessage.id))}
             scripted={scriptedPress ? { phase: scriptedPress.phase, elapsedMs: scriptedPress.elapsedMs, entranceElapsedMs: scriptedPress.entranceElapsedMs, reduced: scriptedPress.reduced } : undefined}
             progress={scriptedPress ? undefined : longPress?.progress} autoFocus={!scriptedPress && longPress?.progress === undefined && !closing}
             open={scriptedPress ? scriptedPress.phase !== "exit" : !closing} onExited={() => setClosing(null)}

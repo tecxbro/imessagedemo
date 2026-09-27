@@ -2,7 +2,7 @@
 
 The pin is `https://imessage.swerdlow.dev/r/registry.json`. Polls are repository-owned (`src/components/owned/ios-poll.tsx`) because the registry has no poll item.
 
-Authoring goes flow JSON, validation, compilation, one runtime timeline, then the iOS renderer. Playback is Play, Pause or Resume, and Replay. Interactive preview pauses, applies the same events in a local session, and Replay restores the authored opening.
+Authoring goes flow JSON, validation, compilation, one runtime timeline, then the iOS renderer. Playback is Play, Pause or Resume, and Replay. Interactive preview pauses, applies transcript changes as canonical events in a local session, and Replay demo restores the authored opening. Reply, copy, selection, and custom emoji controls are described in [Interactive Sunday previews](sunday-interactive-preview.md). Selection remains unavailable once a live checkout card is visible.
 
 A one-to-one conversation is the default. Groups, polls, stickers, search, and the recorder are available when the story needs them.
 
@@ -77,3 +77,13 @@ Mini apps other than the checkout `app-card`, real FaceTime calls, Apple Cash, a
 ## Verification
 
 `scripts/check-ios-coverage.mjs` fails when a registry item is missing from this document or when `capabilities.json` still lists polls as unsupported.
+
+## Playable video messages
+
+The repository-owned iOS `video` message supports local MP4/WebM with an optional local poster. It automatically plays muted inline with the conversation timeline, pauses with the player, and restores media time on seek or Replay. It shows no “Play video” footer, elapsed-time label, scrubber, mute button, or other browser media controls, and requires no extra click. See [the video contract and checks](ios-video.md).
+
+## Shared presentation defaults
+
+New demos use one company/contact header name, content-sized text bubbles and the shared progressive header blur (clear below, strongest toward the top edge). Use existing schema fields and renderer styling, never company-specific CSS. A requested checkout ending keeps its card last and opens the visual Apple Pay sheet automatically during normal playback; the visible button contains only the Apple Pay mark. Exact supplied transcripts and explicit overrides take precedence. See [payment behavior](apple-pay-presentation.md) and the canonical authoring skills.
+
+The shared header and text-bubble layout corrections are recorded in [conversation-layout.patch](../patches/imessage/conversation-layout.patch), after the interactive-preview patch. The header uses six masked backdrop layers with increasing blur radii (0.5–16 px), progressing from clear at the conversation edge to strongest at the top of the phone, plus a fading background wash behind sharp navigation content. Bubble measurement converts viewport-scaled text ranges back to CSS layout coordinates. The vendor pin remains unchanged; `verify:upstream` checks the pin plus recorded patches. These are shared implementation details, not flow fields.

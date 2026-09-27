@@ -1,6 +1,6 @@
 {
-  "id": "sunday-morning-espresso",
-  "title": "Sunday \u2014 Your coffee break, with a little help",
+  "id": "sunday-coffee-poll",
+  "title": "Sunday \u2014 Coffee first",
   "platform": "ios",
   "theme": "light",
   "contact": {
@@ -21,57 +21,78 @@
       "atMs": 0
     },
     {
-      "id": "typing",
-      "atMs": 3200
+      "id": "poll-before",
+      "atMs": 8500
+    },
+    {
+      "id": "poll-selected",
+      "atMs": 12300
     },
     {
       "id": "quoted-reply",
-      "atMs": 9690
+      "atMs": 16200
     },
     {
-      "id": "in-progress",
-      "atMs": 18000
+      "id": "video",
+      "atMs": 28400
     },
     {
       "id": "proof",
-      "atMs": 29000
+      "atMs": 51500
     },
     {
       "id": "reaction-menu",
-      "atMs": 31000
+      "atMs": 53500
     },
     {
       "id": "reaction-landed",
-      "atMs": 33000
-    },
-    {
-      "id": "final",
-      "atMs": 43500
+      "atMs": 56100
     },
     {
       "id": "ready-to-tip",
-      "atMs": 43500
+      "atMs": 66000
     }
   ],
   "messages": [
     {
       "id": "m1",
-      "text": "Memo, can you make me an espresso?",
+      "text": "Memo, help me get the morning started?",
       "direction": "outgoing",
       "atMs": 1790452800000,
       "status": "read"
     },
     {
       "id": "m2",
-      "text": "One espresso, coming up.",
+      "text": "Of course. What comes first?",
       "direction": "incoming",
       "atMs": 1790452804000
     },
     {
+      "id": "morning-poll",
+      "kind": "poll",
+      "direction": "incoming",
+      "atMs": 1790452807000,
+      "text": "What comes first?",
+      "poll": {
+        "question": "",
+        "selectionMode": "single",
+        "options": [
+          {
+            "id": "espresso",
+            "text": "Espresso \u2615"
+          },
+          {
+            "id": "dishes",
+            "text": "Clear dishes"
+          }
+        ]
+      }
+    },
+    {
       "id": "m3",
-      "text": "Just a single shot, please.",
+      "text": "Espresso first. Just a single shot, please.",
       "direction": "outgoing",
-      "atMs": 1790452809000,
+      "atMs": 1790452815500,
       "status": "read",
       "replyTo": "m2"
     },
@@ -79,13 +100,13 @@
       "id": "m4",
       "text": "One shot. I'll get the machine going.",
       "direction": "incoming",
-      "atMs": 1790452813000
+      "atMs": 1790452819500
     },
     {
       "id": "m5",
       "text": "Memo at an espresso machine \u2014 official Sunday demonstration still",
       "direction": "incoming",
-      "atMs": 1790452816500,
+      "atMs": 1790452823000,
       "kind": "image",
       "images": [
         {
@@ -97,36 +118,49 @@
       ]
     },
     {
+      "id": "proof-video",
+      "kind": "video",
+      "direction": "incoming",
+      "atMs": 1790452827000,
+      "text": "Memo making espresso",
+      "video": {
+        "src": "/demo-assets/sunday/memo-espresso.mp4",
+        "poster": "/demo-assets/sunday/memo-espresso.webp",
+        "width": 640,
+        "height": 360
+      }
+    },
+    {
       "id": "m6",
       "text": "That's my kind of coffee break.",
       "direction": "outgoing",
-      "atMs": 1790452822500,
+      "atMs": 1790452845000,
       "status": "read"
     },
     {
       "id": "m7",
       "text": "Your espresso is ready by the machine. \u2615",
       "direction": "incoming",
-      "atMs": 1790452827500
+      "atMs": 1790452850000
     },
     {
       "id": "tip-request",
       "text": "Let me leave a $5 tip. You earned it.",
       "direction": "outgoing",
-      "atMs": 1790452836000,
+      "atMs": 1790452858500,
       "status": "read"
     },
     {
       "id": "tip-reply",
       "text": "That's kind of you. Here's your $5 tip.",
       "direction": "incoming",
-      "atMs": 1790452839500
+      "atMs": 1790452862000
     },
     {
       "id": "tip-checkout",
       "text": "Tip for Memo",
       "direction": "incoming",
-      "atMs": 1790452842500,
+      "atMs": 1790452865000,
       "kind": "app-card",
       "appCard": {
         "url": "http://127.0.0.1:5175/checkouts/sunday-tip.html",
@@ -149,37 +183,65 @@
     },
     {
       "type": "typing",
-      "atMs": 1790452811500,
+      "atMs": 1790452805800,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452813000,
+      "atMs": 1790452807000,
+      "typing": false
+    },
+    {
+      "type": "poll-vote",
+      "atMs": 1790452811000,
+      "messageId": "morning-poll",
+      "participantId": "me",
+      "optionId": "espresso",
+      "voted": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452818000,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452819500,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452815000,
+      "atMs": 1790452821500,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452816500,
+      "atMs": 1790452823000,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452826000,
+      "atMs": 1790452825500,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452827500,
+      "atMs": 1790452827000,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452848500,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452850000,
       "typing": false
     },
     {
       "type": "overlay",
-      "atMs": 1790452829500,
+      "atMs": 1790452852000,
       "overlay": {
         "kind": "long-press",
         "messageId": "m7"
@@ -187,7 +249,7 @@
     },
     {
       "type": "overlay",
-      "atMs": 1790452831200,
+      "atMs": 1790452853700,
       "overlay": {
         "kind": "long-press",
         "messageId": "m7",
@@ -198,14 +260,14 @@
     },
     {
       "type": "overlay",
-      "atMs": 1790452831700,
+      "atMs": 1790452854200,
       "overlay": {
         "kind": "closed"
       }
     },
     {
       "type": "reaction",
-      "atMs": 1790452832200,
+      "atMs": 1790452854700,
       "messageId": "m7",
       "reactionId": "morning-espresso-thanks",
       "reaction": {
@@ -216,23 +278,30 @@
     },
     {
       "type": "typing",
-      "atMs": 1790452838200,
+      "atMs": 1790452860700,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452839500,
+      "atMs": 1790452862000,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452841200,
+      "atMs": 1790452863700,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452842500,
+      "atMs": 1790452865000,
       "typing": false
+    }
+  ],
+  "participants": [
+    {
+      "id": "me",
+      "name": "You",
+      "me": true
     }
   ]
 }

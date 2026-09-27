@@ -22,7 +22,9 @@ and captures so I can screen-record them.
 
 `$make-imessage-demo` also works: it enters the same research workflow for a company-only request. Once a brief/transcript exists, it renders without routing back. An exact user transcript is authoritative. No second tag is necessary.
 
-The HTML adapter defaults to three distinct use cases only when no count/transcript is supplied. It uses one JSON file per conversation, shared namespaced assets, separate output directories, and independent previews. The story can end in a useful result; no mandatory checkout, mini-app, live number, or payment ending is imported from Spectrum references. When a story does end at an existing Photon checkout, the executor can embed it as an iOS `app-card` whose Apple Pay button opens the recreated sheet ([presentation notes](apple-pay-presentation.md)).
+Shared defaults apply across companies: one header identity, natural text-bubble width and progressive header blur (clear below, strongest toward the top edge) from the renderer, and muted inline video synchronized to the conversation with no extra “Play video” footer, elapsed-time label, scrubber, mute button, or other browser media controls. Use supported fields and preserve exact supplied transcripts; do not add per-company CSS. The three skills document their respective authoring, research and visual-payment responsibilities.
+
+The HTML adapter defaults to three distinct use cases only when no count/transcript is supplied. It uses one JSON file per conversation, shared namespaced assets, separate output directories, and independent previews. The story can end in a useful result; no mandatory checkout, mini-app, live number, or payment ending is imported from Spectrum references. When a story does end at an existing Photon checkout, the executor can embed it as an iOS `app-card` as the final message, with automatic visual sheet presentation during normal playback and an Apple Pay mark-only button for reopening after cancellation ([presentation notes](apple-pay-presentation.md)).
 
 ## Source of truth
 
@@ -34,9 +36,9 @@ Preview includes controls; captures crop to the Messages frame. PNG samples are 
 
 ## Keep local and repository copies aligned
 
-The two folders under `.agents/skills/` are canonical for this checkout. After pulling `main`, use these repository files directly. When an agent has loaded an older global `$photon-demo-creator`, point it explicitly at `.agents/skills/photon-demo-creator/SKILL.md` before starting.
+The renderer and creator folders, plus the scoped `recreate-apple-pay` skill, under `.agents/skills/` are canonical for this checkout. After pulling `main`, use these repository files directly. When an agent has loaded an older global `$photon-demo-creator`, point it explicitly at `.agents/skills/photon-demo-creator/SKILL.md` before starting.
 
-To refresh a personal installation, first compare and back up that installation; then copy the complete repository skill folder, including `agents/` and `references/`. Keep both skill folders in the renderer checkout. Do not overwrite unrelated personal skills or assume a repository push changes files on the user's Mac. Do not maintain separately edited copies of the HTML command cookbook.
+To refresh a personal installation, first compare and back up that installation; then copy the complete repository skill folder, including `agents/` and `references/`. Keep these repository skill folders in the renderer checkout. Do not overwrite unrelated personal skills or assume a repository push changes files on the user's Mac. Do not maintain separately edited copies of the HTML command cookbook.
 
 The eight supplied Spectrum reference files are preserved for the high-level skill's separate Spectrum mode. They are historical/domain context in HTML mode, not permission to use their provider operations, payment endings, project IDs, or local paths here.
 

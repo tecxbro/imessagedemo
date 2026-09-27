@@ -134,6 +134,7 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
   if (message.facetime) logical.facetime = { ...message.facetime };
   if (message.sticker) logical.sticker = { ...message.sticker };
   if (message.stickers) logical.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+  if (message.video) logical.video = { ...message.video };
   if (message.poll) logical.poll = clonePoll(message.poll);
   if (message.replyTo) {
     logical.replyTo = {
@@ -234,6 +235,7 @@ function projectConversation(conversation: ConversationState): ConversationState
       if (message.facetime) copy.facetime = { ...message.facetime };
       if (message.sticker) copy.sticker = { ...message.sticker };
       if (message.stickers) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
+      if (message.video) copy.video = { ...message.video };
       if (message.poll) copy.poll = clonePoll(message.poll);
       return copy;
     }),

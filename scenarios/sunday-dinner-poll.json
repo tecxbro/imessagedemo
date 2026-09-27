@@ -1,6 +1,6 @@
 {
-  "id": "sunday-dinner-cleanup",
-  "title": "Sunday \u2014 Dinner is yours again",
+  "id": "sunday-dinner-poll",
+  "title": "Sunday \u2014 Dinner, decided",
   "platform": "ios",
   "theme": "light",
   "contact": {
@@ -21,57 +21,82 @@
       "atMs": 0
     },
     {
-      "id": "typing",
-      "atMs": 3200
+      "id": "poll-before",
+      "atMs": 6500
     },
     {
-      "id": "quoted-reply",
-      "atMs": 9690
+      "id": "poll-selected",
+      "atMs": 9200
     },
     {
-      "id": "in-progress",
-      "atMs": 18000
+      "id": "reply",
+      "atMs": 16190
+    },
+    {
+      "id": "image",
+      "atMs": 24400
+    },
+    {
+      "id": "video",
+      "atMs": 28400
     },
     {
       "id": "proof",
-      "atMs": 29000
+      "atMs": 51000
     },
     {
       "id": "reaction-menu",
-      "atMs": 31000
+      "atMs": 54000
     },
     {
       "id": "reaction-landed",
-      "atMs": 33000
-    },
-    {
-      "id": "final",
-      "atMs": 43500
+      "atMs": 56400
     },
     {
       "id": "ready-to-tip",
-      "atMs": 43500
+      "atMs": 67500
     }
   ],
   "messages": [
     {
       "id": "m1",
-      "text": "Memo, can you clear the table? We're doing bedtime.",
+      "text": "Memo, dinner\u2019s done and bedtime\u2019s starting. Can you take a chore?",
       "direction": "outgoing",
       "atMs": 1790452800000,
       "status": "read"
     },
     {
+      "id": "dinner-priority",
+      "kind": "poll",
+      "direction": "incoming",
+      "atMs": 1790452804000,
+      "text": "What should I take first?",
+      "poll": {
+        "question": "What should I take first?",
+        "selectionMode": "single",
+        "options": [
+          {
+            "id": "dishes",
+            "text": "The dishes"
+          },
+          {
+            "id": "socks",
+            "text": "The socks"
+          }
+        ]
+      }
+    },
+    {
       "id": "m2",
       "text": "I've got the dishes. You take bedtime.",
       "direction": "incoming",
-      "atMs": 1790452804000
+      "atMs": 1790452811000
     },
     {
       "id": "m3",
       "text": "The wine glasses too?",
       "direction": "outgoing",
-      "atMs": 1790452809000,
+      "atMs": 1790452815500,
       "status": "read",
       "replyTo": "m2"
     },
@@ -79,13 +104,13 @@
       "id": "m4",
       "text": "Yes. I'll handle them carefully, then load the dishwasher.",
       "direction": "incoming",
-      "atMs": 1790452813000
+      "atMs": 1790452819500
     },
     {
       "id": "m5",
       "text": "Memo handling a wine glass at a dining table \u2014 official Sunday demonstration still",
       "direction": "incoming",
-      "atMs": 1790452816500,
+      "atMs": 1790452823000,
       "kind": "image",
       "images": [
         {
@@ -97,36 +122,49 @@
       ]
     },
     {
+      "id": "proof-video",
+      "kind": "video",
+      "direction": "incoming",
+      "atMs": 1790452827000,
+      "text": "Memo clearing the table",
+      "video": {
+        "src": "/demo-assets/sunday/memo-dishes.mp4",
+        "poster": "/demo-assets/sunday/memo-dishes.webp",
+        "width": 640,
+        "height": 360
+      }
+    },
+    {
       "id": "m6",
       "text": "That's one less thing tonight.",
       "direction": "outgoing",
-      "atMs": 1790452822500,
+      "atMs": 1790452845000,
       "status": "read"
     },
     {
       "id": "m7",
       "text": "Table cleared. Dishwasher running. Enjoy your evening.",
       "direction": "incoming",
-      "atMs": 1790452827500
+      "atMs": 1790452850000
     },
     {
       "id": "tip-request",
       "text": "Let me leave a $5 tip. You earned it.",
       "direction": "outgoing",
-      "atMs": 1790452836000,
+      "atMs": 1790452860000,
       "status": "read"
     },
     {
       "id": "tip-reply",
       "text": "That's kind of you. Here's your $5 tip.",
       "direction": "incoming",
-      "atMs": 1790452839500
+      "atMs": 1790452863500
     },
     {
       "id": "tip-checkout",
       "text": "Tip for Memo",
       "direction": "incoming",
-      "atMs": 1790452842500,
+      "atMs": 1790452866500,
       "kind": "app-card",
       "appCard": {
         "url": "http://127.0.0.1:5174/checkouts/sunday-tip.html",
@@ -148,38 +186,66 @@
       "typing": false
     },
     {
+      "type": "poll-vote",
+      "atMs": 1790452808000,
+      "messageId": "dinner-priority",
+      "participantId": "me",
+      "optionId": "dishes",
+      "voted": true
+    },
+    {
       "type": "typing",
-      "atMs": 1790452811500,
+      "atMs": 1790452809500,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452813000,
+      "atMs": 1790452811000,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452815000,
+      "atMs": 1790452818000,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452816500,
+      "atMs": 1790452819500,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452826000,
+      "atMs": 1790452821500,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452827500,
+      "atMs": 1790452823000,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452825500,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452827000,
+      "typing": false
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452848500,
+      "typing": true
+    },
+    {
+      "type": "typing",
+      "atMs": 1790452850000,
       "typing": false
     },
     {
       "type": "overlay",
-      "atMs": 1790452829500,
+      "atMs": 1790452852500,
       "overlay": {
         "kind": "long-press",
         "messageId": "m7"
@@ -187,7 +253,7 @@
     },
     {
       "type": "overlay",
-      "atMs": 1790452831200,
+      "atMs": 1790452854200,
       "overlay": {
         "kind": "long-press",
         "messageId": "m7",
@@ -198,16 +264,16 @@
     },
     {
       "type": "overlay",
-      "atMs": 1790452831700,
+      "atMs": 1790452854700,
       "overlay": {
         "kind": "closed"
       }
     },
     {
       "type": "reaction",
-      "atMs": 1790452832200,
+      "atMs": 1790452855200,
       "messageId": "m7",
-      "reactionId": "dinner-cleanup-thanks",
+      "reactionId": "dinner-poll-thanks",
       "reaction": {
         "type": "love",
         "byMe": true
@@ -215,23 +281,30 @@
     },
     {
       "type": "typing",
-      "atMs": 1790452838200,
+      "atMs": 1790452862000,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452839500,
+      "atMs": 1790452863500,
       "typing": false
     },
     {
       "type": "typing",
-      "atMs": 1790452841200,
+      "atMs": 1790452865000,
       "typing": true
     },
     {
       "type": "typing",
-      "atMs": 1790452842500,
+      "atMs": 1790452866500,
       "typing": false
+    }
+  ],
+  "participants": [
+    {
+      "id": "me",
+      "name": "You",
+      "me": true
     }
   ]
 }

@@ -19,6 +19,10 @@ export function preflightAssets(document: AuthoringDocument, repoRoot: string): 
     if (contact.photo) assets.push(inspectAsset(contact.photo, repoRoot));
   }
   for (const message of document.messages) {
+    if (message.video) {
+      inspectVideoAsset(message.video.src, repoRoot);
+      if (message.video.poster) assets.push(inspectAsset(message.video.poster, repoRoot));
+    }
     for (const voter of message.poll?.voters ?? []) {
       assets.push(inspectAsset(voter.avatar, repoRoot));
     }
@@ -45,6 +49,17 @@ export function preflightAssets(document: AuthoringDocument, repoRoot: string): 
 }
 
 export function inspectAsset(src: string, repoRoot: string): AssetOk {
+  const real = resolveAsset(src, repoRoot);
+  const bytes = readFileSync(real);
+  const kind = sniffImage(bytes);
+  if (!kind) {
+    throw new CliError(`Unsupported asset type: ${src}`, EXIT_ENVIRONMENT, { src });
+  }
+  const size = imageSize(bytes, kind);
+  return { src, file: real, type: kind, width: size.width, height: size.height };
+}
+
+function resolveAsset(src: string, repoRoot: string): string {
   if (/^(https?:)?\/\//i.test(src) || src.startsWith("file:")) {
     throw new CliError(`External media is not allowed: ${src}`, EXIT_ENVIRONMENT, { src });
   }
@@ -77,13 +92,22 @@ export function inspectAsset(src: string, repoRoot: string): AssetOk {
     throw new CliError(`Asset path escapes public/demo-assets: ${src}`, EXIT_ENVIRONMENT, { src });
   }
 
-  const bytes = readFileSync(real);
-  const kind = sniffImage(bytes);
-  if (!kind) {
-    throw new CliError(`Unsupported asset type: ${src}`, EXIT_ENVIRONMENT, { src });
+  if (!lstatSync(real).isFile()) throw new CliError(`Asset is not a file: ${src}`, EXIT_ENVIRONMENT, { src });
+  return real;
+}
+
+export function inspectVideoAsset(src: string, repoRoot: string): { src: string; file: string; type: "mp4" | "webm" } {
+  if (!/^\/demo-assets\/(?:[a-z0-9_-]+\/)*[a-z0-9._-]+\.(mp4|webm)$/i.test(src) || src.includes("..")) {
+    throw new CliError(`Video must be a local MP4 or WebM: ${src}`, EXIT_ENVIRONMENT, { src });
   }
-  const size = imageSize(bytes, kind);
-  return { src, file: real, type: kind, width: size.width, height: size.height };
+  const file = resolveAsset(src, repoRoot);
+  const bytes = readFileSync(file);
+  const type = src.toLowerCase().endsWith(".mp4") ? "mp4" : "webm";
+  const recognized = type === "mp4"
+    ? bytes.length >= 12 && bytes.toString("ascii", 4, 8) === "ftyp"
+    : bytes.length >= 4 && bytes.readUInt32BE(0) === 0x1a45dfa3;
+  if (!recognized) throw new CliError(`Invalid ${type} video header: ${src}`, EXIT_ENVIRONMENT, { src });
+  return { src, file, type };
 }
 
 export function sniffImage(bytes: Buffer): "png" | "jpeg" | "gif" | "webp" | null {

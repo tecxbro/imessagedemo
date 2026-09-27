@@ -118,10 +118,11 @@ export type IosFrameProps = RendererProps & {
   interactive?: boolean;
   onDraft?: (value: string) => void;
   overlay?: ReactNode;
+  previewOverlay?: ReactNode;
   shell?: Partial<IosMessagesAppProps>;
 };
 
-export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFrame({ compiled, frame, interactive = false, onDraft, overlay, shell }, ref) {
+export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFrame({ compiled, frame, interactive = false, onDraft, overlay, previewOverlay, shell }, ref) {
   const hostRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const compiledRef = useRef(compiled);
@@ -249,20 +250,23 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         composer={shell?.composer ?? view.composer}
         sendAnimation={view.sendAnimation}
         receiveAnimation={view.receiveAnimation}
-        longPress={shell?.longPress ?? view.longPress}
+        longPress={shell && "longPress" in shell ? shell.longPress : view.longPress}
         longPressPose={shell?.longPressPose !== undefined ? shell.longPressPose : view.longPressPose}
         renderReactions={shell?.renderReactions ?? view.renderReactions}
-        thread={shell?.thread ?? view.thread}
+        thread={shell && "thread" in shell ? shell.thread : view.thread}
         effectsPicker={shell?.effectsPicker ?? view.effectsPicker}
         audioControl={shell?.audioControl ?? view.audioControl}
         timeReveal={shell?.timeReveal ?? view.timeReveal}
         overlay={
           <>
             {baseOverlay}
-            {hostsAppCards ? <AppCardLayer messages={visual.messages} frameRef={frameRef} /> : null}
+            {hostsAppCards ? <AppCardLayer messages={visual.messages} frameRef={frameRef}
+              playing={demoIsPlaying()} finished={visual.timeMs >= compiled.durationMs} timeMs={visual.timeMs}
+              finalMessageId={compiled.events.filter(event => event.type === "message").sort((a, b) => a.atMs - b.atMs).at(-1)?.message.id} /> : null}
             {hostsPolls ? (
               <PollLayer compiled={compiled} frame={visual} frameRef={frameRef} onVote={castPollVote} />
             ) : null}
+            {previewOverlay}
           </>
         }
         style={shell?.style}

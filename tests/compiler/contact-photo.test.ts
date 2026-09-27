@@ -10,7 +10,7 @@ import { frameAt } from "@/runtime";
 import { makeDeps, parseStdoutJson } from "../cli/helpers";
 
 const photo = "/demo-assets/sunday/avatar.png";
-const contact = { name: "Memo · Sunday", initials: "S", photo };
+const contact = { name: "Sunday", initials: "S", photo };
 const flow = (avatar: unknown = photo) => ({
   id: "contact-photo-test", title: "Contact artwork", platform: "ios", theme: "light",
   contact: { ...contact, photo: avatar },
