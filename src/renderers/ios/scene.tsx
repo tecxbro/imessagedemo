@@ -21,6 +21,7 @@ import { applyCheckpointScroll } from "./scroll";
 import { controlledLongPressPose, iosInteractionShell, type InteractionInput } from "./interaction-state";
 import { iosInteractionView, undoSendOverlay, type OverlayRenderOptions } from "./overlays";
 import { AppCardLayer } from "./app-card/AppCardLayer";
+import { PollLayer } from "./poll/PollLayer";
 import { renderOwnedContent } from "./owned-content";
 
 export type { IosSettleReceipt };
@@ -167,11 +168,11 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   useLayoutEffect(() => {
     const shellNode = frameRef.current;
     if (shellNode) {
-      applyCheckpointScroll(shellNode);
+      applyCheckpointScroll(shellNode, visual.scroll);
       freezeLoops(shellNode, session.current.cues);
     }
     if (poseKey !== committedKey) setPoseKey(committedKey);
-  }, [committedKey, poseKey, token]);
+  }, [committedKey, poseKey, token, visual.scroll]);
 
   const handleRef = useRef<IosRendererHandle | null>(null);
   if (!handleRef.current) {
@@ -208,7 +209,20 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
   const view = shellProps(compiled, visual, cues, posed, interactive, onDraft);
   const canonicalOverlay = canonicalOverlayNode(compiled, visual);
   const hostsAppCards = useMemo(() => compiledHasAppCards(compiled), [compiled]);
+  const hostsPolls = useMemo(() => compiledHasPolls(compiled), [compiled]);
   const baseOverlay = overlay ?? shell?.overlay ?? canonicalOverlay;
+  const castPollVote = (messageId: string, optionId: string) => {
+    const message = visual.messages.find((item) => item.id === messageId);
+    const poll = message?.poll;
+    if (!poll) return;
+    const participantId = compiled.participants?.find((person) => person.me)?.id
+      ?? poll.voters?.find((voter) => voter.id === "me")?.id
+      ?? poll.voters?.[0]?.id
+      ?? "me";
+    const selected = (poll.votes ?? []).some((vote) => vote.participantId === participantId && vote.optionId === optionId);
+    const voted = (poll.selectionMode ?? "multiple") === "single" ? true : !selected;
+    window.IMESSAGE_DEMO?.castPollVote?.({ messageId, optionId, participantId, voted });
+  };
   return (
     <div
       ref={hostRef}
@@ -243,14 +257,13 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         audioControl={shell?.audioControl ?? view.audioControl}
         timeReveal={shell?.timeReveal ?? view.timeReveal}
         overlay={
-          hostsAppCards ? (
-            <>
-              {baseOverlay}
-              <AppCardLayer messages={visual.messages} frameRef={frameRef} />
-            </>
-          ) : (
-            baseOverlay
-          )
+          <>
+            {baseOverlay}
+            {hostsAppCards ? <AppCardLayer messages={visual.messages} frameRef={frameRef} /> : null}
+            {hostsPolls ? (
+              <PollLayer compiled={compiled} frame={visual} frameRef={frameRef} onVote={castPollVote} />
+            ) : null}
+          </>
         }
         style={shell?.style}
       />
@@ -331,6 +344,13 @@ function controlledSurfaces(frame: VisualFrame): Partial<IosMessagesAppProps> {
 }
 
 /** Only a flow that authors a live app card mounts the card layer and its Apple Pay presentation. */
+function compiledHasPolls(compiled: CompiledDemo): boolean {
+  return (
+    compiled.events.some((event) => event.type === "message" && event.message.kind === "poll") ||
+    Boolean(compiled.initialState?.conversations?.some((conversation) => conversation.messages?.some((message) => message.kind === "poll")))
+  );
+}
+
 function compiledHasAppCards(compiled: CompiledDemo): boolean {
   return (
     compiled.events.some((event) => event.type === "message" && event.message.kind === "app-card") ||

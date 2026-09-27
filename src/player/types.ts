@@ -52,6 +52,7 @@ export type IMessageDemoApi = {
   pause(): Promise<void>;
   state(): { timeMs: number; playing: boolean; durationMs: number };
   frame(): RenderFrame;
+  castPollVote?(vote: { messageId: string; optionId: string; participantId: string; voted?: boolean }): void;
 };
 
 declare global {

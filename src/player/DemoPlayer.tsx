@@ -22,12 +22,14 @@ export type DemoPlayerViewProps = DemoPlayerProps & {
   playbackBaseline?: number;
 };
 
+const noCheckpoints: NamedCheckpoint[] = [];
+
 export function DemoPlayer({
   compiled,
   ref,
   clean = false,
   capture = false,
-  checkpoints = [],
+  checkpoints = noCheckpoints,
   scenarioId,
   onScenario,
   scenarios,
@@ -116,7 +118,7 @@ export function DemoPlayer({
   const state = player.state();
   const frame = { ...session.frame(), platform, theme };
   const profile = profiles[platform];
-  const compiledView = { ...compiled, platform, theme };
+  const compiledView = { ...session.playbackCompiled(), platform, theme };
   const playbackLabel = playbackControlLabel(state);
   const onPlayback = () => {
     void runPlaybackControl(player.state(), session);

@@ -1,5 +1,7 @@
-import type { CompiledDemo, Player, RenderFrame, RendererHandle } from "@/contracts";
+import type { CompiledDemo, CompiledEvent, Player, RenderFrame, RendererHandle } from "@/contracts";
 import { buildReadyReceipt, canonicalFrame, frameDigest } from "@/player/receipt";
+import { POLL_VOTE_SETTLE_MS } from "@/runtime/poll";
+import { stateAt } from "@/runtime/project";
 import type { InspectState, IMessageDemoApi, NamedCheckpoint, ReadyReceipt, SeekResult } from "@/player/types";
 
 export type RuntimeSession = IMessageDemoApi & {
@@ -8,6 +10,8 @@ export type RuntimeSession = IMessageDemoApi & {
   setView(platform: CompiledDemo["platform"], theme: CompiledDemo["theme"]): void;
   view(): { platform: CompiledDemo["platform"]; theme: CompiledDemo["theme"] };
   snapshot(): { frame: RenderFrame; digest: string };
+  playbackCompiled(): CompiledDemo;
+  liveRevision(): number;
 };
 
 export function createRuntimeSession(args: {
@@ -24,6 +28,14 @@ export function createRuntimeSession(args: {
   let theme = args.compiled.theme;
   const logicalFrames = new Map<number, RenderFrame>();
   logicalFrames.set(0, structuredClone({ ...args.player.frame(), platform, theme }));
+  let liveVotes: CompiledEvent[] = [];
+  let liveRevision = 0;
+
+  function playbackCompiled(): CompiledDemo {
+    if (liveVotes.length === 0) return args.compiled;
+    const durationMs = liveVotes.reduce((end, event) => Math.max(end, event.atMs + POLL_VOTE_SETTLE_MS), args.compiled.durationMs);
+    return { ...args.compiled, durationMs, events: [...args.compiled.events, ...liveVotes] };
+  }
 
   function currentFrame(): RenderFrame {
     const frame = args.player.frame();
@@ -70,7 +82,10 @@ export function createRuntimeSession(args: {
     },
     async reset() {
       inspect = { messageId: null };
+      liveVotes = [];
+      liveRevision += 1;
       args.player.pause();
+      args.player.reset?.();
       args.player.seek(0);
       return bump(0);
     },
@@ -124,6 +139,29 @@ export function createRuntimeSession(args: {
     snapshot() {
       const frame = currentFrame();
       return { frame, digest: canonicalFrame(frame) };
+    },
+    playbackCompiled,
+    liveRevision() {
+      return liveRevision;
+    },
+    castPollVote(vote) {
+      const atMs = Math.round(args.player.state().timeMs);
+      const compiled = playbackCompiled();
+      const message = stateAt(compiled, atMs).messages.find((item) => item.id === vote.messageId);
+      const poll = message?.poll;
+      if (!poll || !poll.options.some((option) => option.id === vote.optionId)) return;
+      const voted = vote.voted ?? true;
+      const already = (poll.votes ?? []).some((item) => item.participantId === vote.participantId && item.optionId === vote.optionId);
+      if (voted && already) return;
+      if (!voted && !already) return;
+      liveVotes = [
+        ...liveVotes,
+        { type: "poll-vote", atMs, messageId: vote.messageId, participantId: vote.participantId, optionId: vote.optionId, voted },
+      ];
+      liveRevision += 1;
+      args.player.setDuration?.(Math.max(args.player.state().durationMs, atMs + POLL_VOTE_SETTLE_MS));
+      args.player.seek(atMs);
+      bump(atMs);
     },
   };
 

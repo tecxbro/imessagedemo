@@ -100,6 +100,8 @@ export const stickerPayloadSchema = z.object({
   rotation: z.number().optional(),
 });
 
+export const pollSelectionModeSchema = z.enum(["single", "multiple"]);
+
 export const pollOptionSchema = z.object({
   id: z.string().min(1),
   text: z.string().min(1),
@@ -108,12 +110,22 @@ export const pollOptionSchema = z.object({
 export const pollVoteSchema = z.object({
   participantId: z.string().min(1),
   optionId: z.string().min(1),
+  /** Canonical time the vote was applied. Omitted on an opening selection, which is already settled. */
+  atMs: z.number().int().nonnegative().optional(),
+});
+
+export const pollVoterSchema = z.object({
+  id: z.string().min(1),
+  avatar: z.string().min(1),
 });
 
 export const pollPayloadSchema = z.object({
-  question: z.string().min(1),
+  /** Empty hides the heading. The recorded poll has no visible question. */
+  question: z.string(),
+  selectionMode: pollSelectionModeSchema.optional(),
   options: z.array(pollOptionSchema).min(1).max(POLL_MAX_OPTIONS),
   votes: z.array(pollVoteSchema).optional(),
+  voters: z.array(pollVoterSchema).optional(),
 });
 
 export const participantSchema = z.object({
@@ -445,6 +457,7 @@ export type SystemMessagePayload = z.infer<typeof systemMessageEventSchema>;
 export type FaceTimeStateName = z.infer<typeof facetimeStateSchema>;
 export type StickerPayload = z.infer<typeof stickerPayloadSchema>;
 export type PollPayload = z.infer<typeof pollPayloadSchema>;
+export type PollVote = z.infer<typeof pollVoteSchema>;
 export type DemoParticipant = z.infer<typeof participantSchema>;
 export type DemoGroup = z.infer<typeof groupSchema>;
 export type LibraryPhoto = z.infer<typeof libraryPhotoSchema>;
@@ -647,6 +660,8 @@ export type Player = {
   play(): void;
   pause(): void;
   seek(timeMs: number): void;
+  reset?(): void;
+  setDuration?(timeMs: number): void;
   state(): PlaybackState;
   frame(): RenderFrame;
 };

@@ -19,6 +19,9 @@ export function preflightAssets(document: AuthoringDocument, repoRoot: string): 
     if (contact.photo) assets.push(inspectAsset(contact.photo, repoRoot));
   }
   for (const message of document.messages) {
+    for (const voter of message.poll?.voters ?? []) {
+      assets.push(inspectAsset(voter.avatar, repoRoot));
+    }
     for (const image of message.images ?? []) {
       const asset = inspectAsset(image.src, repoRoot);
       if (image.width !== undefined && image.width !== asset.width) {
@@ -83,7 +86,7 @@ export function inspectAsset(src: string, repoRoot: string): AssetOk {
   return { src, file: real, type: kind, width: size.width, height: size.height };
 }
 
-export function sniffImage(bytes: Buffer): AssetOk["type"] | null {
+export function sniffImage(bytes: Buffer): "png" | "jpeg" | "gif" | "webp" | null {
   if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "png";
   if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "jpeg";
   if (bytes.length >= 6 && bytes.subarray(0, 6).toString("ascii") === "GIF87a") return "gif";

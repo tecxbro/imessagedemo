@@ -1,0 +1,49 @@
+{
+  "id": "ios-poll-vote",
+  "title": "Poll vote reference",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": { "name": "Conversation", "initials": "C" },
+  "participants": [
+    { "id": "me", "name": "You", "me": true }
+  ],
+  "nowMs": 1790492820000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "dinner-poll",
+      "kind": "poll",
+      "direction": "incoming",
+      "atMs": 0,
+      "text": "",
+      "poll": {
+        "question": "",
+        "selectionMode": "single",
+        "options": [
+          { "id": "heidis", "text": "Heidi’s" },
+          { "id": "sushis", "text": "Sushi’s" },
+          { "id": "anshans", "text": "Anshan’s" },
+          { "id": "other", "text": "Hehshshs" }
+        ],
+        "voters": [
+          { "id": "me", "avatar": "/demo-assets/ios-poll-reference-voter.png" }
+        ]
+      }
+    }
+  ],
+  "events": [
+    { "type": "poll-vote", "atMs": 1567, "messageId": "dinner-poll", "participantId": "me", "optionId": "heidis", "voted": true },
+    { "type": "scroll", "atMs": 3167, "offset": 25 },
+    { "type": "scroll", "atMs": 3200, "offset": 47 },
+    { "type": "scroll", "atMs": 3233, "offset": 68 },
+    { "type": "scroll", "atMs": 3267, "offset": 85 },
+    { "type": "scroll", "atMs": 3300, "offset": 103 },
+    { "type": "scroll", "atMs": 3333, "offset": 119 },
+    { "type": "scroll", "atMs": 3367, "offset": 133 },
+    { "type": "scroll", "atMs": 3400, "offset": 144 },
+    { "type": "scroll", "atMs": 3433, "offset": 158 },
+    { "type": "scroll", "atMs": 3467, "offset": 170 }
+  ]
+}

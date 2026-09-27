@@ -25,12 +25,14 @@ These are interaction patterns, not industry labels. Combine them only when ever
 | Group/album | the assets form one bundle or snapshot | each item must feel like a distinct selectable message |
 | Separate assets | individual timing, sender, or selection matters | a single bundle is the product object |
 | Reaction | a targeted lightweight decision or tone-appropriate acknowledgement | accepting unrelated emoji globally, or reacting playfully to sensitive identity/health material by default |
-| Poll | a small bounded refinement or team choice | free-form intent is required or the options are fake |
+| Poll | a small bounded refinement or team choice | free-form intent is required or the options are not real choices |
 | Typing | upload, processing, or staged reveal creates a real wait | an immediate deterministic reply |
 | Video/audio | the prepared artifact is itself the proof moment | it is filler or a fabricated live result |
 | Mini-app | one compact action is better than chat: configure, confirm, pay, upgrade, review | before value is shown, or when plain text completes the job |
 
 If an uploaded asset deserves acknowledgement but a heart would be off-brand or inappropriate, use a read receipt or immediate text confirmation instead. When a reaction is a control, record the exact target message ID and accepted emoji set.
+
+A poll in this repository is `kind: "poll"` and a `poll-vote` event aimed at a stable option id. Put the voter's face in `poll.voters` as a local image. Leave `question` empty when the row should not show a heading. `selectionMode: "single"` replaces that person's previous choice; omit it to keep multiple selections. The reference `examples/ios-poll-vote.flow.json` is the recorded four-option vote. Unselected options stay within 2/5 of the phone width; longer labels shrink and wrap. The chosen option expands to 70% of the phone width. Do not invent a creation sheet, counts, or a multi-voter layout from that clip.
 
 A customer tapback is something the viewer watches: the message lifts, the menu and picker play, the choice highlights, and only then does the badge land. The company reacting does not open that local picker. Already-present reactions stay settled. Leave enough time after the target message arrives, and an intentional hold so the choice can be read; that hold is pacing, not part of the animation. The one runnable recipe is [examples/ios-tapback-interaction.flow.json](../../../../examples/ios-tapback-interaction.flow.json). Do not copy its idle wait into every conversation, and do not silently compress an exact transcript when the interaction does not fit.
 

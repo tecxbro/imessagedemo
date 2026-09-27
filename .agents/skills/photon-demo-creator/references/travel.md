@@ -11,8 +11,8 @@ The prior travel demo used per-space state and this shape:
 1. Ask whether the user wants a flight or hotel.
 2. For flights, collect route/dates and timezone.
 3. Return a fixed, preclassified option list.
-4. A positive selection sends a booking preview or live app card. A negative phrase sends a native poll such as cheaper, earlier arrival, or different airline.
-5. A poll vote returns the corresponding fixed refinement and returns to the decision step.
+4. A positive selection sends a booking preview or live app card. A negative phrase can send a poll such as cheaper, earlier arrival, or different airline. In this repository that is `kind: "poll"` plus a `poll-vote` event, using the syntax in the renderer skill. It is one option-selection transition, not a creation sheet or a vote-count panel.
+5. A poll vote returns the corresponding fixed refinement and returns to the decision step. Do not claim the recording validated change-vote motion, percentages, or several faces on one option.
 6. `reset` restarts the demo. A deliberate shortcut may send the payment card without changing the current step.
 
 Do not imply that static options came from live search. A mock confirmation must not claim a reservation or charge.
@@ -47,7 +47,7 @@ Do not make a heart the default for every upload; include it only when the user 
 ## Implementation notes
 
 - Keep flight and hotel paths in one explicit transition model when they share a conversation; use distinct steps so a generic “send the link” request can route by current context.
-- Native Spectrum polls accept the application title/options. Do not claim control over Apple Messages' visible poll tint without direct evidence.
+- In this repository, poll tint and motion follow the recorded option transition documented in `docs/ios-poll.md`. Do not claim a creation sheet or a different tint without evidence. Spectrum, when that mode is actually in use, still accepts the application title and options on its own poll.
 - For an album, build one supported group and retain individually addressable child messages for reaction matching.
 - Handle ambiguous send confirmation per inbound turn so one provider error does not terminate the entire consumer.
 - A hosted checkout route is separate from the Spectrum server. In `photon-travel-demo`, use the current typed checkout spec and shared renderer; treat `pho-cx` as a separate legacy surface unless the request explicitly includes it.

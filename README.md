@@ -64,7 +64,7 @@ Exit `0` means valid. Exit `1` means usage error. Exit `2` means invalid or unsu
 
 `screen` is `conversation` for ordinary demos. On iOS it may also be `list` or `new-message`; macOS accepts `conversation` only. Customer messages are outgoing and company messages are incoming. Turn typing on before a company reply and explicitly turn it off when that message arrives. Reactions target stable message ids. `examples/typing-reactions.flow.json` is a small runnable example of both. `examples/agent-walkover.flow.json` has a reply arriving at playback `1000`, matching `after-reply`. Use `1690` for a post-arrival settled capture of that example.
 
-`examples/ios-poll.flow.json` is a valid group poll. `examples/unsupported-poll.flow.json` is a poll with no options and fails validation with exit `2`. It does not open a browser or write an image.
+`examples/ios-poll.flow.json` is a valid group poll. `examples/ios-poll-vote.flow.json` is the recorded single-choice vote; open it at `/?flow=ios-poll-vote` or `npm run demo -- preview examples/ios-poll-vote.flow.json`. `examples/unsupported-poll.flow.json` is a poll with no options and fails validation with exit `2`. It does not open a browser or write an image.
 
 ## 2. Preview and capture
 

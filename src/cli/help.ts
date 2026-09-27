@@ -23,7 +23,9 @@ Authoring:
   React to a message, reply to one, open its thread, long-press it, open an image,
   play an audio message at a position, open the effects picker, send with confetti,
   open the plus menu, enter selection, swipe to reveal timestamps, and move to the
-  Messages list. Use the canonical events in src/contracts/index.ts. Do not author
+  Messages list. An iOS poll is kind "poll" plus a poll-vote event
+  { messageId, participantId, optionId, voted } at the moment the option should respond.
+  Use the canonical events in src/contracts/index.ts. Do not author
   tail, gapBefore, or pixel positions.
 
 Exit codes:

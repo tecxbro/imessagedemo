@@ -1,5 +1,5 @@
 import type { AudioControlState, DemoFlow, PickerSelection, StickerPayload, SystemNotice } from "@/contracts";
-import { applyPollVote } from "@/components/owned/ios-poll";
+import { applyPollVote, clonePoll } from "@/runtime/poll";
 import { tapbackMotion } from "@/contracts/tapback-motion";
 import {
   bubbleEffectDuration,
@@ -134,13 +134,7 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
   if (message.facetime) logical.facetime = { ...message.facetime };
   if (message.sticker) logical.sticker = { ...message.sticker };
   if (message.stickers) logical.stickers = message.stickers.map((sticker) => ({ ...sticker }));
-  if (message.poll) {
-    logical.poll = {
-      question: message.poll.question,
-      options: message.poll.options.map((option) => ({ ...option })),
-      ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
-    };
-  }
+  if (message.poll) logical.poll = clonePoll(message.poll);
   if (message.replyTo) {
     logical.replyTo = {
       id: message.replyTo.id,
@@ -240,13 +234,7 @@ function projectConversation(conversation: ConversationState): ConversationState
       if (message.facetime) copy.facetime = { ...message.facetime };
       if (message.sticker) copy.sticker = { ...message.sticker };
       if (message.stickers) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
-      if (message.poll) {
-        copy.poll = {
-          question: message.poll.question,
-          options: message.poll.options.map((option) => ({ ...option })),
-          ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
-        };
-      }
+      if (message.poll) copy.poll = clonePoll(message.poll);
       return copy;
     }),
   };
@@ -432,7 +420,12 @@ function reduceEvent(working: Working, event: SceneEvent, fallbackContact: DemoF
     case "poll-vote":
       return mapMessage(working, event.messageId, (message) => {
         if (!message.poll || !message.poll.options.some((option) => option.id === event.optionId)) return message;
-        const votes = applyPollVote(message.poll.votes ?? [], { participantId: event.participantId, optionId: event.optionId }, event.voted);
+        const votes = applyPollVote(
+          message.poll.votes ?? [],
+          { participantId: event.participantId, optionId: event.optionId, atMs: event.atMs },
+          event.voted,
+          message.poll.selectionMode ?? "multiple",
+        );
         return { ...message, poll: { ...message.poll, votes } };
       });
     case "sticker":

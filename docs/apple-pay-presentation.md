@@ -24,7 +24,7 @@ The visual source is the supplied recording and its analysis package (`apple-pay
 ```
 
 - `url`: absolute http(s) URL of the checkout route, without credentials or the `presentation`/`parentOrigin` parameters.
-- `live` must be `true` and `app` must be `"checkout"`; other Photon mini apps and polls stay unsupported (`src/contracts/capabilities.json`).
+- `live` must be `true` and `app` must be `"checkout"`; other Photon mini apps stay unsupported (`src/contracts/capabilities.json`). Polls are a separate repository-owned message kind, not an app card.
 - `height`: 120–480 points, default 240. The width is the thread's maximum bubble width (280.5 points), which matches the card in the recording.
 - iOS only. Validation rejects the item on macOS, with SMS service, with `status`/`reactions`/`replyTo`/`edited`/`effect`, when a reaction/status/long-press/context-menu/thread event targets it, and in a flow that enters select mode (select mode re-creates every row, which would reload the card).
 - `demo capture` stays offline: with the checkout origin configured it fails (exit 3, "External network request during capture") on the card's request; without it, the capture shows the configuration error card. Inspect app-card flows in the preview, or capture the conversation before the card arrives.

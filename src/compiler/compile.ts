@@ -1,5 +1,6 @@
 import type { CompiledDemo, CompiledEvent, DemoFlow, DemoMessage, OverlayState, PickerSelection, Reaction } from "@/contracts";
 import { tapbackMotion } from "@/contracts/tapback-motion";
+import { clonePoll, POLL_VOTE_SETTLE_MS } from "@/runtime/poll";
 import { arrivalWindow } from "./motion";
 
 function copyContact(contact: DemoFlow["contact"]): DemoFlow["contact"] {
@@ -76,13 +77,7 @@ function copyMessage(message: DemoMessage, messages: readonly DemoMessage[]): De
   if (message.facetime !== undefined) copy.facetime = { ...message.facetime };
   if (message.sticker !== undefined) copy.sticker = { ...message.sticker };
   if (message.stickers !== undefined) copy.stickers = message.stickers.map((sticker) => ({ ...sticker }));
-  if (message.poll !== undefined) {
-    copy.poll = {
-      question: message.poll.question,
-      options: message.poll.options.map((option) => ({ ...option })),
-      ...(message.poll.votes ? { votes: message.poll.votes.map((vote) => ({ ...vote })) } : {}),
-    };
-  }
+  if (message.poll !== undefined) copy.poll = clonePoll(message.poll);
   if (message.appCard !== undefined) {
     const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: "checkout" };
     if (message.appCard.height !== undefined) appCard.height = message.appCard.height;
@@ -178,6 +173,7 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
     const copied = copyEvent(event, baseline);
     events.push(copied);
     durationMs = Math.max(durationMs, copied.atMs);
+    if (copied.type === "poll-vote") durationMs = Math.max(durationMs, copied.atMs + POLL_VOTE_SETTLE_MS);
     if (copied.type === "reaction" && copied.reaction) {
       durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.reactionLandingMs);
     }

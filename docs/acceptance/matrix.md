@@ -20,7 +20,7 @@ The authored flows use the frozen `DemoFlow` schema in `src/contracts/index.ts`.
 | Catalogue, not a transcript | `tests/fixtures/catalogue-expectations.json` | FaceTime stays off `message-row`. Group-chat system rows stay catalogue-only. Screen effects, the image viewer, and the effects picker are timeline overlays |
 | Edit / removal final state | `scenarios/ios-surface-ios-{light,dark}.json` | Settled edited text with an edited label, then Undo Send removes the row. `tests/negative/edit-removal-final.json` still rejects a malformed final state |
 | Reactions and replies | `scenarios/ios-surface-ios-{light,dark}.json` | A love tapback and a quoted reply on the timeline. `tests/negative/group-chat.json` stays a diagnostic |
-| Polls and mini apps | `tests/negative/polls.json`, `mini-apps.json` | Unsupported. Not implementation coverage |
+| Polls | `examples/ios-poll-vote.flow.json`, `examples/ios-poll.flow.json`, `tests/negative/polls.json` | A poll in the transcript. The reference vote shows the label response, width overshoot, and settled avatar. A poll without options still fails. Mini apps other than checkout stay unsupported (`tests/negative/mini-apps.json`). |
 
 ## Determinism
 

@@ -68,7 +68,7 @@ A one-to-one conversation is the default. Groups, polls, stickers, search, and t
 
 ## Polls
 
-Repository-owned. Kind `poll` with up to 12 options. Events `poll-option`, `poll-vote`, and overlay `poll-details`. Vote membership is a set, so replay does not double-count. Bars are each option's share of participants, not a split that sums to 100%. Example: `examples/ios-poll.flow.json`.
+Repository-owned (`src/renderers/ios/poll/`), not a registry item. Kind `poll` with up to 12 options. `question` may be empty. `selectionMode` `single` replaces one person's previous option; omitted or `multiple` keeps a set of selections. Optional `voters` point at local avatar files. Events `poll-option`, `poll-vote`, and overlay `poll-details`. A `poll-vote` samples the recorded option transition from that event's time: label, widening pill, ring-to-avatar, width overshoot, then settle at 70% of the phone width. Unselected options stay within 2/5 of the phone width. Other options stay put. Replay does not double-count. The clip does not validate a creation sheet, counts, percentages, or a multi-voter layout. Examples: `examples/ios-poll.flow.json` and `examples/ios-poll-vote.flow.json`. See [docs/ios-poll.md](ios-poll.md).
 
 ## Not a rendered iMessage feature
 

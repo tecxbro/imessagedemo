@@ -6,7 +6,11 @@ import { PlayerHost, isCatalogueSceneId } from "@/player";
 import { DemoPlayer } from "@/player/DemoPlayer";
 import type { DemoRunManifest } from "@/player/types";
 
-const scenarioModules = import.meta.glob("../scenarios/*.json", { eager: true, import: "default" }) as Record<string, DemoFlow>;
+const scenarioModules = {
+  ...(import.meta.glob("../scenarios/*.json", { eager: true, import: "default" }) as Record<string, DemoFlow>),
+  ...(import.meta.glob("../examples/ios-poll-vote.flow.json", { eager: true, import: "default" }) as Record<string, DemoFlow>),
+  ...(import.meta.glob("../examples/would-you-rather.flow.json", { eager: true, import: "default" }) as Record<string, DemoFlow>),
+};
 const negativeModules = import.meta.glob("../tests/negative/*.json", { eager: true, import: "default" }) as Record<
   string,
   { id: string; input: unknown; issues?: Array<{ path: string }> }

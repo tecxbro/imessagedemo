@@ -7,6 +7,8 @@ export type PlayerController = {
   pause(): void;
   seek(timeMs: number): number;
   reset(): number;
+  /** Raise the playback ceiling so an interactive vote can finish. Reset restores the authored duration. */
+  setDuration(timeMs: number): void;
   state(): PlaybackState;
   frame(): VisualFrame;
   revision(): number;
@@ -50,7 +52,8 @@ function freezeSnapshot(snapshot: PlayerSnapshot): PlayerSnapshot {
 
 export function createPlayer(compiled: DemoSource, options: CreatePlayerOptions = {}): PlayerController {
   const clock = options.clock ?? animationClock();
-  const durationMs = Math.max(0, compiled.durationMs);
+  const authoredDuration = Math.max(0, compiled.durationMs);
+  let durationMs = authoredDuration;
   let logicalTime = 0;
   let playing = false;
   let revision = 0;
@@ -142,8 +145,14 @@ export function createPlayer(compiled: DemoSource, options: CreatePlayerOptions 
       if (disposed) return revision;
       playing = false;
       logicalTime = 0;
+      durationMs = authoredDuration;
       cancelPending();
       return bump();
+    },
+    setDuration(timeMs) {
+      if (disposed || !Number.isFinite(timeMs) || timeMs <= durationMs) return;
+      durationMs = timeMs;
+      bump();
     },
     state() {
       return readSnapshot().playback;

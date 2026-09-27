@@ -53,9 +53,37 @@ VITE_PHOTON_CHECKOUT_ORIGINS=http://127.0.0.1:3100 npm run demo -- preview examp
 
 Pin a port the checkout's parent allowlist includes (the local checkout allows `http://127.0.0.1:5173`).
 
+### Poll (iOS)
+
+A poll is a repository-owned message, not an upstream registry component and not a mini app. Author `kind: "poll"` with `poll.question` (use `""` when no heading should show), `poll.options` (`id` and `text`; `label` is accepted and stored as `text`), and optional `poll.selectionMode` (`single` or `multiple`; omitted means `multiple`). Optional `poll.voters` names who can vote and each `avatar` must be a local `/demo-assets/` PNG, JPEG, GIF, or WebP. Do not embed a screenshot as the poll. The reference face in `public/demo-assets/ios-poll-reference-voter.png` is only for `examples/ios-poll-vote.flow.json`.
+
+A timed vote is an event, not a timer in the component:
+
+```json
+{ "type": "poll-vote", "atMs": 1567, "messageId": "dinner-poll", "participantId": "me", "optionId": "heidis", "voted": true }
+```
+
+`voterId` is an alias of `participantId`. Omitting `voted` casts the vote. Play, Pause, Resume, Replay, seek, and capture all read that event's time. The selected option's label responds, then the pill widens, the ring gives way to the voter's avatar, the width overshoots, and it settles. Other options stay put. A click in the preview uses the same vote transition and does not append a duplicate of the current selection. Reset and Replay return to the authored votes.
+
+`single` replaces that person's previous option. `multiple` keeps a set of selections. `poll-option` can add a choice. Overlay `poll-details` lists who selected each option. This recording does not validate a creation sheet, add-option control, vote counts, percentages, change-vote motion, multi-select layout, or haptics. Do not describe those as measured. A vote does not scroll the conversation. Scroll is a separate `scroll` event; the reference fixture uses one only so the later transcript motion can be compared.
+
+Every option is a 44px capsule. Unselected options are at most 2/5 of the phone width; a longer label gets smaller and wraps to two lines. The chosen option expands to 70% of the phone width, overshoots slightly, and settles there. The empty ring and the voter face are drawn smaller than the recording crop. Other options stay put. [examples/would-you-rather.flow.json](../../../examples/would-you-rather.flow.json) opens at `/?flow=would-you-rather`.
+
+Preview and capture the reference with the existing commands. The clean viewer route is `/?flow=ios-poll-vote`.
+
+```sh
+npm run demo -- validate examples/ios-poll-vote.flow.json --json --platform ios
+npm run demo -- preview examples/ios-poll-vote.flow.json --json --platform ios
+npm run demo -- capture examples/ios-poll-vote.flow.json --json --platform ios --at-ms 1567 --out "$OUT/label"
+npm run demo -- capture examples/ios-poll-vote.flow.json --json --platform ios --at-ms 1900 --out "$OUT/overshoot"
+npm run demo -- capture examples/ios-poll-vote.flow.json --json --platform ios --at-ms 2434 --out "$OUT/settled"
+```
+
+1567 ms is the label response at the original width. 1900 ms is the width overshoot. 2434 ms is the settled selection. [docs/ios-poll.md](../../../docs/ios-poll.md) and [examples/ios-poll.flow.json](../../../examples/ios-poll.flow.json) are the group poll with more than one selection. [examples/ios-poll-vote.flow.json](../../../examples/ios-poll-vote.flow.json) is the same reference as the scenario.
+
 ## 2. Author one file per conversation
 
-Match `DemoFlow` plus optional CLI `targets` and `checkpoints`. Start from the existing [agent walkover example](../../../examples/agent-walkover.flow.json), not a second copied example in this skill. Save new flows as `scenarios/<company>-<use-case>.json`. Give each flow a unique ID. The current built-in scenario loader only reads JSON directly inside `scenarios/`.
+Match `DemoFlow` plus optional CLI `targets` and `checkpoints`. Start from the existing [agent walkover example](../../../examples/agent-walkover.flow.json), not a second copied example in this skill. Save new flows as `scenarios/<company>-<use-case>.json`. Give each flow a unique ID. The built-in scenario loader reads JSON directly inside `scenarios/`, plus `examples/ios-poll-vote.flow.json` (`/?flow=ios-poll-vote`) and `examples/would-you-rather.flow.json` (`/?flow=would-you-rather`).
 
 `targets` chooses platform variants of one flow. It does not define multiple conversations. Use one flow file per story. For several stories repeat this workflow sequentially, with independent preview processes and output directories. Do not mount multiple players behind the single `window.IMESSAGE_DEMO` controller.
 

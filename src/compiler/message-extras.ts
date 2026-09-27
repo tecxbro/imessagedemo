@@ -152,14 +152,25 @@ function isLocalAudio(src: string): boolean {
   return /^\/demo-assets\/[a-z0-9._-]+\.(m4a|mp3|wav|aac|caf)$/i.test(src) && !src.includes("..");
 }
 
+const LOCAL_AVATAR = /^\/demo-assets\/[a-z0-9._-]+\.(png|jpe?g|gif|webp)$/i;
+
 function readPoll(value: unknown, path: string, issues: ValidationIssue[]): PollPayload | "invalid" | undefined {
   if (!isPlainObject(value)) {
     issues.push(issue(path, "INVALID_TYPE", "poll must be an object"));
     return "invalid";
   }
-  if (typeof value.question !== "string" || value.question.length === 0) {
-    issues.push(issue(`${path}/question`, "MISSING_FIELD", "poll question is required"));
-    return "invalid";
+  let invalid = false;
+  let question = "";
+  if (value.question !== undefined && typeof value.question !== "string") {
+    issues.push(issue(`${path}/question`, "INVALID_TYPE", "poll question must be a string"));
+    invalid = true;
+  } else if (typeof value.question === "string") question = value.question;
+  let selectionMode: PollPayload["selectionMode"];
+  if (value.selectionMode !== undefined) {
+    if (value.selectionMode !== "single" && value.selectionMode !== "multiple") {
+      issues.push(issue(`${path}/selectionMode`, "INVALID_VALUE", "poll selectionMode must be single or multiple"));
+      invalid = true;
+    } else selectionMode = value.selectionMode;
   }
   if (!Array.isArray(value.options) || value.options.length < 1 || value.options.length > POLL_MAX_OPTIONS) {
     issues.push(issue(`${path}/options`, "INVALID_VALUE", `a poll has 1 to ${POLL_MAX_OPTIONS} options`));
@@ -167,10 +178,15 @@ function readPoll(value: unknown, path: string, issues: ValidationIssue[]): Poll
   }
   const options: PollPayload["options"] = [];
   const ids = new Set<string>();
-  let invalid = false;
   value.options.forEach((option, index) => {
-    if (!isPlainObject(option) || typeof option.id !== "string" || option.id.length === 0 || typeof option.text !== "string" || option.text.length === 0) {
+    const text = isPlainObject(option) ? optionText(option) : undefined;
+    if (!isPlainObject(option) || typeof option.id !== "string" || option.id.length === 0 || !text) {
       issues.push(issue(`${path}/options/${index}`, "INVALID_VALUE", "each poll option needs an id and text"));
+      invalid = true;
+      return;
+    }
+    if (isPlainObject(option) && typeof option.text === "string" && typeof option.label === "string" && option.text !== option.label) {
+      issues.push(issue(`${path}/options/${index}`, "INVALID_VALUE", "poll option text and label must match when both are set"));
       invalid = true;
       return;
     }
@@ -180,26 +196,84 @@ function readPoll(value: unknown, path: string, issues: ValidationIssue[]): Poll
       return;
     }
     ids.add(option.id);
-    options.push({ id: option.id, text: option.text });
+    options.push({ id: option.id, text });
   });
-  const votes: NonNullable<PollPayload["votes"]> = [];
-  if (value.votes !== undefined) {
-    if (!Array.isArray(value.votes)) {
-      issues.push(issue(`${path}/votes`, "INVALID_TYPE", "poll votes must be an array"));
+  const voters: NonNullable<PollPayload["voters"]> = [];
+  const voterIds = new Set<string>();
+  if (value.voters !== undefined) {
+    if (!Array.isArray(value.voters)) {
+      issues.push(issue(`${path}/voters`, "INVALID_TYPE", "poll voters must be an array"));
       invalid = true;
     } else {
-      value.votes.forEach((vote, index) => {
-        if (!isPlainObject(vote) || typeof vote.participantId !== "string" || typeof vote.optionId !== "string" || !ids.has(vote.optionId)) {
-          issues.push(issue(`${path}/votes/${index}`, "INVALID_REFERENCE", "a vote must name a participant and an existing option"));
+      value.voters.forEach((voter, index) => {
+        if (!isPlainObject(voter) || typeof voter.id !== "string" || voter.id.length === 0) {
+          issues.push(issue(`${path}/voters/${index}`, "INVALID_VALUE", "each poll voter needs an id"));
           invalid = true;
           return;
         }
-        votes.push({ participantId: vote.participantId, optionId: vote.optionId });
+        if (typeof voter.avatar !== "string" || !LOCAL_AVATAR.test(voter.avatar) || voter.avatar.includes("..")) {
+          issues.push(issue(`${path}/voters/${index}/avatar`, "INVALID_ASSET", "poll voter avatar must be a local image under /demo-assets/"));
+          invalid = true;
+          return;
+        }
+        if (voterIds.has(voter.id)) {
+          issues.push(issue(`${path}/voters/${index}/id`, "DUPLICATE_ID", `duplicate poll voter id ${JSON.stringify(voter.id)}`));
+          invalid = true;
+          return;
+        }
+        voterIds.add(voter.id);
+        voters.push({ id: voter.id, avatar: voter.avatar });
+      });
+    }
+  }
+  if (value.votes !== undefined && value.initialVotes !== undefined) {
+    issues.push(issue(`${path}/initialVotes`, "INVALID_VALUE", "use votes or initialVotes, not both"));
+    invalid = true;
+  }
+  const rawVotes = value.votes ?? value.initialVotes;
+  const votes: NonNullable<PollPayload["votes"]> = [];
+  if (rawVotes !== undefined) {
+    const votePath = value.votes !== undefined ? "votes" : "initialVotes";
+    if (!Array.isArray(rawVotes)) {
+      issues.push(issue(`${path}/${votePath}`, "INVALID_TYPE", "poll votes must be an array"));
+      invalid = true;
+    } else {
+      rawVotes.forEach((vote, index) => {
+        const participantId = isPlainObject(vote) ? voteParticipant(vote) : undefined;
+        if (!isPlainObject(vote) || !participantId || typeof vote.optionId !== "string" || !ids.has(vote.optionId)) {
+          issues.push(issue(`${path}/${votePath}/${index}`, "INVALID_REFERENCE", "a vote must name a voter and an existing option"));
+          invalid = true;
+          return;
+        }
+        if (voterIds.size > 0 && !voterIds.has(participantId)) {
+          issues.push(issue(`${path}/${votePath}/${index}/participantId`, "INVALID_REFERENCE", `vote names unknown voter ${JSON.stringify(participantId)}`));
+          invalid = true;
+          return;
+        }
+        votes.push({ participantId, optionId: vote.optionId });
       });
     }
   }
   if (invalid) return "invalid";
-  return { question: value.question, options, ...(votes.length > 0 ? { votes } : {}) };
+  return {
+    question,
+    options,
+    ...(selectionMode ? { selectionMode } : {}),
+    ...(votes.length > 0 ? { votes } : {}),
+    ...(voters.length > 0 ? { voters } : {}),
+  };
+}
+
+function optionText(option: Record<string, unknown>): string | undefined {
+  if (typeof option.text === "string" && option.text.length > 0) return option.text;
+  if (typeof option.label === "string" && option.label.length > 0) return option.label;
+  return undefined;
+}
+
+function voteParticipant(vote: Record<string, unknown>): string | undefined {
+  if (typeof vote.participantId === "string" && vote.participantId.length > 0) return vote.participantId;
+  if (typeof vote.voterId === "string" && vote.voterId.length > 0) return vote.voterId;
+  return undefined;
 }
 
 export function knownParticipantIds(participants: ReadonlyArray<{ id: string }> | undefined, contactName: string): Set<string> {

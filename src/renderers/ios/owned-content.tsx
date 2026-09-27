@@ -3,7 +3,6 @@ import type { CompiledDemo, DemoMessage } from "@/contracts";
 import { FaceTimeCard } from "@/components/imessage/facetime-card";
 import { MessageAudio } from "@/components/imessage/message-audio";
 import type { Message } from "@/components/imessage/message-list";
-import { IosPoll } from "@/components/owned/ios-poll";
 import type { VisualFrame } from "@/runtime";
 
 function AudibleAudio({ message, position, playing }: { message: DemoMessage; position: number; playing: boolean }) {
@@ -66,23 +65,6 @@ function stickerMarks(message: DemoMessage, content: ReactNode): ReactNode {
 export function renderOwnedContent(compiled: CompiledDemo, frame: VisualFrame, upstream: Message, content: ReactNode): ReactNode | undefined {
   const message = frame.messages.find((item) => item.id === upstream.id);
   if (!message) return undefined;
-  const participants = (compiled.participants ?? [
-    { id: "me", name: "You", me: true },
-    { id: "contact", name: frame.contact.name, initials: frame.contact.initials },
-  ]).map((person) => ({ id: person.id, name: person.name, initials: person.initials }));
-  if (message.kind === "poll" && message.poll) {
-    const voter = compiled.participants?.find((person) => person.me)?.id ?? "me";
-    return (
-      <IosPoll
-        question={message.poll.question}
-        options={message.poll.options}
-        votes={message.poll.votes}
-        participants={participants}
-        voterId={voter}
-        detailsOpen={frame.overlay.kind === "poll-details" && frame.overlay.messageId === message.id}
-      />
-    );
-  }
   if (message.kind === "facetime" && message.facetime) {
     return <FaceTimeCard state={message.facetime.state} duration={message.facetime.duration} />;
   }

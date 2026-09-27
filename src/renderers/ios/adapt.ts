@@ -19,7 +19,16 @@ export function toUpstreamMessage(message: AdaptableMessage): Message {
     // cluster; `AppCardLayer` hides that row's contents and docks the checkout iframe in it.
     return { id: message.id, text: message.text, direction: message.direction, sentAt: message.atMs };
   }
-  const owned = message.kind === "poll" || message.kind === "facetime" || message.kind === "sticker";
+  if (message.kind === "poll") {
+    // The pinned list has no poll row. Keep the real message id and dock the renderer-owned poll
+    // into this row. The placeholder bubble is hidden by PollLayer.
+    const row: Message = { id: message.id, text: "", direction: message.direction, sentAt: message.atMs };
+    if (message.sender) row.sender = message.sender;
+    if (message.senderInitials) row.senderInitials = message.senderInitials;
+    if (message.senderPhoto) row.senderPhoto = message.senderPhoto;
+    return row;
+  }
+  const owned = message.kind === "facetime" || message.kind === "sticker";
   const upstream: Message = {
     id: message.id,
     text: message.text,

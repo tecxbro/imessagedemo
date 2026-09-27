@@ -25,6 +25,12 @@ The company-name path is one sequence: research, author, validate, preview and c
 
 This repo remains render-only even when a user asks for a live number. Spectrum mode requires a separate existing Spectrum checkout and explicitly authorized operations; never convert `imessagedemo` into a provider or start a live consumer here.
 
+## Polls in this repository
+
+Use the same poll as [Make an iMessage demo](../make-imessage-demo/SKILL.md). `kind` is `poll`. `poll.question` may be `""`. `poll.options` use `id` and `text`. `poll.selectionMode` is `single` or `multiple` (multiple when omitted). `poll.voters` supply local `/demo-assets/` avatars when a face should appear. A vote is `{ "type": "poll-vote", "atMs": 1567, "messageId": "dinner-poll", "participantId": "me", "optionId": "heidis", "voted": true }`. Preview `examples/ios-poll-vote.flow.json`, then Play, Pause, Replay, and capture at 1567 (label, original width), 1900 (overshoot), and 2434 (settled). The route is `/?flow=ios-poll-vote`. A click uses that same transition and does not duplicate the current vote. Reset returns the authored votes. Unselected options stay within 2/5 of the phone width and wrap if the label is longer. The chosen option expands to 70% of the phone width. `/?flow=would-you-rather` is the short three-option example.
+
+Do not claim a creation sheet, counts, percentages, multi-voter layout, or change-vote animation; the recording does not show them. Do not use the reference avatar for any other company. A poll does not scroll the thread by itself.
+
 ## Choose the execution mode first
 
 Use the user's requested deliverable and the target repository to select one mode. Do not run both by default.

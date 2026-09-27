@@ -1,0 +1,42 @@
+{
+  "id": "would-you-rather",
+  "title": "Would you rather",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": { "name": "Group chat", "initials": "G" },
+  "participants": [
+    { "id": "me", "name": "You", "me": true }
+  ],
+  "nowMs": 1790492820000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "rather-poll",
+      "kind": "poll",
+      "direction": "incoming",
+      "atMs": 0,
+      "text": "",
+      "poll": {
+        "question": "would you rather",
+        "selectionMode": "single",
+        "options": [
+          { "id": "elliotts", "text": "be elliotts homie" },
+          { "id": "harvey", "text": "dinner with david harvey" },
+          { "id": "mason", "text": "mason young sales class" }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "poll-vote",
+      "atMs": 900,
+      "messageId": "rather-poll",
+      "participantId": "me",
+      "optionId": "mason",
+      "voted": true
+    }
+  ]
+}

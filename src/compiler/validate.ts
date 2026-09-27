@@ -297,7 +297,27 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
   if (roster.library) demo.library = roster.library;
   const timeline = [...derived, ...events];
   if (timeline.length > 0) demo.events = timeline;
+  auditPollVoters(demo, issues);
   return { issues, demo };
+}
+
+function auditPollVoters(demo: DemoFlow, issues: ValidationIssue[]): void {
+  const known = new Set<string>(["me"]);
+  for (const person of demo.participants ?? []) known.add(person.id);
+  demo.messages.forEach((message, index) => {
+    if (!message.poll || (message.poll.voters?.length ?? 0) > 0) return;
+    message.poll.votes?.forEach((vote, voteIndex) => {
+      if (known.has(vote.participantId)) return;
+      issues.push(issue(pointer(["messages", index, "poll", "votes", voteIndex, "participantId"]), "INVALID_REFERENCE", `vote names unknown participant ${JSON.stringify(vote.participantId)}`));
+    });
+  });
+  demo.events?.forEach((event, index) => {
+    if (event.type !== "poll-vote") return;
+    const message = demo.messages.find((item) => item.id === event.messageId);
+    if ((message?.poll?.voters?.length ?? 0) > 0) return;
+    if (known.has(event.participantId)) return;
+    issues.push(issue(pointer(["events", index, "participantId"]), "INVALID_REFERENCE", `poll-vote names unknown participant ${JSON.stringify(event.participantId)}`));
+  });
 }
 
 function readRoster(input: Record<string, unknown>, issues: ValidationIssue[], platform: DemoPlatform | undefined): Pick<DemoFlow, "participants" | "group" | "conversations" | "selectedConversationId" | "library"> {
@@ -1568,7 +1588,7 @@ const EVENT_FIELDS: Record<string, string[]> = {
   "time-reveal": ["type", "atMs", "sourceIndex", "progress"],
   notice: ["type", "atMs", "sourceIndex", "notice"],
   "poll-option": ["type", "atMs", "sourceIndex", "conversationId", "messageId", "optionId", "text"],
-  "poll-vote": ["type", "atMs", "sourceIndex", "conversationId", "messageId", "participantId", "optionId", "voted"],
+  "poll-vote": ["type", "atMs", "sourceIndex", "conversationId", "messageId", "participantId", "voterId", "optionId", "voted"],
   sticker: ["type", "atMs", "sourceIndex", "conversationId", "messageId", "sticker"],
 };
 
@@ -1580,6 +1600,8 @@ type LiveMessage = {
   effect?: BubbleEffectName;
   imageCount: number;
   audioDuration?: number;
+  pollOptionIds?: Set<string>;
+  pollVoterIds?: Set<string>;
 };
 
 function readTimeline(
@@ -1649,6 +1671,13 @@ function liveMessages(value: unknown): Map<string, LiveMessage> {
     if (message.direction === "incoming" || message.direction === "outgoing") entry.direction = message.direction;
     if (typeof message.effect === "string" && EFFECTS.has(message.effect as BubbleEffectName)) entry.effect = message.effect as BubbleEffectName;
     if (isPlainObject(message.audio) && typeof message.audio.duration === "number") entry.audioDuration = message.audio.duration;
+    if (kind === "poll" && isPlainObject(message.poll)) {
+      const options = Array.isArray(message.poll.options) ? message.poll.options : [];
+      entry.pollOptionIds = new Set(options.flatMap((option) => (isPlainObject(option) && typeof option.id === "string" ? [option.id] : [])));
+      if (Array.isArray(message.poll.voters)) {
+        entry.pollVoterIds = new Set(message.poll.voters.flatMap((voter) => (isPlainObject(voter) && typeof voter.id === "string" ? [voter.id] : [])));
+      }
+    }
     live.set(message.id, entry);
   });
   return live;
@@ -2110,6 +2139,11 @@ function parsePollOptionEvent(
     issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "poll-option target must be a poll"));
     return undefined;
   }
+  if (message.pollOptionIds?.has(value.optionId)) {
+    issues.push(issue(`${base}/optionId`, "DUPLICATE_ID", `duplicate poll option id ${JSON.stringify(value.optionId)}`));
+    return undefined;
+  }
+  message.pollOptionIds?.add(value.optionId);
   return { type: "poll-option", atMs, messageId: value.messageId, optionId: value.optionId, text: value.text };
 }
 
@@ -2124,12 +2158,35 @@ function parsePollVoteEvent(
 ): CompiledEvent | undefined {
   if (!requireIos(platform, base, "poll-vote", issues)) return undefined;
   const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "poll-vote");
-  if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.participantId !== "string" || typeof value.optionId !== "string" || typeof value.voted !== "boolean") return undefined;
+  if (!message || atMs === undefined || typeof value.messageId !== "string") return undefined;
   if (message.kind !== "poll") {
     issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "poll-vote target must be a poll"));
     return undefined;
   }
-  return { type: "poll-vote", atMs, messageId: value.messageId, participantId: value.participantId, optionId: value.optionId, voted: value.voted };
+  const participantId = typeof value.participantId === "string" && value.participantId.length > 0
+    ? value.participantId
+    : typeof value.voterId === "string" && value.voterId.length > 0
+      ? value.voterId
+      : undefined;
+  if (typeof value.participantId === "string" && typeof value.voterId === "string" && value.participantId !== value.voterId) {
+    issues.push(issue(`${base}/voterId`, "INVALID_VALUE", "participantId and voterId must name the same voter"));
+    return undefined;
+  }
+  if (!participantId || typeof value.optionId !== "string" || value.optionId.length === 0) return undefined;
+  const voted = value.voted === undefined ? true : value.voted;
+  if (typeof voted !== "boolean") {
+    issues.push(issue(`${base}/voted`, "INVALID_TYPE", "poll-vote voted must be a boolean"));
+    return undefined;
+  }
+  if (message.pollOptionIds && !message.pollOptionIds.has(value.optionId)) {
+    issues.push(issue(`${base}/optionId`, "INVALID_REFERENCE", `poll-vote option ${JSON.stringify(value.optionId)} is not on that poll`));
+    return undefined;
+  }
+  if (message.pollVoterIds && !message.pollVoterIds.has(participantId)) {
+    issues.push(issue(`${base}/participantId`, "INVALID_REFERENCE", `poll-vote voter ${JSON.stringify(participantId)} is not on that poll`));
+    return undefined;
+  }
+  return { type: "poll-vote", atMs, messageId: value.messageId, participantId, optionId: value.optionId, voted };
 }
 
 function parseStickerEvent(
