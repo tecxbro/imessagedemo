@@ -432,6 +432,7 @@ export const demoFlowSchema = z.object({
   theme: themeSchema,
   contact: contactSchema,
   nowMs: z.number().int(),
+  startAtMs: z.number().int().nonnegative().optional(),
   draft: z.string(),
   typing: z.boolean(),
   screen: iosScreenSchema,
@@ -582,6 +583,8 @@ export type DemoFlow = {
   theme: DemoTheme;
   contact: DemoContact;
   nowMs: number;
+  /** Optional opening time on the message clock, allowing a draft before the first send. */
+  startAtMs?: number;
   draft: string;
   typing: boolean;
   screen: IosScreenName;

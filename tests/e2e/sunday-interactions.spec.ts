@@ -21,7 +21,7 @@ test.beforeEach(({}, testInfo) => {
 
 async function openSunday(page: Page) {
   const observed = await installObservers(page);
-  await openFlow(page, flow, 28_000);
+  await openFlow(page, flow, 32_000);
   await expect(page.locator('[data-message-id="m7"]')).toContainText(resultText);
   await expect(page.locator('[data-app-card-id="tip-checkout"]')).toHaveCount(0);
   return observed;
@@ -111,10 +111,10 @@ test("Reply sends a local quoted message, opens its thread, and Replay demo clea
   await expect(thread).toHaveCount(0);
 
   await page.getByRole("button", { name: "Replay demo", exact: true }).click();
-  await expect(page.locator('[data-message-id="m1"]')).toBeVisible();
+  await expect(page.locator('[data-message-id="m1"]')).toHaveCount(0);
   await expect(reply).toHaveCount(0);
   await expect(page.locator('[data-slot="preview-reply-context"]')).toHaveCount(0);
-  await seek(page, 28_000);
+  await seek(page, 32_000);
   await expect(page.locator('[data-message-id="m7"] [data-slot="reply-count"]')).toHaveCount(0);
   await expect(reply).toHaveCount(0);
   expect(observed.pageErrors).toEqual([]);
@@ -144,7 +144,7 @@ test("classic and custom emoji reactions persist when message options reopen", a
   await expect(actions).toHaveCount(0);
   await expect(reactions).toContainText("🥳");
   await page.getByRole("button", { name: "Replay demo", exact: true }).click();
-  await seek(page, 28_000);
+  await seek(page, 32_000);
   await expect(reactions).toHaveCount(0);
   expect(observed.pageErrors).toEqual([]);
 });
@@ -170,9 +170,9 @@ test("API reset removes local messages and dialogs while seek restores authored 
   await expect(picker).toHaveCount(0);
   await expect(localMessage).toHaveCount(0);
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(page.locator('[data-message-id="m1"]')).toBeVisible();
+  await expect(page.locator('[data-message-id="m1"]')).toHaveCount(0);
   expect(await page.evaluate(() => window.IMESSAGE_DEMO!.state())).toMatchObject({ timeMs: 0, playing: false });
-  await seek(page, 28_000);
+  await seek(page, 32_000);
   await expect(localMessage).toHaveCount(0);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
@@ -180,7 +180,7 @@ test("API reset removes local messages and dialogs while seek restores authored 
   actions = await holdMessage(page);
   await actions.getByRole("menuitem", { name: "Choose an emoji", exact: true }).click();
   await expect(picker).toBeVisible();
-  await seek(page, 31_000);
+  await seek(page, 35_000);
   await expect(picker).toHaveCount(0);
   const scripted = page.getByRole("dialog", { name: "Message options", exact: true });
   await expect(scripted).toBeVisible();
@@ -198,7 +198,7 @@ test("the later Sunday checkout retains its $5 amount after a local interaction 
   await expect(page.locator('[data-message-id="m7"] [data-reaction="love"]')).toBeVisible();
   await page.getByRole("button", { name: "Replay demo", exact: true }).click();
   await expect(page.locator('[data-message-id="m7"]')).toHaveCount(0);
-  await seek(page, 45_690);
+  await seek(page, 49_690);
   const checkout = page.locator('[data-app-card-id="tip-checkout"]').frameLocator("iframe");
   await expect(checkout.locator("#price")).toHaveText("$5.00");
   await checkout.getByRole("button", { name: "Apple Pay", exact: true }).click();

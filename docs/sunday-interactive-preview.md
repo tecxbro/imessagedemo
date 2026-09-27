@@ -1,6 +1,6 @@
 # Interactive Sunday previews
 
-The three Sunday stories retain their quoted replies, official logo, proof images, and $5 tip ending. Playback now shows the full long-press reaction sequence: a heart for dinner, ☕ for espresso, and 🧦 for laundry. The tip card arrives at 42.5 seconds; the final message settles at 47.69 seconds.
+The three Sunday stories retain their quoted replies, official logo, proof images, and $5 tip ending. Playback now shows the full long-press reaction sequence: a heart for dinner, ☕ for espresso, and 🧦 for laundry. Each outgoing blue text message is typed into the input field before it sends, and the field clears at that exact send time. A four-second opening lead-in also types the first message; the tip card remains last. Incoming typing dots represent Sunday and never place company text in the composer. Pause, seek, and Replay preserve the same draft/send timing.
 
 Press Play to watch, or hold a text message to explore. Holding pauses playback. The menu supports:
 

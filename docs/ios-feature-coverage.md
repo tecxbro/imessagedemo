@@ -36,7 +36,7 @@ A one-to-one conversation is the default. Groups, polls, stickers, search, and t
 | message-list | Authorable transcript, clustering, dates, typing, system rows. |
 | ios-status-bar | Composed by the iOS shell. |
 | ios-nav-bar | Composed by the iOS shell. Photo, initials, or silhouette. |
-| ios-composer | Draft and send. Author `draft` and typing. |
+| ios-composer | Progressive outgoing text through `draft` events; clear at send. Incoming typing is separate. |
 | ios-conversation-list | Screen `list`. Multiple conversations with stable ids. |
 | ios-new-message-sheet | Screen `new-message`. iOS only. |
 | palette | Infrastructure. Theme variables. |
@@ -65,6 +65,12 @@ A one-to-one conversation is the default. Groups, polls, stickers, search, and t
 | group-avatar | Participants with photos or initials. |
 | audio-recorder | Overlay `recorder`. Fixture levels, no microphone. |
 | index | Registry index. No source file. |
+
+## Outgoing composer playback
+
+The input composer represents the outgoing blue side. Use the existing `draft` timeline events to grow grapheme-safe prefixes of the next outgoing text, show its complete text before send, and set `value: ""` exactly at its arrival time. Incoming responses use separate `typing` on/off events; their text, attachment titles, and checkout labels do not belong in the composer. Explicit drafts and supplied transcript timing remain authoritative. Pause, seek, and Replay read the same deterministic draft state.
+
+`message.atMs - (flow.startAtMs ?? firstMessage.atMs)` is the playback clock. Optional `startAtMs` is an absolute message-clock timestamp at or before the first message; an earlier value makes room for opening typing. Omitting it retains the first-message baseline. Authored message and event timestamps use the same absolute clock. Only compiled event offsets and checkpoints are relative to the baseline. Adding an authorized lead-in leaves existing authored timestamps unchanged; compilation increases their playback offsets. Increase later checkpoints by the same lead-in offset, retaining an opening checkpoint at zero.
 
 ## Polls
 

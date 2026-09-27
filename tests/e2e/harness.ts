@@ -12,6 +12,7 @@ export type Scenario = {
   platform: "ios" | "macos";
   theme: "light" | "dark";
   nowMs: number;
+  startAtMs?: number;
   draft: string;
   typing: boolean;
   screen: "list" | "conversation" | "new-message";
@@ -83,7 +84,7 @@ export async function installObservers(page: Page) {
 }
 
 export function playbackMs(scenario: Scenario, atMs: number): number {
-  const baseline = scenario.messages[0]?.atMs ?? 0;
+  const baseline = scenario.startAtMs ?? scenario.messages[0]?.atMs ?? 0;
   if (baseline > 0 && atMs >= baseline) return atMs - baseline;
   return atMs;
 }

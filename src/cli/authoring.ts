@@ -21,6 +21,7 @@ export function toDemoFlow(document: AuthoringDocument, platform: DemoPlatform):
     theme: document.theme,
     contact: document.contact,
     nowMs: document.nowMs,
+    ...(document.startAtMs !== undefined ? { startAtMs: document.startAtMs } : {}),
     draft: document.draft,
     typing: document.typing,
     screen: document.screen,

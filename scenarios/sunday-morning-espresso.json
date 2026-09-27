@@ -1,6 +1,6 @@
 {
   "id": "sunday-morning-espresso",
-  "title": "Sunday \u2014 Your coffee break, with a little help",
+  "title": "Sunday — Your coffee break, with a little help",
   "platform": "ios",
   "theme": "light",
   "contact": {
@@ -22,35 +22,39 @@
     },
     {
       "id": "typing",
-      "atMs": 3200
+      "atMs": 7200
     },
     {
       "id": "quoted-reply",
-      "atMs": 9690
+      "atMs": 13690
     },
     {
       "id": "in-progress",
-      "atMs": 18000
+      "atMs": 22000
     },
     {
       "id": "proof",
-      "atMs": 29000
-    },
-    {
-      "id": "reaction-menu",
-      "atMs": 31000
-    },
-    {
-      "id": "reaction-landed",
       "atMs": 33000
     },
     {
+      "id": "reaction-menu",
+      "atMs": 35000
+    },
+    {
+      "id": "reaction-landed",
+      "atMs": 37000
+    },
+    {
       "id": "final",
-      "atMs": 43500
+      "atMs": 47500
     },
     {
       "id": "ready-to-tip",
-      "atMs": 43500
+      "atMs": 47500
+    },
+    {
+      "id": "composing-opening",
+      "atMs": 3000
     }
   ],
   "messages": [
@@ -83,14 +87,14 @@
     },
     {
       "id": "m5",
-      "text": "Memo at an espresso machine \u2014 official Sunday demonstration still",
+      "text": "Memo at an espresso machine — official Sunday demonstration still",
       "direction": "incoming",
       "atMs": 1790452816500,
       "kind": "image",
       "images": [
         {
           "src": "/demo-assets/sunday/memo-espresso.webp",
-          "alt": "Memo at an espresso machine \u2014 official Sunday demonstration still",
+          "alt": "Memo at an espresso machine — official Sunday demonstration still",
           "width": 1920,
           "height": 1080
         }
@@ -105,7 +109,7 @@
     },
     {
       "id": "m7",
-      "text": "Your espresso is ready by the machine. \u2615",
+      "text": "Your espresso is ready by the machine. ☕",
       "direction": "incoming",
       "atMs": 1790452827500
     },
@@ -138,6 +142,181 @@
   ],
   "events": [
     {
+      "type": "draft",
+      "atMs": 1790452797570,
+      "value": "M"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797637,
+      "value": "Me"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797704,
+      "value": "Mem"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797771,
+      "value": "Memo"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797838,
+      "value": "Memo,"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797905,
+      "value": "Memo, "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797972,
+      "value": "Memo, c"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798039,
+      "value": "Memo, ca"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798106,
+      "value": "Memo, can"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798173,
+      "value": "Memo, can "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798240,
+      "value": "Memo, can y"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798307,
+      "value": "Memo, can yo"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798374,
+      "value": "Memo, can you"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798441,
+      "value": "Memo, can you "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798508,
+      "value": "Memo, can you m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798575,
+      "value": "Memo, can you ma"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798642,
+      "value": "Memo, can you mak"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798708,
+      "value": "Memo, can you make"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798775,
+      "value": "Memo, can you make "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798842,
+      "value": "Memo, can you make m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798909,
+      "value": "Memo, can you make me"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798976,
+      "value": "Memo, can you make me "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799043,
+      "value": "Memo, can you make me a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799110,
+      "value": "Memo, can you make me an"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799177,
+      "value": "Memo, can you make me an "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799244,
+      "value": "Memo, can you make me an e"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799311,
+      "value": "Memo, can you make me an es"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799378,
+      "value": "Memo, can you make me an esp"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799445,
+      "value": "Memo, can you make me an espr"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799512,
+      "value": "Memo, can you make me an espre"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799579,
+      "value": "Memo, can you make me an espres"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799646,
+      "value": "Memo, can you make me an espress"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799713,
+      "value": "Memo, can you make me an espresso"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799780,
+      "value": "Memo, can you make me an espresso?"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452800000,
+      "value": ""
+    },
+    {
       "type": "typing",
       "atMs": 1790452802500,
       "typing": true
@@ -146,6 +325,146 @@
       "type": "typing",
       "atMs": 1790452804000,
       "typing": false
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807025,
+      "value": "J"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807093,
+      "value": "Ju"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807160,
+      "value": "Jus"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807228,
+      "value": "Just"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807295,
+      "value": "Just "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807363,
+      "value": "Just a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807430,
+      "value": "Just a "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807498,
+      "value": "Just a s"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807565,
+      "value": "Just a si"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807633,
+      "value": "Just a sin"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807700,
+      "value": "Just a sing"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807768,
+      "value": "Just a singl"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807835,
+      "value": "Just a single"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807903,
+      "value": "Just a single "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807970,
+      "value": "Just a single s"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808038,
+      "value": "Just a single sh"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808105,
+      "value": "Just a single sho"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808173,
+      "value": "Just a single shot"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808240,
+      "value": "Just a single shot,"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808308,
+      "value": "Just a single shot, "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808375,
+      "value": "Just a single shot, p"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808443,
+      "value": "Just a single shot, pl"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808510,
+      "value": "Just a single shot, ple"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808578,
+      "value": "Just a single shot, plea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808645,
+      "value": "Just a single shot, pleas"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808713,
+      "value": "Just a single shot, please"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808780,
+      "value": "Just a single shot, please."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452809000,
+      "value": ""
     },
     {
       "type": "typing",
@@ -166,6 +485,166 @@
       "type": "typing",
       "atMs": 1790452816500,
       "typing": false
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820265,
+      "value": "T"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820332,
+      "value": "Th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820399,
+      "value": "Tha"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820467,
+      "value": "That"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820534,
+      "value": "That'"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820601,
+      "value": "That's"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820668,
+      "value": "That's "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820735,
+      "value": "That's m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820802,
+      "value": "That's my"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820870,
+      "value": "That's my "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820937,
+      "value": "That's my k"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821004,
+      "value": "That's my ki"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821071,
+      "value": "That's my kin"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821138,
+      "value": "That's my kind"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821205,
+      "value": "That's my kind "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821273,
+      "value": "That's my kind o"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821340,
+      "value": "That's my kind of"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821407,
+      "value": "That's my kind of "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821474,
+      "value": "That's my kind of c"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821541,
+      "value": "That's my kind of co"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821608,
+      "value": "That's my kind of cof"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821676,
+      "value": "That's my kind of coff"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821743,
+      "value": "That's my kind of coffe"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821810,
+      "value": "That's my kind of coffee"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821877,
+      "value": "That's my kind of coffee "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821944,
+      "value": "That's my kind of coffee b"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822011,
+      "value": "That's my kind of coffee br"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822079,
+      "value": "That's my kind of coffee bre"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822146,
+      "value": "That's my kind of coffee brea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822213,
+      "value": "That's my kind of coffee break"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822280,
+      "value": "That's my kind of coffee break."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822500,
+      "value": ""
     },
     {
       "type": "typing",
@@ -192,7 +671,7 @@
         "kind": "long-press",
         "messageId": "m7",
         "selected": {
-          "emoji": "\u2615"
+          "emoji": "☕"
         }
       }
     },
@@ -210,9 +689,199 @@
       "reactionId": "morning-espresso-thanks",
       "reaction": {
         "type": "custom",
-        "emoji": "\u2615",
+        "emoji": "☕",
         "byMe": true
       }
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833375,
+      "value": "L"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833442,
+      "value": "Le"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833509,
+      "value": "Let"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833575,
+      "value": "Let "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833642,
+      "value": "Let m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833709,
+      "value": "Let me"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833776,
+      "value": "Let me "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833843,
+      "value": "Let me l"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833909,
+      "value": "Let me le"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833976,
+      "value": "Let me lea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834043,
+      "value": "Let me leav"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834110,
+      "value": "Let me leave"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834177,
+      "value": "Let me leave "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834243,
+      "value": "Let me leave a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834310,
+      "value": "Let me leave a "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834377,
+      "value": "Let me leave a $"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834444,
+      "value": "Let me leave a $5"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834511,
+      "value": "Let me leave a $5 "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834578,
+      "value": "Let me leave a $5 t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834644,
+      "value": "Let me leave a $5 ti"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834711,
+      "value": "Let me leave a $5 tip"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834778,
+      "value": "Let me leave a $5 tip."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834845,
+      "value": "Let me leave a $5 tip. "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834912,
+      "value": "Let me leave a $5 tip. Y"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834978,
+      "value": "Let me leave a $5 tip. Yo"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835045,
+      "value": "Let me leave a $5 tip. You"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835112,
+      "value": "Let me leave a $5 tip. You "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835179,
+      "value": "Let me leave a $5 tip. You e"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835246,
+      "value": "Let me leave a $5 tip. You ea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835312,
+      "value": "Let me leave a $5 tip. You ear"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835379,
+      "value": "Let me leave a $5 tip. You earn"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835446,
+      "value": "Let me leave a $5 tip. You earne"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835513,
+      "value": "Let me leave a $5 tip. You earned"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835580,
+      "value": "Let me leave a $5 tip. You earned "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835646,
+      "value": "Let me leave a $5 tip. You earned i"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835713,
+      "value": "Let me leave a $5 tip. You earned it"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835780,
+      "value": "Let me leave a $5 tip. You earned it."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452836000,
+      "value": ""
     },
     {
       "type": "typing",
@@ -234,5 +903,6 @@
       "atMs": 1790452842500,
       "typing": false
     }
-  ]
+  ],
+  "startAtMs": 1790452796000
 }

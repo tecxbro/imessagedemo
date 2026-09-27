@@ -6,7 +6,7 @@
     { "id": "link", "anchors": ["MessageKind", "LinkPreview"] },
     { "id": "attachment", "anchors": ["MessageKind", "MessageAttachment"] },
     { "id": "image", "anchors": ["MessageKind", "MessageImages"] },
-    { "id": "video", "anchors": ["IosVideo"], "note": "Repository-owned iOS playable video: kind video with video { src, poster?, width?, height? }. Local MP4/WebM assets autoplay muted inline with conversation Play, pause and seek with its clock, and reset on Replay. Native media controls only; no extra text footer or video-control event." },
+    { "id": "video", "anchors": ["IosVideo"], "note": "Repository-owned iOS playable video: kind video with video { src, poster?, width?, height? }. Local MP4/WebM assets autoplay muted inline with conversation Play, pause and seek with its clock, and reset on Replay. No browser media controls, time labels, or extra text footer. No video-control event is required." },
     { "id": "audio", "anchors": ["MessageKind", "MessageAudio"] },
     { "id": "typing", "anchors": ["MessageListProps", "TypingIndicator"] },
     { "id": "emoji-only", "anchors": ["isEmojiOnly", "MessageList"] },

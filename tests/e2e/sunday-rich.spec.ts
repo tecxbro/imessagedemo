@@ -84,7 +84,7 @@ test.describe("Sunday polls, media, replies, and visual tipping", () => {
       const quoted = flow.messages.find((message) => message.id === reply.replyTo)!;
       await expect(page.locator(`[data-message-id="${reply.id}"] [data-slot="reply-stub"]`)).toContainText(quoted.text);
       const imageMessage = flow.messages.find((message) => message.kind === "image")!;
-      const imageTime = imageMessage.atMs - flow.messages[0].atMs + 1400;
+      const imageTime = imageMessage.atMs - (flow.startAtMs ?? flow.messages[0].atMs) + 1400;
       await seek(page, imageTime);
       const image = page.locator(`[data-message-id="${imageMessage.id}"] img`).first();
       await expect(image).toHaveAttribute("src", imageMessage.images![0].src);

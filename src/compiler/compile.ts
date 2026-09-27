@@ -149,7 +149,7 @@ function selectionKey(selected: PickerSelection | null | undefined): string {
 }
 
 export function compileDemo(demo: DemoFlow): CompiledDemo {
-  const baseline = demo.messages[0]?.atMs ?? demo.events?.[0]?.atMs ?? 0;
+  const baseline = demo.startAtMs ?? demo.messages[0]?.atMs ?? demo.events?.[0]?.atMs ?? 0;
   const events: CompiledDemo["events"] = [];
   let durationMs = 0;
   let openLongPress: { messageId: string; selectedKey: string } | null = null;

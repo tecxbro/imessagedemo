@@ -1,6 +1,6 @@
 {
   "id": "sunday-sock-pile",
-  "title": "Sunday \u2014 The small chore that always waits",
+  "title": "Sunday — The small chore that always waits",
   "platform": "ios",
   "theme": "light",
   "contact": {
@@ -22,35 +22,39 @@
     },
     {
       "id": "typing",
-      "atMs": 3200
+      "atMs": 7200
     },
     {
       "id": "quoted-reply",
-      "atMs": 9690
+      "atMs": 13690
     },
     {
       "id": "in-progress",
-      "atMs": 18000
+      "atMs": 22000
     },
     {
       "id": "proof",
-      "atMs": 29000
-    },
-    {
-      "id": "reaction-menu",
-      "atMs": 31000
-    },
-    {
-      "id": "reaction-landed",
       "atMs": 33000
     },
     {
+      "id": "reaction-menu",
+      "atMs": 35000
+    },
+    {
+      "id": "reaction-landed",
+      "atMs": 37000
+    },
+    {
       "id": "final",
-      "atMs": 43500
+      "atMs": 47500
     },
     {
       "id": "ready-to-tip",
-      "atMs": 43500
+      "atMs": 47500
+    },
+    {
+      "id": "composing-opening",
+      "atMs": 3000
     }
   ],
   "messages": [
@@ -83,14 +87,14 @@
     },
     {
       "id": "m5",
-      "text": "Memo folding socks on a green sofa \u2014 official Sunday demonstration still",
+      "text": "Memo folding socks on a green sofa — official Sunday demonstration still",
       "direction": "incoming",
       "atMs": 1790452816500,
       "kind": "image",
       "images": [
         {
           "src": "/demo-assets/sunday/memo-socks.webp",
-          "alt": "Memo folding socks on a green sofa \u2014 official Sunday demonstration still",
+          "alt": "Memo folding socks on a green sofa — official Sunday demonstration still",
           "width": 1920,
           "height": 1080
         }
@@ -98,7 +102,7 @@
     },
     {
       "id": "m6",
-      "text": "We might actually see the cushions again \ud83d\ude02",
+      "text": "We might actually see the cushions again 😂",
       "direction": "outgoing",
       "atMs": 1790452822500,
       "status": "read"
@@ -138,6 +142,251 @@
   ],
   "events": [
     {
+      "type": "draft",
+      "atMs": 1790452796800,
+      "value": "M"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452796863,
+      "value": "Me"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452796927,
+      "value": "Mem"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452796990,
+      "value": "Memo"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797054,
+      "value": "Memo,"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797117,
+      "value": "Memo, "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797180,
+      "value": "Memo, t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797244,
+      "value": "Memo, th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797307,
+      "value": "Memo, the"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797371,
+      "value": "Memo, the "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797434,
+      "value": "Memo, the c"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797497,
+      "value": "Memo, the cl"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797561,
+      "value": "Memo, the cle"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797624,
+      "value": "Memo, the clea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797688,
+      "value": "Memo, the clean"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797751,
+      "value": "Memo, the clean "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797814,
+      "value": "Memo, the clean s"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797878,
+      "value": "Memo, the clean so"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452797941,
+      "value": "Memo, the clean soc"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798005,
+      "value": "Memo, the clean sock"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798068,
+      "value": "Memo, the clean socks"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798131,
+      "value": "Memo, the clean socks "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798195,
+      "value": "Memo, the clean socks a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798258,
+      "value": "Memo, the clean socks ar"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798322,
+      "value": "Memo, the clean socks are"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798385,
+      "value": "Memo, the clean socks are "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798449,
+      "value": "Memo, the clean socks are t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798512,
+      "value": "Memo, the clean socks are ta"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798575,
+      "value": "Memo, the clean socks are tak"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798639,
+      "value": "Memo, the clean socks are taki"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798702,
+      "value": "Memo, the clean socks are takin"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798766,
+      "value": "Memo, the clean socks are taking"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798829,
+      "value": "Memo, the clean socks are taking "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798892,
+      "value": "Memo, the clean socks are taking o"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452798956,
+      "value": "Memo, the clean socks are taking ov"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799019,
+      "value": "Memo, the clean socks are taking ove"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799083,
+      "value": "Memo, the clean socks are taking over"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799146,
+      "value": "Memo, the clean socks are taking over "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799209,
+      "value": "Memo, the clean socks are taking over t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799273,
+      "value": "Memo, the clean socks are taking over th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799336,
+      "value": "Memo, the clean socks are taking over the"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799400,
+      "value": "Memo, the clean socks are taking over the "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799463,
+      "value": "Memo, the clean socks are taking over the c"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799526,
+      "value": "Memo, the clean socks are taking over the co"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799590,
+      "value": "Memo, the clean socks are taking over the cou"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799653,
+      "value": "Memo, the clean socks are taking over the couc"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799717,
+      "value": "Memo, the clean socks are taking over the couch"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452799780,
+      "value": "Memo, the clean socks are taking over the couch."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452800000,
+      "value": ""
+    },
+    {
       "type": "typing",
       "atMs": 1790452802500,
       "typing": true
@@ -146,6 +395,196 @@
       "type": "typing",
       "atMs": 1790452804000,
       "typing": false
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806375,
+      "value": "J"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806442,
+      "value": "Ju"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806509,
+      "value": "Jus"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806575,
+      "value": "Just"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806642,
+      "value": "Just "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806709,
+      "value": "Just t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806776,
+      "value": "Just th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806843,
+      "value": "Just the"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806909,
+      "value": "Just the "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452806976,
+      "value": "Just the s"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807043,
+      "value": "Just the so"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807110,
+      "value": "Just the soc"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807177,
+      "value": "Just the sock"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807243,
+      "value": "Just the socks"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807310,
+      "value": "Just the socks."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807377,
+      "value": "Just the socks. "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807444,
+      "value": "Just the socks. I"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807511,
+      "value": "Just the socks. I'"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807578,
+      "value": "Just the socks. I'l"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807644,
+      "value": "Just the socks. I'll"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807711,
+      "value": "Just the socks. I'll "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807778,
+      "value": "Just the socks. I'll h"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807845,
+      "value": "Just the socks. I'll ha"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807912,
+      "value": "Just the socks. I'll han"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452807978,
+      "value": "Just the socks. I'll hand"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808045,
+      "value": "Just the socks. I'll handl"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808112,
+      "value": "Just the socks. I'll handle"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808179,
+      "value": "Just the socks. I'll handle "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808246,
+      "value": "Just the socks. I'll handle t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808312,
+      "value": "Just the socks. I'll handle th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808379,
+      "value": "Just the socks. I'll handle the"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808446,
+      "value": "Just the socks. I'll handle the "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808513,
+      "value": "Just the socks. I'll handle the r"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808580,
+      "value": "Just the socks. I'll handle the re"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808646,
+      "value": "Just the socks. I'll handle the res"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808713,
+      "value": "Just the socks. I'll handle the rest"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452808780,
+      "value": "Just the socks. I'll handle the rest."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452809000,
+      "value": ""
     },
     {
       "type": "typing",
@@ -166,6 +605,221 @@
       "type": "typing",
       "atMs": 1790452816500,
       "typing": false
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819550,
+      "value": "W"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819617,
+      "value": "We"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819683,
+      "value": "We "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819750,
+      "value": "We m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819816,
+      "value": "We mi"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819883,
+      "value": "We mig"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452819950,
+      "value": "We migh"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820016,
+      "value": "We might"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820083,
+      "value": "We might "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820149,
+      "value": "We might a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820216,
+      "value": "We might ac"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820282,
+      "value": "We might act"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820349,
+      "value": "We might actu"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820416,
+      "value": "We might actua"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820482,
+      "value": "We might actual"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820549,
+      "value": "We might actuall"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820615,
+      "value": "We might actually"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820682,
+      "value": "We might actually "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820749,
+      "value": "We might actually s"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820815,
+      "value": "We might actually se"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820882,
+      "value": "We might actually see"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452820948,
+      "value": "We might actually see "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821015,
+      "value": "We might actually see t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821081,
+      "value": "We might actually see th"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821148,
+      "value": "We might actually see the"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821215,
+      "value": "We might actually see the "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821281,
+      "value": "We might actually see the c"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821348,
+      "value": "We might actually see the cu"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821414,
+      "value": "We might actually see the cus"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821481,
+      "value": "We might actually see the cush"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821548,
+      "value": "We might actually see the cushi"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821614,
+      "value": "We might actually see the cushio"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821681,
+      "value": "We might actually see the cushion"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821747,
+      "value": "We might actually see the cushions"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821814,
+      "value": "We might actually see the cushions "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821880,
+      "value": "We might actually see the cushions a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452821947,
+      "value": "We might actually see the cushions ag"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822014,
+      "value": "We might actually see the cushions aga"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822080,
+      "value": "We might actually see the cushions agai"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822147,
+      "value": "We might actually see the cushions again"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822213,
+      "value": "We might actually see the cushions again "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822280,
+      "value": "We might actually see the cushions again 😂"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452822500,
+      "value": ""
     },
     {
       "type": "typing",
@@ -192,7 +846,7 @@
         "kind": "long-press",
         "messageId": "m7",
         "selected": {
-          "emoji": "\ud83e\udde6"
+          "emoji": "🧦"
         }
       }
     },
@@ -210,9 +864,199 @@
       "reactionId": "sock-pile-thanks",
       "reaction": {
         "type": "custom",
-        "emoji": "\ud83e\udde6",
+        "emoji": "🧦",
         "byMe": true
       }
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833375,
+      "value": "L"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833442,
+      "value": "Le"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833509,
+      "value": "Let"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833575,
+      "value": "Let "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833642,
+      "value": "Let m"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833709,
+      "value": "Let me"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833776,
+      "value": "Let me "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833843,
+      "value": "Let me l"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833909,
+      "value": "Let me le"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452833976,
+      "value": "Let me lea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834043,
+      "value": "Let me leav"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834110,
+      "value": "Let me leave"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834177,
+      "value": "Let me leave "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834243,
+      "value": "Let me leave a"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834310,
+      "value": "Let me leave a "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834377,
+      "value": "Let me leave a $"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834444,
+      "value": "Let me leave a $5"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834511,
+      "value": "Let me leave a $5 "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834578,
+      "value": "Let me leave a $5 t"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834644,
+      "value": "Let me leave a $5 ti"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834711,
+      "value": "Let me leave a $5 tip"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834778,
+      "value": "Let me leave a $5 tip."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834845,
+      "value": "Let me leave a $5 tip. "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834912,
+      "value": "Let me leave a $5 tip. Y"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452834978,
+      "value": "Let me leave a $5 tip. Yo"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835045,
+      "value": "Let me leave a $5 tip. You"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835112,
+      "value": "Let me leave a $5 tip. You "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835179,
+      "value": "Let me leave a $5 tip. You e"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835246,
+      "value": "Let me leave a $5 tip. You ea"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835312,
+      "value": "Let me leave a $5 tip. You ear"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835379,
+      "value": "Let me leave a $5 tip. You earn"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835446,
+      "value": "Let me leave a $5 tip. You earne"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835513,
+      "value": "Let me leave a $5 tip. You earned"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835580,
+      "value": "Let me leave a $5 tip. You earned "
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835646,
+      "value": "Let me leave a $5 tip. You earned i"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835713,
+      "value": "Let me leave a $5 tip. You earned it"
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452835780,
+      "value": "Let me leave a $5 tip. You earned it."
+    },
+    {
+      "type": "draft",
+      "atMs": 1790452836000,
+      "value": ""
     },
     {
       "type": "typing",
@@ -234,5 +1078,6 @@
       "atMs": 1790452842500,
       "typing": false
     }
-  ]
+  ],
+  "startAtMs": 1790452796000
 }

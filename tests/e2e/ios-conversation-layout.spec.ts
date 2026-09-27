@@ -46,7 +46,7 @@ test("iOS text fits the shared column and chrome frosts content behind it", asyn
 test("actual coffee confirmation width", async ({ page }, info) => {
   test.skip(info.project.name !== "chromium-ios-light-e2e");
   const { targets, checkpoints, ...actual } = JSON.parse(readFileSync("scenarios/sunday-coffee-poll.json", "utf8"));
-  const phone = await openFlow(page, actual, 21000);
+  const phone = await openFlow(page, actual, 25000);
   for (const id of ["m2", "m3", "m4"]) {
     const bubble = page.locator(`[data-message-id="${id}"] [data-slot="bubble"]`).last();
     expect((await bubble.boundingBox())!.width).toBeGreaterThan(220);

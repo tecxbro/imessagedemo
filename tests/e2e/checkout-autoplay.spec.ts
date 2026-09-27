@@ -12,7 +12,7 @@ for (const id of cases) {
     expect(card.kind).toBe("app-card");
     expect(flow.contact.name).toBe("Sunday");
     card.appCard.url = "http://127.0.0.1:4173/checkouts/sunday-tip.html";
-    const arrival = card.atMs - flow.messages[0].atMs;
+    const arrival = card.atMs - (flow.startAtMs ?? flow.messages[0].atMs);
     const observed = await installObservers(page);
     const phone = await openFlow(page, flow as Scenario, arrival - 700);
     await page.getByRole("button", { name: "Resume", exact: true }).click();

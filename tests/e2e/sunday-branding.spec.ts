@@ -35,7 +35,7 @@ test.describe("Sunday artwork and quoted replies", () => {
       const flow = load(id);
       await page.addInitScript((payload) => sessionStorage.setItem("imessage-demo-inline", JSON.stringify(payload)), flow);
       await page.setViewportSize({ width: 402, height: 874 + playbackBarHeightPx });
-      await page.goto(`/?flow=${id}&t=9690`);
+      await page.goto(`/?flow=${id}&t=13690`);
       const phone = page.locator('[data-slot="ios-messages-app"]');
       await expectAvatar(page);
       const quote = page.locator('[data-message-id="m3"] [data-slot="reply-stub"]');
@@ -43,7 +43,7 @@ test.describe("Sunday artwork and quoted replies", () => {
       await expect(quote).toContainText(flow.messages.find((message) => message.id === "m2")!.text);
       await phone.screenshot({ path: info.outputPath(`${id}-quoted-reply.png`) });
 
-      await seek(page, 47690);
+      await seek(page, 51690);
       await expectAvatar(page);
       const checkout = page.frameLocator('[data-app-card-id="tip-checkout"] iframe');
       await checkout.getByRole("button", { name: "Apple Pay", exact: true }).click();
@@ -61,7 +61,7 @@ test.describe("Sunday artwork and quoted replies", () => {
       await expect(page.locator('[data-app-card-id="tip-checkout"]')).toHaveCount(0);
       await expectAvatar(page);
       await page.getByRole("button", { name: "Pause", exact: true }).click();
-      await seek(page, 9690);
+      await seek(page, 13690);
       await expectAvatar(page);
       await expect(quote).toContainText(flow.messages.find((message) => message.id === "m2")!.text);
     });
@@ -71,7 +71,7 @@ test.describe("Sunday artwork and quoted replies", () => {
     const flow = load("sunday-dinner-cleanup");
     delete flow.contact.photo;
     await page.addInitScript((payload) => sessionStorage.setItem("imessage-demo-inline", JSON.stringify(payload)), flow);
-    await page.goto(`/?flow=${flow.id}&t=9690`);
+    await page.goto(`/?flow=${flow.id}&t=13690`);
     const avatar = page.locator('[data-slot="ios-nav-bar"] [data-slot="avatar"]');
     await expect(avatar).toHaveText("S");
     await expect(avatar.locator("img")).toHaveCount(0);
