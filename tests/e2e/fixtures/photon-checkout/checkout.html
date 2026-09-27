@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout</title>
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: #0b1b33; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #fff; }
+  .mini-app { box-sizing: border-box; width: min(100%, 300px); min-height: 240px; height: 100vh; display: grid; grid-template-rows: 64px 1fr auto; }
+  .hero { background: linear-gradient(135deg, #1f3a5f, #33507a); display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+  .logo { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #ff9a8b, #7ee8fa); }
+  .brand { font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+  .item { display: flex; justify-content: space-between; align-items: flex-end; padding: 12px 16px 8px; gap: 10px; }
+  .item-title { font-size: 18px; font-weight: 700; }
+  .item-subtitle { font-size: 11px; color: #a9b6c8; margin-top: 4px; }
+  .item-price { font-size: 24px; font-weight: 500; white-space: nowrap; }
+  .note { margin: 0 16px; font: inherit; font-size: 11px; padding: 4px 8px; border-radius: 8px; border: 1px solid #3a4d6a; background: #12233d; color: #fff; }
+  .pay { padding: 10px 16px 14px; }
+  .apple-pay { width: 100%; height: 44px; border: 0; border-radius: 22px; background: #fff; color: #000; font-size: 18px; font-weight: 600; cursor: pointer; }
+  .status { margin: 6px 16px 0; font-size: 10px; color: #a9b6c8; min-height: 12px; }
+</style>
+<script src="/vendor/motion-data.js"></script>
+<script src="/vendor/apple-pay.js"></script>
+<script src="/vendor/bridge.js"></script>
+</head>
+<body>
+<main class="mini-app">
+  <div class="hero"><div class="logo"></div><div class="brand" id="brand"></div></div>
+  <div>
+    <div class="item">
+      <div><div class="item-title" id="title"></div><div class="item-subtitle" id="subtitle"></div></div>
+      <div class="item-price" id="price"></div>
+    </div>
+    <input class="note" id="note" aria-label="Note" placeholder="Add a note">
+    <p class="status" id="status" role="status"></p>
+  </div>
+  <div class="pay">
+    <button class="apple-pay" id="applepay" type="button" aria-label="Buy with Apple Pay"> Pay</button>
+    <button id="applepayfb" type="button" hidden>Apple Pay</button>
+  </div>
+</main>
+<script src="/checkout.js"></script>
+</body>
+</html>

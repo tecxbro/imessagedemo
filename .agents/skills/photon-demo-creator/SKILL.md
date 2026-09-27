@@ -35,7 +35,7 @@ Use the user's requested deliverable and the target repository to select one mod
 
 For HTML demos, this skill owns company research, story selection, asset preparation, multiple conversation files, and visual review. The repository skill owns the current schema, supported capabilities, validation, preview, and capture commands. The user can invoke only `$photon-demo-creator`; read the repository skill directly rather than requiring a second tag.
 
-HTML demo creation produces data and assets, not renderer changes. Do not load `photon-cli`, `spectrum`, `brand-mini-app`, the Spectrum server-lifecycle reference, or the Apple Pay/Sites checkout reference for an HTML request. Publishing a visual artifact is not permission to provision a Photon project or publish a checkout.
+HTML demo creation produces data and assets, not renderer changes. Do not load `photon-cli`, `spectrum`, `brand-mini-app`, the Spectrum server-lifecycle reference, or the Apple Pay/Sites checkout reference for an HTML request; the one exception is that reference's "iMessage visual renderer" section when a flow embeds an existing checkout as an `app-card`. Publishing a visual artifact is not permission to provision a Photon project or publish a checkout.
 
 ## Choose one path
 

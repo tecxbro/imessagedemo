@@ -63,6 +63,11 @@ function copyMessage(message: DemoMessage, messages: readonly DemoMessage[]): De
     if (message.audio.peaks !== undefined) audio.peaks = [...message.audio.peaks];
     copy.audio = audio;
   }
+  if (message.appCard !== undefined) {
+    const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: "checkout" };
+    if (message.appCard.height !== undefined) appCard.height = message.appCard.height;
+    copy.appCard = appCard;
+  }
   const reply = replyOf(message, messages);
   if (reply) copy.replyTo = reply;
   const ownReactions = (message.reactions ?? []).filter((reaction) => {

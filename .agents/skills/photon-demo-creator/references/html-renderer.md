@@ -6,7 +6,7 @@ Use this reference for render-only work in `tecxbro/imessagedemo`. This is an ex
 
 - Follow the target repository's `AGENTS.md`. Read [the repository renderer skill](../../make-imessage-demo/SKILL.md) before authoring. Run its capabilities command and inspect the current authoring contract when necessary. Current repository evidence controls schemas, command flags, and render support; this reference does not add features.
 - Do not call Spectrum, provision a project, request an iMessage number, send messages, create a checkout, or run a live message consumer. No provider credentials are needed for this visual workflow.
-- Produce conversation data and local assets. Do not modify the renderer, install another UI library, add custom message components, embed mini-apps, or render screenshots of unsupported widgets to disguise missing support. A renderer implementation change is a separate task.
+- Produce conversation data and local assets. Do not modify the renderer, install another UI library, add custom message components, embed mini-apps, or render screenshots of unsupported widgets to disguise missing support. A renderer implementation change is a separate task. The one mini app the renderer hosts is an existing Photon checkout as an iOS `app-card` (see the executor); it embeds that checkout, it does not create one.
 - Keep playback deterministic. Conversation copy should sound like the product in iMessage. Put integration limits in the handoff, not in message bubbles. Never report that a search, generation, diagnosis, booking, or payment actually occurred when the experience only shows the conversation.
 - Preserve supplied transcripts, assets, and established presentation choices. Keep unrelated files and existing demos intact. Do not edit this reusable skill library while making one company's demo.
 
@@ -40,6 +40,7 @@ Read [Company analysis](company-analysis.md), retaining its product research, br
 Those references were written for live Spectrum demos. In HTML mode:
 
 - The story ends with a useful visible result or supported next step; a mini-app, purchase gate, or Apple Pay ending is not required.
+- When the story does end at an existing Photon checkout route, embed it as an `app-card`. Its Apple Pay button opens the renderer's recreated Apple Pay sheet with the checkout's own merchant, amount, currency, and domain; do not restate or hardcode those values in the flow, and do not describe the pending sheet as a completed payment. The checkout's native `ApplePaySession` path is unchanged outside this renderer ([Sites and Apple Pay](sites-apple-pay.md#imessage-visual-renderer)).
 - A stock link preview is a link preview, never a substitute claimed to be a functioning mini-app.
 - A timeline and its checkpoints replace the executable inbound/outbound state machine. Replay restarts that timeline with the existing player. It does not send `reset` to a bot. Viewers play the compiled timeline; checkpoints remain for capture and tests.
 - Record the brief and assumptions in working notes. Do not impose the Spectrum new-company preflight or ask for approval of every transcript when a local build was already requested. Ask only when a material required input cannot be resolved, or the user requested an approval checkpoint.

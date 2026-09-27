@@ -17,7 +17,7 @@ If the user supplies only a company name or URL, read [Photon Demo Creator](../p
 
 Photon Demo Creator owns research, conversation count/defaults, story selection, asset provenance, and visual review. This skill owns the current renderer contract and commands. Code and capability output control actual support; neither skill adds capabilities. The repository copies are canonical in this checkout.
 
-Read `AGENTS.md`. For a content task, keep renderer code, contracts, upstream components, dependencies, and other demos unchanged. Use only the pinned UI. No Spectrum, provider credentials, phone number, mini-app, or live send is involved. An explicitly required unsupported feature blocks the affected flow, not independent supported flows; never silently replace it with text or a picture.
+Read `AGENTS.md`. For a content task, keep renderer code, contracts, upstream components, dependencies, and other demos unchanged. Use only the pinned UI. No Spectrum, provider credentials, phone number, generic mini-app, or live send is involved; the one hosted exception is the live checkout card below. An explicitly required unsupported feature blocks the affected flow, not independent supported flows; never silently replace it with text or a picture.
 
 ## 1. Inspect support and prepare the environment
 
@@ -27,15 +27,31 @@ Run from the repository root. Use the existing lockfile; install dependencies on
 npm run demo -- capabilities --json
 ```
 
-Use `supported` capabilities only for authored flows. `catalogueOnly` entries are not timeline fields. `unsupported` includes polls and mini-apps. Check [the flow contract](../../../src/contracts/index.ts) and [CLI authoring fields](../../../src/cli/authoring.ts) for exact data shapes rather than inventing fields.
+Use `supported` capabilities only for authored flows. `catalogueOnly` entries are not timeline fields. `unsupported` includes polls and mini-apps; `supported` includes `app-card`, the single exception described below. Check [the flow contract](../../../src/contracts/index.ts) and [CLI authoring fields](../../../src/cli/authoring.ts) for exact data shapes rather than inventing fields.
 
-Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, or `audio`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company is incoming. Default `screen` to `conversation`. Typing and draft are timeline events. Do not encode typing as a message row. Turn typing on before each company response and add an explicit typing-off event at the same time that incoming message arrives. A later typing interval is another on/off pair. Do not rely on message arrival to clear typing. Audio is waveform data plus an `audio-control` event, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
+Current flow messages use `kind`: `text`, `link`, `attachment`, `image`, `audio`, or (iOS only) `app-card`. Direction is `incoming` or `outgoing`. From the customer's phone, the customer is outgoing and the company is incoming. Default `screen` to `conversation`. Typing and draft are timeline events. Do not encode typing as a message row. Turn typing on before each company response and add an explicit typing-off event at the same time that incoming message arrives. A later typing interval is another on/off pair. Do not rely on message arrival to clear typing. Audio is waveform data plus an `audio-control` event, not an uploaded audio track; attachment rows do not imply playable video or file delivery.
 
 Reactions are timeline events aimed at a stable message id, after that message exists. `byMe: true` is the customer; `byMe: false` is the company. Use a classic tapback type or `custom` with `emoji`. Time the add, replacement, or removal deliberately. [examples/typing-reactions.flow.json](../../../examples/typing-reactions.flow.json) is the small runnable pattern for typing and reactions. Keep using the walkover file below for the command cookbook.
 
 Author the useful iOS surface with canonical events. Examples: react to m4 with love, reply to m2, open thread m2, long-press m5, open image m7, play audio m8 at 2.4 seconds, open the effects picker on the Screen tab, send m9 with confetti, open the plus menu, enter selection, swipe to reveal timestamps, and navigate to the Messages list. The checked-in conversation `scenarios/ios-surface-ios-light.json` is the full sequence, including read time, quoted reply, rich link image, attachment href, image viewer, edit, Undo Send, photo picker, and the return to the conversation. Do not author `tail`, `gapBefore`, or pixel positions.
 
 Contact supports name/initials, not a logo field. The current flow has no conversation-wallpaper or outer-presentation-background field. Keep prepared branding assets separate from claims that they were applied. Do not inject CSS/DOM overrides or new schema keys.
+
+### Live checkout card (iOS)
+
+A flow can embed one existing Photon checkout in the thread, named after Photon's `appCard(url, { live: true })`:
+
+- Message fields: `"kind": "app-card"` and `"appCard": { "url": "http://127.0.0.1:3100/hotel", "live": true, "app": "checkout", "height": 240 }`. `height` is optional (120–480 points, default 240); the card is the thread's maximum bubble width. `text` is the card's accessible title and conversation-list preview. [examples/photon-checkout-apple-pay.flow.json](../../../examples/photon-checkout-apple-pay.flow.json) is the runnable pattern.
+- iOS only; macOS validation rejects it. No `status`, `reactions`, `replyTo`, `edited`, `effect`, or SMS service on the card, no reaction/status/long-press/thread events aimed at it, and no select mode in a flow that has one. Do not add `presentation` or `parentOrigin` to the URL; the renderer appends them.
+- The renderer embeds only origins listed in its own configuration, `VITE_PHOTON_CHECKOUT_ORIGINS` (comma-separated exact origins, read when the preview server starts). An unlisted origin shows a visible configuration error in the card instead of the checkout. The checkout must also allow the renderer's origin as its parent.
+- Tapping the checkout's Apple Pay button opens the recreated Apple Pay sheet over the whole phone. Merchant, amounts, currency, and domain come from the checkout's own `CheckoutSpec`; never retype them in the flow. It shows a pending payment and a cancel path only: no native Apple Pay, charge, Face ID, or success state. Other Photon mini apps and polls remain unsupported.
+- `demo capture` stays offline: with the origin configured it fails on the card's checkout request, and without it the PNG shows the configuration error card. Inspect app-card flows in the preview. Developer details and evidence limits are in [the presentation notes](../../../docs/apple-pay-presentation.md).
+
+```sh
+VITE_PHOTON_CHECKOUT_ORIGINS=http://127.0.0.1:3100 npm run demo -- preview examples/photon-checkout-apple-pay.flow.json --json --platform ios --port 5173
+```
+
+Pin a port the checkout's parent allowlist includes (the local checkout allows `http://127.0.0.1:5173`).
 
 ## 2. Author one file per conversation
 

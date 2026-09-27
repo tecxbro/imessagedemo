@@ -17,6 +17,7 @@ import { settleIosScene, type IosSettleReceipt } from "./readiness";
 import { applyCheckpointScroll } from "./scroll";
 import { describeSelection, iosInteractionShell, type InteractionInput } from "./interaction-state";
 import { iosInteractionView, undoSendOverlay, type OverlayRenderOptions } from "./overlays";
+import { AppCardLayer } from "./app-card/AppCardLayer";
 
 export type { IosSettleReceipt };
 
@@ -191,6 +192,8 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
 
   const view = shellProps(visual, cues, posed, interactive, onDraft);
   const canonicalOverlay = canonicalOverlayNode(compiled, visual);
+  const hostsAppCards = useMemo(() => compiledHasAppCards(compiled), [compiled]);
+  const baseOverlay = overlay ?? shell?.overlay ?? canonicalOverlay;
   return (
     <div
       ref={hostRef}
@@ -222,7 +225,16 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
         effectsPicker={shell?.effectsPicker ?? view.effectsPicker}
         audioControl={shell?.audioControl ?? view.audioControl}
         timeReveal={shell?.timeReveal ?? view.timeReveal}
-        overlay={overlay ?? shell?.overlay ?? canonicalOverlay}
+        overlay={
+          hostsAppCards ? (
+            <>
+              {baseOverlay}
+              <AppCardLayer messages={visual.messages} frameRef={frameRef} />
+            </>
+          ) : (
+            baseOverlay
+          )
+        }
         style={shell?.style}
       />
     </div>
@@ -270,6 +282,14 @@ function shellProps(frame: VisualFrame, cues: CueState, posed: boolean, interact
     audioControl: frame.audio,
     timeReveal: frame.timeReveal,
   };
+}
+
+/** Only a flow that authors a live app card mounts the card layer and its Apple Pay presentation. */
+function compiledHasAppCards(compiled: CompiledDemo): boolean {
+  return (
+    compiled.events.some((event) => event.type === "message" && event.message.kind === "app-card") ||
+    Boolean(compiled.initialState?.conversations?.some((conversation) => conversation.messages?.some((message) => message.kind === "app-card")))
+  );
 }
 
 function canonicalOverlayNode(compiled: CompiledDemo, frame: VisualFrame): ReactNode {

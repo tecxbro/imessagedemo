@@ -28,7 +28,7 @@
   "issues": [
     {
       "path": "messages.0.kind",
-      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\""
+      "message": "Invalid option: expected one of \"text\"|\"link\"|\"attachment\"|\"image\"|\"audio\"|\"app-card\""
     }
   ]
 }

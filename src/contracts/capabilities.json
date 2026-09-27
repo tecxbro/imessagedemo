@@ -30,7 +30,8 @@
     { "id": "selection", "anchors": ["IosSelectMode"] },
     { "id": "audio-control", "anchors": ["MessageAudio"] },
     { "id": "time-reveal", "anchors": ["useSwipeToRevealTimes"] },
-    { "id": "notice", "anchors": ["UnknownSenderNotice", "SystemMessage"] }
+    { "id": "notice", "anchors": ["UnknownSenderNotice", "SystemMessage"] },
+    { "id": "app-card", "anchors": ["MessageList", "IosMessagesApp"], "note": "iOS only. kind \"app-card\" with appCard { url, live: true, app: \"checkout\", height? } embeds one live Photon checkout in the thread from an origin listed in VITE_PHOTON_CHECKOUT_ORIGINS; its Apple Pay button opens the recreated full-phone Apple Pay presentation. Repo-owned renderer code, not a pinned component." }
   ],
   "catalogueOnly": [
     { "id": "facetime-card", "anchors": ["FaceTimeCard"], "reason": "Standalone component. It is not a MessageKind in the pin." },
@@ -41,7 +42,7 @@
   ],
   "unsupported": [
     { "id": "polls", "reason": "No poll symbol in the pinned registry or its docs. Not added because a human mentioned polls." },
-    { "id": "mini-apps", "reason": "No Photon or mini-app package is installed, and the pin has no mini-app module." }
+    { "id": "mini-apps", "reason": "No Photon or mini-app package is installed, and the pin has no mini-app module. The only exception is the live Photon checkout card (kind \"app-card\", app \"checkout\", iOS), which the renderer hosts itself." }
   ],
   "absentFromPin": [
     { "id": "audio-recorder", "reason": "Present only on the unpinned imessage.swerdlow.dev registry." },

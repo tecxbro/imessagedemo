@@ -22,7 +22,7 @@ and captures so I can screen-record them.
 
 `$make-imessage-demo` also works: it enters the same research workflow for a company-only request. Once a brief/transcript exists, it renders without routing back. An exact user transcript is authoritative. No second tag is necessary.
 
-The HTML adapter defaults to three distinct use cases only when no count/transcript is supplied. It uses one JSON file per conversation, shared namespaced assets, separate output directories, and independent previews. The story can end in a useful result; no mandatory checkout, mini-app, live number, or payment ending is imported from Spectrum references.
+The HTML adapter defaults to three distinct use cases only when no count/transcript is supplied. It uses one JSON file per conversation, shared namespaced assets, separate output directories, and independent previews. The story can end in a useful result; no mandatory checkout, mini-app, live number, or payment ending is imported from Spectrum references. When a story does end at an existing Photon checkout, the executor can embed it as an iOS `app-card` whose Apple Pay button opens the recreated sheet ([presentation notes](apple-pay-presentation.md)).
 
 ## Source of truth
 

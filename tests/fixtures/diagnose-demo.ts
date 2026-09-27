@@ -7,12 +7,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 
 const FLOW_KEYS = ["id", "title", "platform", "theme", "contact", "nowMs", "draft", "typing", "screen", "messages", "events"] as const;
 const CONTACT_KEYS = ["name", "initials"] as const;
-const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio", "reactions", "replyTo", "edited", "readAt", "revealed", "removed"] as const;
+const MESSAGE_KEYS = ["id", "text", "direction", "atMs", "kind", "service", "status", "effect", "link", "attachments", "images", "audio", "appCard", "reactions", "replyTo", "edited", "readAt", "revealed", "removed"] as const;
 const LINK_KEYS = ["url", "title", "host", "image"] as const;
 const ATTACHMENT_KEYS = ["name", "size", "href"] as const;
 const REACTION_KEYS = ["id", "type", "byMe", "emoji", "messageId", "targetId"] as const;
 const IMAGE_KEYS = ["src", "alt", "width", "height"] as const;
 const AUDIO_KEYS = ["duration", "peaks"] as const;
+const APP_CARD_KEYS = ["url", "live", "app", "height"] as const;
 
 const LOCAL_PNG = /^\/demo-assets\/[a-z0-9-]+\.png$/;
 const ANIMATED = /\.(gif|apng|webp|mp4|m4v|mov|webm|avi)(?:$|\?)/i;
@@ -130,6 +131,7 @@ export function diagnoseDemo(input: unknown): ValidationIssue[] {
       message.images.forEach((image, imageIndex) => pushExtras(issues, `${base}.images.${imageIndex}`, image, IMAGE_KEYS));
     }
     pushExtras(issues, `${base}.audio`, message.audio, AUDIO_KEYS);
+    pushExtras(issues, `${base}.appCard`, message.appCard, APP_CARD_KEYS);
   });
 
   if (input.platform === "macos" && typeof input.screen === "string" && input.screen !== "conversation") {

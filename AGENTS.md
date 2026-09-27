@@ -38,4 +38,4 @@ Historical lane ownership:
 
 Run checks appropriate to the changed surface. For skill/docs alignment, run `node scripts/check-demo-skills.mjs` and `node scripts/check-agent-bootstrap.mjs`; this is not a substitute for flow validation, browser review, or application tests. Preserve test doubles in tests, not production source.
 
-Polls, Photon mini apps, and provider accounts remain out of scope. The public `imessage.swerdlow.dev` registry is larger than the pin; do not install it over `vendor/upstream`. Historical release/handoff reports are evidence from their recorded run, not fresh test results.
+Polls, Photon mini apps, and provider accounts remain out of scope, except the live Photon checkout embedded as an iOS `app-card` ([presentation notes](docs/apple-pay-presentation.md)); changing that presentation is implementation scope, guided by the narrow [recreate-apple-pay](.agents/skills/recreate-apple-pay/SKILL.md) skill. The public `imessage.swerdlow.dev` registry is larger than the pin; do not install it over `vendor/upstream`. Historical release/handoff reports are evidence from their recorded run, not fresh test results.

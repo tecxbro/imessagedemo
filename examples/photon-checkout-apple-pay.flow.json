@@ -1,0 +1,93 @@
+{
+  "id": "photon-checkout-apple-pay",
+  "title": "Villa checkout with Apple Pay",
+  "platform": "ios",
+  "theme": "light",
+  "contact": { "name": "Airial Travel", "initials": "AT" },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "targets": ["ios"],
+  "checkpoints": [
+    { "id": "opening", "atMs": 0 },
+    { "id": "checkout-card", "atMs": 5200 },
+    { "id": "ready-to-pay", "atMs": 19290 }
+  ],
+  "messages": [
+    {
+      "id": "customer-1",
+      "text": "Can you find me a private villa in Ubud for next weekend?",
+      "direction": "outgoing",
+      "atMs": 1790008740000,
+      "status": "read"
+    },
+    {
+      "id": "company-1",
+      "text": "Villa Amara has the whole weekend open: two bedrooms, a private pool, and a view over the rice terraces.",
+      "direction": "incoming",
+      "atMs": 1790008742200
+    },
+    {
+      "id": "customer-2",
+      "text": "That one. Can I book it here?",
+      "direction": "outgoing",
+      "atMs": 1790008744000,
+      "status": "read"
+    },
+    {
+      "id": "checkout",
+      "text": "Villa Amara checkout",
+      "direction": "incoming",
+      "atMs": 1790008745200,
+      "kind": "app-card",
+      "appCard": { "url": "http://127.0.0.1:3100/hotel", "live": true, "app": "checkout", "height": 240 }
+    },
+    {
+      "id": "company-2",
+      "text": "That covers Friday to Sunday, two nights, $2,040 total.",
+      "direction": "incoming",
+      "atMs": 1790008746400
+    },
+    {
+      "id": "customer-3",
+      "text": "Can we check in early on Friday?",
+      "direction": "outgoing",
+      "atMs": 1790008748600,
+      "status": "read"
+    },
+    {
+      "id": "company-3",
+      "text": "Yes. The villa is ready from noon, so arrive whenever your flight lands.",
+      "direction": "incoming",
+      "atMs": 1790008750800
+    },
+    {
+      "id": "customer-4",
+      "text": "And a ride from the airport?",
+      "direction": "outgoing",
+      "atMs": 1790008753000,
+      "status": "read"
+    },
+    {
+      "id": "company-4",
+      "text": "A driver will meet you at Denpasar arrivals and take you straight to the villa. It's about an hour through the hills.",
+      "direction": "incoming",
+      "atMs": 1790008755200
+    },
+    {
+      "id": "customer-5",
+      "text": "Perfect.",
+      "direction": "outgoing",
+      "atMs": 1790008757400,
+      "status": "read"
+    },
+    {
+      "id": "customer-6",
+      "text": "Paying now.",
+      "direction": "outgoing",
+      "atMs": 1790008758600,
+      "status": "delivered"
+    }
+  ]
+}

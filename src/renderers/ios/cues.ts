@@ -50,7 +50,7 @@ function messageEvents(compiled: CompiledDemo, timeMs: number) {
 
 /** Text and emoji arrivals are the motions `useArrivalAnimation` can seek. Other kinds have no bubble flight. */
 export function supportsArrival(message: DemoMessage): boolean {
-  if (message.kind === "link" || message.kind === "image" || message.kind === "audio" || message.kind === "attachment") return false;
+  if (message.kind === "link" || message.kind === "image" || message.kind === "audio" || message.kind === "attachment" || message.kind === "app-card") return false;
   return message.kind === undefined || message.kind === "text" || isEmojiOnly(message.text);
 }
 

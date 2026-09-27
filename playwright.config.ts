@@ -21,12 +21,22 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:4173",
     trace: "off",
   },
-  webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4173",
-    url: "http://127.0.0.1:4173/?foundation=ios",
-    reuseExistingServer: false,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: "npm run dev -- --host 127.0.0.1 --port 4173",
+      url: "http://127.0.0.1:4173/?foundation=ios",
+      reuseExistingServer: false,
+      timeout: 120_000,
+      // The checkout test double below is the only origin the renderer may embed during tests.
+      env: { VITE_PHOTON_CHECKOUT_ORIGINS: "http://127.0.0.1:4174" },
+    },
+    {
+      command: "node tests/e2e/fixtures/photon-checkout/server.mjs 4174",
+      url: "http://127.0.0.1:4174/hotel",
+      reuseExistingServer: false,
+      timeout: 30_000,
+    },
+  ],
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
   projects: [
     ...engines.flatMap((engine) =>

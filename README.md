@@ -54,7 +54,7 @@ Only one tag is needed. `$make-imessage-demo` can also route a company-only requ
 
 ## 1. Write and validate a flow
 
-Create a JSON file matching `DemoFlow` in `src/contracts/index.ts`, plus optional CLI fields from `src/cli/authoring.ts`. `platform` is `ios` or `macos`. `theme` is `light` or `dark`. Each message needs `direction` `incoming` or `outgoing`; `kind`, when supplied, is `text`, `link`, `attachment`, `image`, or `audio`. Typing is the flow field `typing`, not a message kind. Local images are files in `public/demo-assets/` referenced as `/demo-assets/<file>`.
+Create a JSON file matching `DemoFlow` in `src/contracts/index.ts`, plus optional CLI fields from `src/cli/authoring.ts`. `platform` is `ios` or `macos`. `theme` is `light` or `dark`. Each message needs `direction` `incoming` or `outgoing`; `kind`, when supplied, is `text`, `link`, `attachment`, `image`, `audio`, or (iOS only) `app-card`. Typing is the flow field `typing`, not a message kind. Local images are files in `public/demo-assets/` referenced as `/demo-assets/<file>`.
 
 ```sh
 npm run demo -- validate ./your-flow.json --json
@@ -107,7 +107,7 @@ npm run test:e2e
 
 ## Current boundaries
 
-Polls, Photon mini apps, FaceTime, group chats, and provider send/receive are out of scope. Do not rewrite a required unsupported interaction as text or a picture. Group avatars, group details, stickers, and the larger `imessage.swerdlow.dev` registry are not in this pin. Do not author `tail`, `gapBefore`, or pixel positions.
+Polls, Photon mini apps, FaceTime, group chats, and provider send/receive are out of scope. The one exception is a live Photon checkout embedded as an iOS `app-card`: its Apple Pay button opens a recreation of the recorded Apple Pay sheet over the phone, with the checkout's own values, and never calls native Apple Pay or charges anything. Its configuration (`VITE_PHOTON_CHECKOUT_ORIGINS`), bridge, provisional card picker, and measured visual differences are in [the presentation notes](docs/apple-pay-presentation.md). Do not rewrite a required unsupported interaction as text or a picture. Group avatars, group details, stickers, and the larger `imessage.swerdlow.dev` registry are not in this pin. Do not author `tail`, `gapBefore`, or pixel positions.
 
 The current flow has contact name/initials, not an avatar-logo field, chat wallpaper, or outer presentation settings. Researching an asset does not add its placement to the renderer. Keep prepared versus visibly applied branding clear. There is no built-in MP4 or publish command; export/publication requires actual supported tooling, not a claim based on a development URL.
 

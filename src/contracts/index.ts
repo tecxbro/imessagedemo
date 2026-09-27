@@ -12,7 +12,7 @@ export function notImplemented(symbol: string): never {
   throw new Error(`NOT_IMPLEMENTED: ${symbol}`);
 }
 
-export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio"]);
+export const messageKindSchema = z.enum(["text", "link", "attachment", "image", "audio", "app-card"]);
 export const directionSchema = z.enum(["incoming", "outgoing"]);
 export const serviceSchema = z.enum(["imessage", "sms"]);
 export const statusSchema = z.enum(["sending", "sent", "delivered", "read", "failed"]);
@@ -62,6 +62,22 @@ export const attachmentPayloadSchema = z.object({
   href: z.string().min(1).optional(),
 });
 
+/**
+ * A live Photon checkout card, named after Photon's `appCard(url, { live: true })`. iOS only. The
+ * renderer embeds `url` in the thread when its origin is in the renderer's configured checkout origins
+ * and presents the recreated Apple Pay sheet when the checkout asks. Other mini apps stay unsupported.
+ */
+export const APP_CARD_MIN_HEIGHT = 120;
+export const APP_CARD_MAX_HEIGHT = 480;
+export const APP_CARD_DEFAULT_HEIGHT = 240;
+
+export const appCardPayloadSchema = z.object({
+  url: z.string().min(1),
+  live: z.literal(true),
+  app: z.literal("checkout"),
+  height: z.number().int().min(APP_CARD_MIN_HEIGHT).max(APP_CARD_MAX_HEIGHT).optional(),
+});
+
 export const demoMessageSchema = z.object({
   id: z.string().min(1),
   text: z.string(),
@@ -75,6 +91,7 @@ export const demoMessageSchema = z.object({
   attachments: z.array(attachmentPayloadSchema).optional(),
   images: z.array(z.object({ src: z.string().min(1), alt: z.string(), width: z.number().optional(), height: z.number().optional() })).optional(),
   audio: z.object({ duration: z.number().nonnegative(), peaks: z.array(z.number()).optional() }).optional(),
+  appCard: appCardPayloadSchema.optional(),
   reactions: z.array(reactionSchema).optional(),
   replyTo: z.union([z.string().min(1), replySnapshotSchema]).optional(),
   edited: z.boolean().optional(),
@@ -250,6 +267,8 @@ export type Reaction = {
   emoji?: string;
 };
 
+export type AppCardPayload = { url: string; live: true; app: "checkout"; height?: number };
+
 export type ReplySnapshot = {
   id: string;
   text: string;
@@ -271,6 +290,7 @@ export type DemoMessage = {
   attachments?: Array<{ name: string; size?: string; href?: string }>;
   images?: Array<{ src: string; alt: string; width?: number; height?: number }>;
   audio?: { duration: number; peaks?: number[] };
+  appCard?: AppCardPayload;
   reactions?: Reaction[];
   replyTo?: ReplySnapshot;
   edited?: boolean;

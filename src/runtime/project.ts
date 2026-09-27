@@ -122,6 +122,7 @@ function copyMessage(message: SceneMessage, existing: readonly LogicalMessage[])
   if (message.attachments) logical.attachments = message.attachments.map((item) => ({ ...item }));
   if (message.images) logical.images = message.images.map((item) => ({ ...item }));
   if (message.audio) logical.audio = { ...message.audio, peaks: message.audio.peaks?.slice() };
+  if (message.appCard) logical.appCard = { ...message.appCard };
   if (message.replyTo) {
     logical.replyTo = {
       id: message.replyTo.id,
@@ -201,6 +202,7 @@ function projectConversation(conversation: ConversationState): ConversationState
       if (message.attachments) copy.attachments = message.attachments.map((item) => ({ ...item }));
       if (message.images) copy.images = message.images.map((item) => ({ ...item }));
       if (message.audio) copy.audio = { ...message.audio, peaks: message.audio.peaks?.slice() };
+      if (message.appCard) copy.appCard = { ...message.appCard };
       return copy;
     }),
   };

@@ -14,6 +14,11 @@ export type AdaptableMessage = DemoMessage & { replyCount?: number };
  * Optional fields are set only when the source has them.
  */
 export function toUpstreamMessage(message: AdaptableMessage): Message {
+  if (message.kind === "app-card") {
+    // The pinned list has no live-card row. It lays out a plain row for the card's place in its
+    // cluster; `AppCardLayer` hides that row's contents and docks the checkout iframe in it.
+    return { id: message.id, text: message.text, direction: message.direction, sentAt: message.atMs };
+  }
   const upstream: Message = {
     id: message.id,
     text: message.text,

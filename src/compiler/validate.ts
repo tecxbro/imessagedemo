@@ -1,4 +1,6 @@
+import { APP_CARD_MAX_HEIGHT, APP_CARD_MIN_HEIGHT } from "@/contracts";
 import type {
+  AppCardPayload,
   BubbleEffectName,
   CompiledEvent,
   DemoFlow,
@@ -21,7 +23,11 @@ import capabilities from "@/contracts/capabilities.json";
 import { isPlainObject, issue, pointer } from "./issues";
 import { arrivalWindow, bubbleEffectDurationMs } from "./motion";
 
-const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio"]);
+const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card"]);
+/** Decorations the thread would draw on the hidden placeholder row rather than on the live card. */
+const APP_CARD_EXCLUDED_FIELDS = ["status", "reactions", "replyTo", "edited"] as const;
+/** Query parameters the renderer appends to an app card URL itself. */
+const APP_CARD_RENDERER_PARAMS = ["presentation", "parentOrigin"] as const;
 const DIRECTIONS = new Set<Direction>(["incoming", "outgoing"]);
 const SERVICES = new Set<Service>(["imessage", "sms"]);
 const STATUSES = new Set<MessageStatus>(["sending", "sent", "delivered", "read", "failed"]);
@@ -68,6 +74,7 @@ const MESSAGE_FIELDS = new Set([
   "attachments",
   "images",
   "audio",
+  "appCard",
   "replyTo",
   "reactions",
   "edited",
@@ -371,9 +378,15 @@ function readMessage(
   const audio = readOwnedPayload(value, "audio", !kindBlocked && effectiveKind === "audio", kindBlocked, () =>
     readAudio(value, base, issues, !kindBlocked && effectiveKind === "audio"),
   );
+  const appCard = readOwnedPayload(value, "appCard", !kindBlocked && effectiveKind === "app-card", kindBlocked, () =>
+    readAppCard(value, base, issues, !kindBlocked && effectiveKind === "app-card"),
+  );
 
   if (!kindBlocked) {
     rejectForeignPayload(value, base, effectiveKind, issues);
+  }
+  if (!kindBlocked && effectiveKind === "app-card") {
+    rejectAppCardDecorations(value, base, issues, flowPlatform);
   }
 
   const reply = readReply(value, base, issues);
@@ -423,7 +436,8 @@ function readMessage(
     link !== "invalid" &&
     attachments !== "invalid" &&
     images !== "invalid" &&
-    audio !== "invalid"
+    audio !== "invalid" &&
+    appCard !== "invalid"
   ) {
     const normalized: DemoMessage = { id, text, direction, atMs };
     if (kind !== undefined) normalized.kind = kind;
@@ -434,6 +448,7 @@ function readMessage(
     if (attachments) normalized.attachments = attachments;
     if (images) normalized.images = images;
     if (audio) normalized.audio = audio;
+    if (appCard) normalized.appCard = appCard;
     if (typeof value.revealed === "boolean") normalized.revealed = value.revealed;
     meta.normalized = normalized;
   }
@@ -455,9 +470,11 @@ function rejectForeignPayload(
           ? ["images"]
           : kind === "audio"
             ? ["audio"]
-            : [],
+            : kind === "app-card"
+              ? ["appCard"]
+              : [],
   );
-  for (const field of ["link", "attachments", "images", "audio"] as const) {
+  for (const field of ["link", "attachments", "images", "audio", "appCard"] as const) {
     if (!Object.hasOwn(value, field) || allowed.has(field)) continue;
     issues.push(
       issue(
@@ -1117,6 +1134,90 @@ function readAudio(
   return copy;
 }
 
+function readAppCard(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  required: boolean,
+): AppCardPayload | "invalid" | undefined {
+  if (!Object.hasOwn(value, "appCard")) {
+    if (required) issues.push(issue(`${base}/appCard`, "MISSING_FIELD", "app-card messages require an appCard payload"));
+    return undefined;
+  }
+  const card = value.appCard;
+  if (!isPlainObject(card)) {
+    issues.push(issue(`${base}/appCard`, "INVALID_TYPE", "appCard must be an object"));
+    return "invalid";
+  }
+  let invalid = false;
+  if (!Object.hasOwn(card, "url")) {
+    issues.push(issue(`${base}/appCard/url`, "MISSING_FIELD", "appCard.url is required"));
+    invalid = true;
+  } else if (typeof card.url !== "string" || !isAppCardUrl(card.url)) {
+    issues.push(issue(`${base}/appCard/url`, "INVALID_VALUE", "appCard.url must be an absolute http or https URL without credentials"));
+    invalid = true;
+  } else if (APP_CARD_RENDERER_PARAMS.some((name) => new URL(card.url as string).searchParams.has(name))) {
+    issues.push(
+      issue(`${base}/appCard/url`, "INVALID_VALUE", "the renderer appends presentation and parentOrigin itself; remove them from appCard.url"),
+    );
+    invalid = true;
+  }
+  if (card.live !== true) {
+    issues.push(issue(`${base}/appCard/live`, "INVALID_VALUE", "only live app cards are supported: set appCard.live to true"));
+    invalid = true;
+  }
+  if (card.app !== "checkout") {
+    const reason = unsupportedReason.get("mini-apps") ?? "mini apps are not supported";
+    issues.push(issue(`${base}/appCard/app`, "UNSUPPORTED_COMPONENT", `only the Photon checkout app card is supported (app "checkout"). ${reason}`));
+    invalid = true;
+  }
+  if (
+    Object.hasOwn(card, "height") &&
+    (typeof card.height !== "number" || !Number.isSafeInteger(card.height) || card.height < APP_CARD_MIN_HEIGHT || card.height > APP_CARD_MAX_HEIGHT)
+  ) {
+    issues.push(
+      issue(`${base}/appCard/height`, "INVALID_VALUE", `appCard.height must be an integer from ${APP_CARD_MIN_HEIGHT} to ${APP_CARD_MAX_HEIGHT} points`),
+    );
+    invalid = true;
+  }
+  for (const key of Object.keys(card)) {
+    if (key === "url" || key === "live" || key === "app" || key === "height") continue;
+    issues.push(issue(`${base}/appCard/${escapeSegment(key)}`, "UNKNOWN_FIELD", `unknown field ${JSON.stringify(key)}`));
+    invalid = true;
+  }
+  if (invalid || typeof card.url !== "string") return "invalid";
+  const copy: AppCardPayload = { url: card.url, live: true, app: "checkout" };
+  if (typeof card.height === "number") copy.height = card.height;
+  return copy;
+}
+
+function rejectAppCardDecorations(
+  value: Record<string, unknown>,
+  base: string,
+  issues: ValidationIssue[],
+  flowPlatform: DemoPlatform | undefined,
+): void {
+  if (flowPlatform === "macos") {
+    issues.push(issue(`${base}/kind`, "PLATFORM_MISMATCH", "app-card is an iOS surface; the macOS renderer does not host live checkout cards"));
+  }
+  if (value.service === "sms") {
+    issues.push(issue(`${base}/service`, "INVALID_VALUE", "a live app card is an iMessage surface, not SMS"));
+  }
+  for (const field of APP_CARD_EXCLUDED_FIELDS) {
+    if (!Object.hasOwn(value, field)) continue;
+    issues.push(issue(`${base}/${field}`, "INVALID_VALUE", `${field} is not supported on a live app card`));
+  }
+}
+
+function isAppCardUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "http:" || url.protocol === "https:") && url.hostname.length > 0 && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
+
 function readContact(
   value: unknown,
   present: boolean,
@@ -1485,6 +1586,10 @@ function parseTimelineEvent(
       return typeof value.value === "string" && atMs !== undefined ? { type: "draft", atMs, value: value.value } : undefined;
     case "status": {
       const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "status");
+      if (message?.kind === "app-card") {
+        issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "status is not supported on a live app card"));
+        return undefined;
+      }
       if (!message || atMs === undefined || typeof value.messageId !== "string" || !STATUSES.has(value.status as MessageStatus)) {
         if (value.status !== undefined && !STATUSES.has(value.status as MessageStatus)) {
           issues.push(issue(`${base}/status`, "INVALID_VALUE", "status must be sending, sent, delivered, read, or failed"));
@@ -1588,6 +1693,10 @@ function parseMessageEvent(
     issues.push(issue(`${base}/message/id`, "DUPLICATE_ID", `duplicate message id ${JSON.stringify(id)}`));
     return undefined;
   }
+  if (value.message.kind === "app-card") {
+    issues.push(issue(`${base}/message/kind`, "INVALID_VALUE", "author app cards in messages, where their appCard payload is validated"));
+    return undefined;
+  }
   if (typeof value.message.text !== "string" || (value.message.direction !== "incoming" && value.message.direction !== "outgoing")) return undefined;
   seen.add(id);
   const kind = typeof value.message.kind === "string" && MESSAGE_KINDS.has(value.message.kind as MessageKind) ? (value.message.kind as MessageKind) : "text";
@@ -1606,6 +1715,10 @@ function parseReactionEvent(
   atMs: number | undefined,
 ): CompiledEvent | undefined {
   const message = requireLive(live, removed, value.messageId, atMs, `${base}/messageId`, issues, "reaction");
+  if (message?.kind === "app-card") {
+    issues.push(issue(`${base}/messageId`, "INVALID_VALUE", "reactions are not supported on a live app card"));
+    return undefined;
+  }
   if (!message || atMs === undefined || typeof value.messageId !== "string" || typeof value.reactionId !== "string" || value.reactionId.length === 0) {
     return undefined;
   }
@@ -1640,6 +1753,16 @@ function parseOverlayEvent(
   }
   if (platform === "macos" && IOS_ONLY_OVERLAYS.has(overlay.kind as OverlayState["kind"])) {
     issues.push(issue(`${base}/overlay/kind`, "PLATFORM_MISMATCH", `${overlay.kind} is an iOS overlay`));
+    return undefined;
+  }
+  const target = overlay.kind === "thread" ? overlay.rootId : overlay.kind === "long-press" || overlay.kind === "context-menu" ? overlay.messageId : undefined;
+  if (typeof target === "string" && live.get(target)?.kind === "app-card") {
+    const field = overlay.kind === "thread" ? "rootId" : "messageId";
+    issues.push(issue(`${base}/overlay/${field}`, "INVALID_VALUE", `${overlay.kind} cannot target a live app card`));
+    return undefined;
+  }
+  if (overlay.kind === "selection" && [...live.values()].some((message) => message.kind === "app-card")) {
+    issues.push(issue(`${base}/overlay/kind`, "INVALID_VALUE", "select mode re-creates every thread row and would reload a live app card"));
     return undefined;
   }
   switch (overlay.kind) {
