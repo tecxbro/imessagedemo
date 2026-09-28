@@ -7,6 +7,7 @@ import path from "node:path";
 export const PATCHED_TARGETS = [
   "components/imessage/ios-messages-app.tsx",
   "components/imessage/message-list.tsx",
+  "components/imessage/message-bubble.tsx",
   "components/imessage/message-actions.tsx",
   "components/imessage/tapback-bar.tsx",
   "components/imessage/tapback.tsx",
@@ -15,6 +16,9 @@ export const PATCHED_TARGETS = [
 const EXTENSION_IMPORT = "@/contracts/tapback-motion";
 const TAPBACK_PATCH = "patches/imessage/tapback-interaction.patch";
 const PLAYBACK_PATCH = "patches/imessage/playback-controls.patch";
+const INTERACTIVE_PATCH = "patches/imessage/interactive-preview.patch";
+const LAYOUT_PATCH = "patches/imessage/conversation-layout.patch";
+const LAYOUT_TARGETS = ["components/imessage/ios-messages-app.tsx", "components/imessage/message-bubble.tsx"] as const;
 const TAPBACK_TARGETS = [
   "components/imessage/message-actions.tsx",
   "components/imessage/tapback-bar.tsx",
@@ -24,6 +28,7 @@ const PLAYBACK_TARGETS = [
   "components/imessage/ios-messages-app.tsx",
   "components/imessage/message-list.tsx",
 ] as const;
+const INTERACTIVE_TARGETS = ["components/imessage/ios-messages-app.tsx"] as const;
 const EXTENSION_TARGETS = new Set<string>(TAPBACK_TARGETS);
 
 type RegistryFile = { target: string; content: string };
@@ -200,8 +205,12 @@ export function verifyWorktree(root: string): VerifyResult {
   }
   const playbackText = readFileSync(path.join(root, PLAYBACK_PATCH), "utf8");
   const tapbackText = readFileSync(path.join(root, TAPBACK_PATCH), "utf8");
+  const interactiveText = readFileSync(path.join(root, INTERACTIVE_PATCH), "utf8");
+  const layoutText = readFileSync(path.join(root, LAYOUT_PATCH), "utf8");
   assertRealFile(path.join(root, PLAYBACK_PATCH));
   assertRealFile(path.join(root, TAPBACK_PATCH));
+  assertRealFile(path.join(root, INTERACTIVE_PATCH));
+  assertRealFile(path.join(root, LAYOUT_PATCH));
   const registryFiles = (JSON.parse(registryText) as { items: Array<{ files?: RegistryFile[] }> }).items.flatMap((item) => item.files ?? []);
   const baseline = new Map(registryFiles.map((file) => [file.target, file.content]));
   let reconstructed: Map<string, string>;
@@ -218,6 +227,18 @@ export function verifyWorktree(root: string): VerifyResult {
       TAPBACK_TARGETS,
     );
     for (const [target, content] of withTapback) baseline.set(target, content);
+    const withInteractive = applyPatchToBaseline(
+      new Map(INTERACTIVE_TARGETS.map((target) => [target, baseline.get(target) ?? ""])),
+      interactiveText,
+      INTERACTIVE_TARGETS,
+    );
+    for (const [target, content] of withInteractive) baseline.set(target, content);
+    const withLayout = applyPatchToBaseline(
+      new Map(LAYOUT_TARGETS.map((target) => [target, baseline.get(target) ?? ""])),
+      layoutText,
+      LAYOUT_TARGETS,
+    );
+    for (const [target, content] of withLayout) baseline.set(target, content);
     reconstructed = baseline;
   } catch (error) {
     return { status: "failed", message: `recorded patch did not apply: ${error instanceof Error ? error.message : String(error)}` };

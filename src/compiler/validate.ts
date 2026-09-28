@@ -25,7 +25,7 @@ import { isPlainObject, issue, pointer } from "./issues";
 import { readMessageExtras } from "./message-extras";
 import { arrivalWindow, bubbleEffectDurationMs } from "./motion";
 
-const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll"]);
+const MESSAGE_KINDS = new Set<MessageKind>(["text", "link", "attachment", "image", "audio", "app-card", "system", "facetime", "sticker", "poll", "video"]);
 /** Decorations the thread would draw on the hidden placeholder row rather than on the live card. */
 const APP_CARD_EXCLUDED_FIELDS = ["status", "reactions", "replyTo", "edited"] as const;
 /** Query parameters the renderer appends to an app card URL itself. */
@@ -61,6 +61,7 @@ const ROOT_FIELDS = new Set([
   "theme",
   "contact",
   "nowMs",
+  "startAtMs",
   "draft",
   "typing",
   "screen",
@@ -106,6 +107,7 @@ const MESSAGE_FIELDS = new Set([
   "sticker",
   "stickers",
   "poll",
+  "video",
 ]);
 
 const unsupportedReason = new Map(capabilities.unsupported.map((entry) => [entry.id, entry.reason]));
@@ -248,6 +250,11 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
   const theme = readEnum(input, "theme", pointer(["theme"]), issues, THEMES);
   const contact = readContact(input.contact, Object.hasOwn(input, "contact"), issues);
   const nowMs = readMillis(input, "nowMs", pointer(["nowMs"]), issues, true);
+  const startAtMs = readMillis(input, "startAtMs", pointer(["startAtMs"]), issues, false);
+  const firstAt = firstMessageAt(input.messages);
+  if (startAtMs !== undefined && firstAt !== undefined && startAtMs > firstAt) {
+    issues.push(issue("/startAtMs", "INVALID_TIMESTAMP", "startAtMs cannot be after the first message"));
+  }
   const draft = readDraft(input, issues);
   const typing = readBoolean(input, "typing", pointer(["typing"]), issues, true);
   const screen = readEnum(input, "screen", pointer(["screen"]), issues, SCREENS);
@@ -289,6 +296,7 @@ function validateFlow(input: Record<string, unknown>): { issues: ValidationIssue
   }
 
   const demo: DemoFlow = { id, title, platform, theme, contact, nowMs, draft, typing, screen, messages };
+  if (startAtMs !== undefined) demo.startAtMs = startAtMs;
   const roster = readRoster(input, issues, platform);
   if (roster.participants) demo.participants = roster.participants;
   if (roster.group) demo.group = roster.group;
@@ -1621,7 +1629,7 @@ function readTimeline(
   }
   const seen = new Set(live.keys());
   let previousAt: number | undefined;
-  const baseline = firstMessageAt(input.messages);
+  const baseline = typeof input.startAtMs === "number" ? input.startAtMs : firstMessageAt(input.messages);
   const events: CompiledEvent[] = [];
   let valid = true;
   input.events.forEach((value, index) => {
@@ -1637,7 +1645,7 @@ function readTimeline(
       issues.push(issue(`${base}/atMs`, "INVALID_TIMESTAMP", "timeline events must be in chronological order"));
     }
     if (atMs !== undefined && baseline !== undefined && atMs < baseline) {
-      issues.push(issue(`${base}/atMs`, "INVALID_TIMESTAMP", "timeline events use the message clock and cannot precede the first message"));
+      issues.push(issue(`${base}/atMs`, "INVALID_TIMESTAMP", "timeline events cannot precede startAtMs (or the first message when startAtMs is omitted)"));
     }
     if (atMs !== undefined) previousAt = atMs;
     rejectEventFields(value, value.type, base, issues);

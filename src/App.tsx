@@ -41,7 +41,7 @@ function FlowRoute({ id, atMs }: { id: string; atMs: number }) {
   const validated = validateDemo(flow);
   if (!validated.ok) return <ScenarioError issues={validated.issues} />;
   const compiled = compileDemo(validated.demo);
-  const baseline = validated.demo.messages[0]?.atMs ?? 0;
+  const baseline = validated.demo.startAtMs ?? validated.demo.messages[0]?.atMs ?? 0;
   return (
     <DemoPlayer
       compiled={compiled}

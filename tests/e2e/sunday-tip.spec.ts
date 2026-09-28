@@ -65,7 +65,7 @@ test.describe("Sunday $5 tip checkout", () => {
     await page.goto(`/?flow=${flow.id}&t=1500`);
     const dock = page.locator('[data-app-card-id="tip"]');
     const checkout = dock.frameLocator("iframe");
-    const button = checkout.getByRole("button", { name: "Tip $5.00 with Apple Pay", exact: true });
+    const button = checkout.getByRole("button", { name: "Apple Pay", exact: true });
     await expect(dock).toHaveAttribute("data-load-count", "1");
     await expect(checkout.locator("#price")).toHaveText("$5.00");
     await expect(checkout.locator("html")).toHaveAttribute("data-photon-pay-state", "ready");

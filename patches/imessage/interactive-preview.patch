@@ -1,0 +1,38 @@
+--- a/src/components/imessage/ios-messages-app.tsx
++++ b/src/components/imessage/ios-messages-app.tsx
+@@ -19,6 +19,7 @@
+ import { ReplyThread, replyThreadMetrics, replyThreadMotion } from "@/components/imessage/message-reply";
+ import { Tapback, type TapbackType } from "@/components/imessage/tapback";
+ import { MessageActions, type Rect, type ScriptedTapback } from "@/components/imessage/message-actions";
++import type { ContextMenuItem } from "@/components/imessage/context-menu";
+ import { Avatar } from "@/components/imessage/avatar";
+ import { useArrivalAnimation, type ArrivalAnimation } from "@/components/imessage/message-motion";
+ import { IosEffectsPicker, type EffectsPickerSelection } from "@/components/imessage/ios-effects-picker";
+@@ -165,6 +166,10 @@
+   onLongPressClose?: () => void;
+   onTapback?: (id: string, selection: TapbackSelection) => void;
+   onMenuAction?: (id: string, action: string) => void;
++  /** Optional caller-owned menu items; omitted keeps the standard message menu. */
++  messageActionItems?: ContextMenuItem[];
++  /** Open the caller's emoji picker for the pressed message. */
++  onPickReactionEmoji?: (messageId: string) => void;
+   /**
+    * Select mode: the checkbox multi-select the long-press menu's "Select" row opens, drawn by
+    * `ios-select-mode.tsx` and measured on `select-mode-dark.png` — a circle in the leading gutter of
+@@ -572,7 +577,7 @@
+   messages, typing = false, now, composer, screenTransition, onBack, onSelectConversation, onCompose, onCloseNewMessage, onDetails,
+   thread, onOpenThread, onCloseThread,
+   sendAnimation, receiveAnimation, onSendAnimationEnd,
+-  longPress, longPressPose, onLongPress, onLongPressClose, onTapback, onMenuAction,
++  longPress, longPressPose, onLongPress, onLongPressClose, onTapback, onMenuAction, messageActionItems, onPickReactionEmoji,
+   selectMode, onOpenSelectMode, onCloseSelectMode, selectedMessageIds, onSelectMessage, onDeleteMessages, onForwardMessages,
+   effectsPicker, onEffectsPickerOpen, onEffectsTabChange, onEffectSelect, onSendWithEffect, onEffectsPickerClose,
+   plusMenu, onPlusMenuSelect, onPlusMenuClose, plusMenuItems = defaultPlusMenuItems,
+@@ -1206,6 +1211,7 @@
+         {overlayMessage && pressedBody && <style>{messageBodyHiddenSlots.map(slot => `[data-message-id="${overlayMessage.id}"] [data-slot="${slot}"]`).join(",")}{"{visibility:hidden}"}</style>}
+         {overlayMessage && pressedBody && (
+           <MessageActions rect={pressedBody.rect} frame={{ width, height }} direction={overlayMessage.direction} service={overlayMessage.service ?? "imessage"}
++            items={messageActionItems} onPickEmoji={onPickReactionEmoji && (() => onPickReactionEmoji(overlayMessage.id))}
+             scripted={scriptedPress ? { phase: scriptedPress.phase, elapsedMs: scriptedPress.elapsedMs, entranceElapsedMs: scriptedPress.entranceElapsedMs, reduced: scriptedPress.reduced } : undefined}
+             progress={scriptedPress ? undefined : longPress?.progress} autoFocus={!scriptedPress && longPress?.progress === undefined && !closing}
+             open={scriptedPress ? scriptedPress.phase !== "exit" : !closing} onExited={() => setClosing(null)}

@@ -52,6 +52,7 @@ describe("app-card flows", () => {
     if (!result.ok) return;
     expect(result.demo.messages[1]).toMatchObject({ kind: "app-card", appCard: { url: card.url, live: true, app: "checkout", height: 288 } });
     const compiled = compileDemo(result.demo);
+    expect(compiled.durationMs).toBe(7000);
     const frame = frameAt(compiled, compiled.durationMs);
     expect(frame.messages.find((message) => message.id === "checkout")?.appCard).toEqual({ ...card, height: 288 });
     expect(supportsArrival(frame.messages[1])).toBe(false);

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { DemoPlayerProps, DemoPlatform, DemoTheme, RendererHandle } from "@/contracts";
+import type { CompiledDemo, DemoPlayerProps, DemoPlatform, DemoTheme, RendererHandle } from "@/contracts";
 import profiles from "@/contracts/render-profiles.json";
 import { createPlayer } from "@/runtime";
-import { IosDemoRenderer } from "@/renderers/ios";
+import { IosFrame } from "@/renderers/ios";
+import { useInteractivePreview } from "./interactive-preview";
 import { MacDemoRenderer, type MacRendererHandle } from "@/renderers/macos";
 import { CatalogueRoute, CatalogueSceneById, isCatalogueSceneId } from "@/player/catalogue";
 import { createRuntimeSession } from "@/player/controller";
@@ -44,22 +45,54 @@ export function DemoPlayer({
   const [platform, setPlatform] = useState<DemoPlatform>(compiled.platform);
   const [theme, setTheme] = useState<DemoTheme>(compiled.theme);
   const [tick, setTick] = useState(0);
+  const [preview, setPreview] = useState<{ source: CompiledDemo; compiled: CompiledDemo; timeMs: number } | null>(null);
+  const [previewDirty, setPreviewDirty] = useState(false);
+  const [replayKey, setReplayKey] = useState(0);
+  const [seekKey, setSeekKey] = useState(0);
+  const [resetToOpening, setResetToOpening] = useState(false);
+  const activePreview = preview?.source === compiled ? preview : null;
+  const activeCompiled = activePreview?.compiled ?? compiled;
   const player = useMemo(() => {
-    const created = createPlayer(compiled);
-    if (initialTimeMs !== 0) created.seek(initialTimeMs);
+    const created = createPlayer(activeCompiled);
+    const start = activePreview?.timeMs ?? (replayKey || resetToOpening ? 0 : initialTimeMs);
+    if (start !== 0) created.seek(start);
     return created;
-  }, [compiled, initialTimeMs]);
+  }, [activeCompiled, activePreview, initialTimeMs, replayKey, resetToOpening]);
   const session = useMemo(
     () =>
       createRuntimeSession({
-        compiled,
+        compiled: activeCompiled,
         player,
         checkpoints,
         getRenderer: () => rendererRef.current,
         getFrameElement: () => frameRef.current,
       }),
-    [compiled, player, checkpoints],
+    [activeCompiled, player, checkpoints],
   );
+  const lastReplay = useRef(replayKey);
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+  const exposedSession = useMemo(() => ({
+    ...session,
+    async seek(timeMs: number) {
+      setSeekKey(key => key + 1);
+      return session.seek(timeMs);
+    },
+    async reset() {
+      setSeekKey(key => key + 1);
+      session.pause();
+      if (!activePreview) return session.reset();
+      setPreview(null); setPreviewDirty(false); setResetToOpening(true);
+      // Wait for the source timeline's session before issuing a receipt for its opening frame.
+      while (sessionRef.current === session) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      return sessionRef.current.reset();
+    },
+  }), [session, activePreview]);
+  useEffect(() => {
+    if (lastReplay.current === replayKey) return;
+    lastReplay.current = replayKey;
+    player.play();
+  }, [player, replayKey]);
 
   useEffect(() => {
     session.setView(platform, theme);
@@ -83,18 +116,18 @@ export function DemoPlayer({
   }, [ref, session]);
 
   if (typeof window !== "undefined") {
-    window.IMESSAGE_DEMO = session;
-    window.__demoPlayer = session;
+    window.IMESSAGE_DEMO = exposedSession;
+    window.__demoPlayer = exposedSession;
   }
 
   useEffect(() => {
-    window.IMESSAGE_DEMO = session;
-    window.__demoPlayer = session;
+    window.IMESSAGE_DEMO = exposedSession;
+    window.__demoPlayer = exposedSession;
     return () => {
-      if (window.IMESSAGE_DEMO === session) delete window.IMESSAGE_DEMO;
-      if (window.__demoPlayer === session) delete window.__demoPlayer;
+      if (window.IMESSAGE_DEMO === exposedSession) delete window.IMESSAGE_DEMO;
+      if (window.__demoPlayer === exposedSession) delete window.__demoPlayer;
     };
-  }, [session]);
+  }, [exposedSession]);
 
   useEffect(() => player.subscribe(() => setTick((value) => value + 1)), [player]);
 
@@ -120,7 +153,25 @@ export function DemoPlayer({
   const profile = profiles[platform];
   const compiledView = { ...session.playbackCompiled(), platform, theme };
   const playbackLabel = playbackControlLabel(state);
+  const replayDemo = () => {
+    player.pause(); setPreview(null); setPreviewDirty(false); setReplayKey(key => key + 1);
+  };
+  const interaction = useInteractivePreview({
+    frame, playing: state.playing, enabled: !capture && platform === "ios", resetKey: replayKey + seekKey,
+    pause: () => player.pause(), changed: () => setPreviewDirty(true),
+    append(events, settleMs = 0) {
+      player.pause();
+      const sourceIndex = Math.max(0, ...activeCompiled.events.map(event => event.sourceIndex ?? 0)) + 1;
+      const timeMs = player.state().timeMs + settleMs;
+      setPreview({ source: compiled, timeMs, compiled: {
+        ...activeCompiled,
+        durationMs: Math.max(activeCompiled.durationMs, timeMs),
+        events: [...activeCompiled.events, ...events.map((event, index) => ({ ...event, sourceIndex: sourceIndex + index }))],
+      } });
+    },
+  });
   const onPlayback = () => {
+    if (playbackLabel === "Replay" && previewDirty) { replayDemo(); return; }
     void runPlaybackControl(player.state(), session);
   };
 
@@ -160,6 +211,10 @@ export function DemoPlayer({
           onPlayback={onPlayback}
         />
       )}
+      {!capture && previewDirty && <div style={{ width: profile.width, padding: "4px 12px", boxSizing: "border-box" }}>
+        <button type="button" onClick={replayDemo}>Replay demo</button>
+        <span style={{ marginLeft: 8, fontSize: 12 }}>Local changes only</span>
+      </div>}
       <div
         ref={frameRef}
         data-demo-frame=""
@@ -172,7 +227,7 @@ export function DemoPlayer({
         {platform === "macos" ? (
           <MacDemoRenderer ref={bindMacRenderer} compiled={compiledView} frame={frame} />
         ) : (
-          <IosDemoRenderer ref={rendererRef} compiled={compiledView} frame={frame} />
+          <IosFrame ref={rendererRef} compiled={compiledView} frame={frame} shell={interaction.shell} previewOverlay={interaction.overlay} />
         )}
       </div>
     </div>

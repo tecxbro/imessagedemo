@@ -1,4 +1,4 @@
-import { POLL_MAX_OPTIONS, type DemoMessage, type PollPayload, type StickerPayload, type SystemMessagePayload } from "@/contracts";
+import { videoPayloadSchema, POLL_MAX_OPTIONS, type DemoMessage, type PollPayload, type StickerPayload, type SystemMessagePayload } from "@/contracts";
 import { issue, isPlainObject } from "./issues";
 import type { ValidationIssue } from "@/contracts";
 
@@ -21,7 +21,7 @@ const SYSTEM_TYPES = new Set([
 ]);
 
 const FACETIME = new Set(["invitation", "ringing", "connected", "ended", "missed"]);
-const IOS_ONLY_KINDS = new Set(["poll", "facetime", "sticker", "system"]);
+const IOS_ONLY_KINDS = new Set(["poll", "facetime", "sticker", "system", "video"]);
 
 export function rejectIosOnlyKind(kind: string | undefined, platform: string | undefined, path: string, issues: ValidationIssue[]): void {
   if (platform === "macos" && kind && IOS_ONLY_KINDS.has(kind)) {
@@ -126,6 +126,20 @@ export function readMessageExtras(
         else stickers.push(sticker);
       });
       if (!invalid) extras.stickers = stickers;
+    }
+  }
+
+  if (Object.hasOwn(value, "video") || kind === "video") {
+    const parsed = videoPayloadSchema.safeParse(value.video);
+    if (kind !== "video" || !parsed.success) {
+      issues.push(issue(`${base}/video`, "INVALID_VALUE", 'video messages require video { src, poster?, width?, height? } and kind "video"'));
+      invalid = true;
+    } else {
+      const local = (src: string, extensions: string) => new RegExp(`^/demo-assets/(?:[a-z0-9_-]+/)*[a-z0-9._-]+\\.(${extensions})$`, "i").test(src) && !src.includes("..");
+      if (!local(parsed.data.src, "mp4|webm") || (parsed.data.poster !== undefined && !local(parsed.data.poster, "png|jpe?g|gif|webp"))) {
+        issues.push(issue(`${base}/video`, "INVALID_ASSET", "video and poster must be local supported files under /demo-assets/"));
+        invalid = true;
+      } else extras.video = parsed.data;
     }
   }
 
