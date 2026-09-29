@@ -1,0 +1,28 @@
+.photon-mini-card{display:block;width:100%;padding:0;text-align:left;border:0;border-radius:20px;overflow:hidden;background:#e9e9eb;color:#161618;font:inherit;cursor:pointer;box-shadow:inset 0 0 0 1px #00000008}
+.photon-mini-card:focus-visible{outline:3px solid #0784ff;outline-offset:3px}
+.photon-mini-art{display:block;width:100%;height:174px;object-fit:cover}
+.photon-mini-placeholder{display:grid;place-items:center;background:radial-gradient(at 20% 0%,#bbebff,#7464ef 65%,#372a75);color:white;font-size:72px}
+.photon-mini-copy{display:flex;flex-direction:column;gap:4px;padding:13px 15px 14px}
+.photon-mini-copy strong{font-size:17px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.photon-mini-copy>span{font-size:13px;line-height:1.35;color:#66666b;overflow-wrap:anywhere}
+.photon-mini-footer{display:flex;align-items:center;gap:7px;padding:9px 15px;background:#00000006;font-size:11px;color:#717178}
+.photon-mini-footer>span:last-child{margin-left:auto;font-size:15px}
+.photon-mini-icon{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;background:#24242a;color:white;font-size:14px}
+.photon-mini-sheet{position:absolute;inset:56px 0 0;z-index:90;display:flex;flex-direction:column;background:#fff;border-radius:24px 24px 0 0;overflow:hidden;box-shadow:0 -10px 45px #0003;color:#171719;pointer-events:auto;animation:photon-mini-in .25s ease-out;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.photon-mini-sheet[hidden]{display:none}
+.photon-mini-toolbar{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid #00000010;gap:12px;flex:none;background:#f7f7f9}
+.photon-mini-toolbar>div{text-align:center;min-width:0;display:flex;flex-direction:column;gap:2px}
+.photon-mini-toolbar strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photon-mini-toolbar span{font-size:11px;color:#73737b}
+.photon-mini-toolbar button{width:34px;height:34px;border:0;border-radius:50%;background:#e7e7eb;color:#53535c;font-size:25px;line-height:1;cursor:pointer;flex:none}
+.photon-mini-content{position:relative;flex:1;min-height:0}
+.photon-mini-content iframe{display:block;width:100%;height:100%;border:0;background:white}
+.photon-mini-loading{position:absolute;inset:0;display:grid;place-items:center;background:white;color:#707077;font-size:14px;pointer-events:none}
+.photon-mini-error{padding:30px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.photon-mini-done{padding:12px 20px 20px;flex:none;background:#f7f7f9;border:0;border-top:1px solid #00000010;font-size:15px;color:#007aff;cursor:pointer}
+.photon-mini-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.dark .photon-mini-card{background:#29292c;color:#fff}
+.dark .photon-mini-copy>span,.dark .photon-mini-footer{color:#aaaab1}
+.dark .photon-mini-sheet,.dark .photon-mini-toolbar,.dark .photon-mini-done{background:#1c1c1e;color:#fff}
+@keyframes photon-mini-in{from{transform:translateY(100%);opacity:.7}to{transform:translateY(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){.photon-mini-sheet{animation:none}}

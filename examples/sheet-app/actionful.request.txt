@@ -1,0 +1,1 @@
+Create a sheet app for Example Museum where selecting one of three invented objects opens its details inside the app.

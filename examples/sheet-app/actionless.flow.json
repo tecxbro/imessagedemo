@@ -1,0 +1,50 @@
+{
+  "id": "museum-actionless",
+  "title": "Example Museum collection",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Example Museum"
+  },
+  "nowMs": 1790008860000,
+  "draft": "My unfinished note",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "museum-intro",
+      "text": "Three objects, three ways of seeing.",
+      "direction": "incoming",
+      "atMs": 0
+    },
+    {
+      "id": "museum-actionless",
+      "text": "A Quiet Collection",
+      "direction": "incoming",
+      "atMs": 1000,
+      "kind": "app-card",
+      "appCard": {
+        "app": "sheet",
+        "live": true,
+        "url": "/demo-apps/sheet-museum-actionless.html",
+        "sheet": {
+          "id": "museum-actionless",
+          "companyName": "Example Museum",
+          "title": "A Quiet Collection",
+          "description": "Three objects and the details that make them extraordinary.",
+          "experienceSummary": "showing three invented objects with short labels and no action buttons.",
+          "hero": {
+            "src": "/demo-assets/sheet-museum/collection.png",
+            "alt": "Invented terracotta vase, bronze mirror and cobalt bottle on ivory plinths.",
+            "width": 1727,
+            "height": 911
+          },
+          "content": {
+            "entry": "/demo-apps/sheet-museum-actionless.html"
+          },
+          "actions": []
+        }
+      }
+    }
+  ]
+}

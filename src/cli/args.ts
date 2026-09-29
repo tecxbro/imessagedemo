@@ -1,13 +1,16 @@
 import { CliError, EXIT_USAGE } from "@/cli/errors";
 import type { DemoPlatform } from "@/contracts";
 
-export type CliCommand = "capabilities" | "validate" | "compile" | "preview" | "capture" | "help";
+export type CliCommand = "capabilities" | "validate" | "compile" | "preview" | "capture" | "generate" | "plan-sheet" | "help";
 
 export type ParsedArgs = {
   command: CliCommand;
   json: boolean;
   help: boolean;
   file?: string;
+  humanRequest?: string;
+  sheetExperience?: string;
+  sheetPlan?: string;
   platform?: DemoPlatform;
   port?: number;
   out?: string;
@@ -18,7 +21,7 @@ export type ParsedArgs = {
   catalogue: boolean;
 };
 
-const COMMANDS = new Set<CliCommand>(["capabilities", "validate", "compile", "preview", "capture", "help"]);
+const COMMANDS = new Set<CliCommand>(["capabilities", "validate", "compile", "preview", "capture", "generate", "plan-sheet", "help"]);
 
 export function parseArgs(argv: string[]): ParsedArgs {
   const flags: Record<string, string | boolean> = {};
@@ -68,6 +71,9 @@ export function parseArgs(argv: string[]): ParsedArgs {
     json: Boolean(flags.json),
     help: Boolean(flags.help) || commandToken === "help",
     file: positionals[1],
+    humanRequest: optionalString(flags["human-request"]),
+    sheetExperience: optionalString(flags["sheet-experience"]),
+    sheetPlan: optionalString(flags["sheet-plan"]),
     platform: parsePlatform(flags.platform),
     port: parseNumber(flags.port, "port"),
     out: optionalString(flags.out),

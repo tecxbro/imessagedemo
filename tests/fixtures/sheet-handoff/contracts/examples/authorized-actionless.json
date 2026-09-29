@@ -1,0 +1,25 @@
+{
+  "authorization": {
+    "source": "human",
+    "explicitSheetRequest": true,
+    "requestText": "Create a sheet app for this museum showing three objects with short labels, with no action buttons.",
+    "experienceDescription": "A browsable informational collection of three objects and their labels."
+  },
+  "app": {
+    "id": "example-museum-collection",
+    "companyName": "Example Museum (fictional contract fixture)",
+    "title": "A Quiet Collection",
+    "description": "Explore three objects from the collection at your own pace.",
+    "experienceSummary": "An informational collection with images and short labels; no app-specific actions.",
+    "hero": {
+      "src": "generated/example-museum-collection.webp",
+      "alt": "Three museum objects arranged on a light background.",
+      "width": 1071,
+      "height": 564
+    },
+    "content": {
+      "entry": "company-content/MuseumCollection.tsx"
+    },
+    "actions": []
+  }
+}

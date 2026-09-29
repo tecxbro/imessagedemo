@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recreate iMessage Sheet Motion"
+  short_description: "Implement and verify measured sheet and host motion"
+  default_prompt: "Use $recreate-imessage-sheet-motion from this repository, preserve the explicit human request gate, and verify the complete conversation host."

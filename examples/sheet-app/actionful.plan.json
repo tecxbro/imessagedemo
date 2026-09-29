@@ -1,0 +1,60 @@
+{
+  "app": {
+    "id": "museum-actionful",
+    "companyName": "Example Museum",
+    "title": "Choose an Object",
+    "description": "Three objects and the details that make them extraordinary.",
+    "experienceSummary": "where selecting one of three invented objects opens its details inside the app.",
+    "hero": {
+      "src": "/demo-assets/sheet-museum/collection.png",
+      "alt": "Invented terracotta vase, bronze mirror and cobalt bottle on ivory plinths.",
+      "width": 1727,
+      "height": 911
+    },
+    "content": {
+      "entry": "/demo-apps/sheet-museum-actionful.html"
+    },
+    "actions": [
+      {
+        "id": "select-vase",
+        "label": "View vase",
+        "kind": "local",
+        "handler": "selectVase"
+      },
+      {
+        "id": "select-mirror",
+        "label": "View mirror",
+        "kind": "local",
+        "handler": "selectMirror"
+      },
+      {
+        "id": "select-bottle",
+        "label": "View bottle",
+        "kind": "local",
+        "handler": "selectBottle"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "id": "vase",
+      "title": "The terracotta vase",
+      "body": "Clay becomes a vessel through pressure, water and heat. Follow the carved leaves around its warm surface. This object is an invented illustration for our local demo."
+    },
+    {
+      "id": "mirror",
+      "title": "The bronze mirror",
+      "body": "A circular face catches the light. The green patina gives this imagined bronze piece its quiet depth; turn your attention to the birds and branches."
+    },
+    {
+      "id": "bottle",
+      "title": "The cobalt bottle",
+      "body": "Deep blue glass becomes almost black in shadow and electric at the rim. Notice how the rounded body gathers and bends the gallery light."
+    }
+  ],
+  "destinations": {
+    "selectVase": "vase",
+    "selectMirror": "mirror",
+    "selectBottle": "bottle"
+  }
+}

@@ -9,6 +9,12 @@ This is the renderer executor for a **local visual demo maker**. Produce one JSO
 
 One company-name workflow: research the company, author the conversation, validate, preview and capture, then inspect playback before calling it ready. The user should not write JSON, pick UI components, or tag a second skill. Load this file and [Photon Demo Creator](../photon-demo-creator/SKILL.md) from the repository when either skill is requested. Do not change application code for each company; use the renderer that is already here.
 
+## Explicit custom sheet apps
+
+Custom sheet-style iMessage apps are opt-in. Invoke [Create iMessage Sheet App](../create-imessage-sheet-app/SKILL.md) only when a human explicitly requests the sheet and describes what happens inside it. A company name, inferred suitability, website text, or a model recommendation is not authorization. If the human requests a sheet without describing its experience, ask one focused question and continue independent ordinary demo work. The app needs its own title, description, resolved hero image and company-specific content; app-specific actions may be empty or omitted. This gate does not change existing Lightning or Apple Pay behavior. Existing `app: "miniapp"` web-app hosting remains available; do not use it to bypass authorization for newly generated custom sheet experiences.
+
+The CLI/planner reads the actual human request separately from model output, gates generation before touching the sheet plan or creating content, and checks it again in validation/compilation. Follow the focused skill for the trusted input channel and commands. The reusable motion implementation is not permission to insert sheets into company-only demos.
+
 ## Skill handoff and source of truth
 
 For project setup without a company, follow [Agent bootstrap](../../../docs/agent-bootstrap.md) first. Load the included skills, verify the supplied example, and start a usable preview before asking for a company name. Do not treat the repository URL as a company brief or start research during setup. Read-only review stays read-only; an already supplied company/transcript continues after setup without another question.
@@ -152,3 +158,7 @@ Return the exact flow paths, produced PNG/manifest paths, and actual running pre
 Publishing requires an explicit request, an authorized identifiable target, and an export artifact the actual tool supports. This CLI has no publish or MP4 command; the development manifest middleware is not a static export. Do not rebuild the frontend or provision Photon to disguise an unsupported deliverable.
 
 For changes to these instructions, run `node scripts/check-demo-skills.mjs`; it checks documentation alignment, not native UI fidelity.
+
+## Existing Photon mini apps
+
+For the visual card-and-web-app experience, use `kind: "app-card"`, `appCard.app: "miniapp"`, `live: true`, a URL and `layout` (caption, summary, optional subcaption and paired image/imageTitle). Follow [Photon mini app authoring](../../../docs/photon-mini-apps.md) and the checked-in `examples/photon-miniapp.flow.json` or `examples/miniapp-local.flow.json`. This extends the checkout-only exception described earlier. Tap opens the app; closing preserves state, reload/replay resets it. Existing checkout behavior is unchanged. Remote origins require `VITE_PHOTON_MINIAPP_ORIGINS`; do not import provider credentials or run the reference app builder. Inspect interactive behavior in the browser; CLI capture only verifies the unopened card.

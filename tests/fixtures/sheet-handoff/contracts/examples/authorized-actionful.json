@@ -1,0 +1,32 @@
+{
+  "authorization": {
+    "source": "human",
+    "explicitSheetRequest": true,
+    "requestText": "Create a museum sheet app where selecting an object opens its details inside the app.",
+    "experienceDescription": "Show three objects and let the person select one to open a details view."
+  },
+  "app": {
+    "id": "example-museum-selection",
+    "companyName": "Example Museum (fictional contract fixture)",
+    "title": "Choose an Object",
+    "description": "Explore the collection and choose an object to learn more.",
+    "experienceSummary": "Choosing an object updates an in-app details view.",
+    "hero": {
+      "src": "generated/example-museum-collection.webp",
+      "alt": "Three museum objects arranged on a light background.",
+      "width": 1071,
+      "height": 564
+    },
+    "content": {
+      "entry": "company-content/MuseumSelection.tsx"
+    },
+    "actions": [
+      {
+        "id": "select-object",
+        "label": "View details",
+        "kind": "local",
+        "handler": "selectObject"
+      }
+    ]
+  }
+}

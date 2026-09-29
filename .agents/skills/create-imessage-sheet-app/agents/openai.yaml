@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create iMessage Sheet App"
+  short_description: "Build explicitly requested company sheet experiences"
+  default_prompt: "Use $create-imessage-sheet-app from this repository, preserve the explicit human request gate, and verify the complete conversation host."

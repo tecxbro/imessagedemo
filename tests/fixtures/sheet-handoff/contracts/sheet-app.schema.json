@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Explicitly requested custom iMessage sheet app",
+  "description": "Structural data only. Human authorization must be checked separately at a trusted boundary. Null means no custom sheet.",
+  "anyOf": [
+    {
+      "type": "null"
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "companyName",
+        "title",
+        "description",
+        "experienceSummary",
+        "hero",
+        "content"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "companyName": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "experienceSummary": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "hero": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "src",
+            "alt",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "src": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "alt": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entry"
+          ],
+          "properties": {
+            "entry": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "kind",
+              "handler"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "kind": {
+                "enum": [
+                  "local",
+                  "open-url",
+                  "send-message"
+                ]
+              },
+              "handler": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

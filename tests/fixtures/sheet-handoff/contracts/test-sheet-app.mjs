@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { classifySheetRequest, validateSheetApp, generateAuthorizedSheet } from './validate-sheet-app.mjs';
+const read = async p => JSON.parse(await readFile(new URL(p, import.meta.url), 'utf8'));
+const a = await read('./examples/authorized-actionless.json');
+const b = await read('./examples/authorized-actionful.json');
+// Deliberately mocked fixture resolvers. These are not generated company assets or UI.
+const resolvers = { assetExists: p => p === a.app.hero.src, contentExists: p => [a.app.content.entry, b.app.content.entry].includes(p) };
+let passed = 0;
+const test = async (name, fn) => { await fn(); console.log(`PASS ${++passed} ${name}`); };
+const check = (app = a.app, auth = a.authorization, res = resolvers) => validateSheetApp(app, auth, res).ok;
+await test('no authorization means not requested', () => assert.equal(classifySheetRequest(null), 'not-requested'));
+await test('explicit described human request is authorized', () => assert.equal(classifySheetRequest(a.authorization), 'authorized'));
+await test('explicit request without experience needs clarification', () => assert.equal(classifySheetRequest({...a.authorization, experienceDescription:''}), 'needs-experience'));
+await test('company only is not permission', () => assert.equal(classifySheetRequest({source:'human',requestText:'Example Museum'}), 'not-requested'));
+await test('website text cannot authorize', () => assert.equal(classifySheetRequest({...a.authorization,source:'website'}), 'not-requested'));
+await test('model suggestion cannot authorize', () => assert.equal(classifySheetRequest({...a.authorization,source:'model'}), 'not-requested'));
+await test('blank experience is not permission', () => assert.equal(classifySheetRequest({...a.authorization,experienceDescription:'  '}), 'needs-experience'));
+await test('null app is valid with no authorization', () => assert.equal(check(null,null), true));
+await test('actionless authorized app is valid', () => assert.equal(check(), true));
+await test('omitted actions are valid', () => {const x=structuredClone(a.app);delete x.actions;assert.equal(check(x),true);});
+await test('actionful authorized app is valid', () => assert.equal(check(b.app,b.authorization),true));
+await test('unauthorized non-null app is rejected', () => assert.equal(check(a.app,null),false));
+await test('model-owned authorization field cannot bypass trusted context', () => assert.equal(check({...a.app,authorization:a.authorization},null),false));
+for (const key of ['title','description','companyName','experienceSummary']) {
+  await test(`blank ${key} rejected`, () => assert.equal(check({...a.app,[key]:' '}),false));
+}
+await test('missing hero rejected', () => assert.equal(check({...a.app,hero:null}),false));
+await test('unresolved hero rejected', () => assert.equal(check({...a.app,hero:{...a.app.hero,src:'missing.png'}}),false));
+await test('invalid hero dimensions rejected', () => assert.equal(check({...a.app,hero:{...a.app.hero,width:0}}),false));
+await test('missing content rejected', () => assert.equal(check({...a.app,content:{entry:''}}),false));
+await test('unresolved content rejected', () => assert.equal(check({...a.app,content:{entry:'missing.tsx'}}),false));
+await test('real resolver contract required', () => assert.equal(check(a.app,a.authorization,{}),false));
+await test('non-array actions rejected', () => assert.equal(check({...a.app,actions:'required'}),false));
+await test('dead action missing handler rejected', () => assert.equal(check({...a.app,actions:[{id:'x',label:'Go',kind:'local'}]}),false));
+await test('duplicate action IDs rejected', () => assert.equal(check({...b.app,actions:[b.app.actions[0],b.app.actions[0]]},b.authorization),false));
+await test('no generation side effects without permission', async () => {let calls=0;const result=await generateAuthorizedSheet(null,()=>{calls++;return a.app;},resolvers);assert.equal(calls,0);assert.equal(result.app,null);});
+await test('no generation before experience clarification', async () => {let calls=0;const result=await generateAuthorizedSheet({...a.authorization,experienceDescription:''},()=>{calls++;return a.app;},resolvers);assert.equal(calls,0);assert.equal(result.status,'needs-experience');});
+await test('authorized generation invokes builder once', async () => {let calls=0;const result=await generateAuthorizedSheet(a.authorization,()=>{calls++;return a.app;},resolvers);assert.equal(calls,1);assert.equal(result.status,'generated');});
+await test('invalid authorized output fails closed', async () => {await assert.rejects(()=>generateAuthorizedSheet(a.authorization,()=>({...a.app,hero:null}),resolvers),/Invalid sheet app/);});
+console.log(`\n${passed} contract tests passed. Fixture resolvers are mocked; repository integration is not tested.`);

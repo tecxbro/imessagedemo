@@ -1,3 +1,4 @@
+import { validateSheetSpec, type SheetValidationContext } from "@/generator/sheet-request";
 import type { CompiledDemo, CompiledEvent, DemoFlow, DemoMessage, OverlayState, PickerSelection, Reaction } from "@/contracts";
 import { tapbackMotion } from "@/contracts/tapback-motion";
 import { clonePoll, POLL_VOTE_SETTLE_MS } from "@/runtime/poll";
@@ -80,7 +81,9 @@ function copyMessage(message: DemoMessage, messages: readonly DemoMessage[]): De
   if (message.video !== undefined) copy.video = { ...message.video };
   if (message.poll !== undefined) copy.poll = clonePoll(message.poll);
   if (message.appCard !== undefined) {
-    const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: "checkout" };
+    const appCard: NonNullable<DemoMessage["appCard"]> = { url: message.appCard.url, live: true, app: message.appCard.app };
+    if (message.appCard.sheet) appCard.sheet = structuredClone(message.appCard.sheet);
+    if (message.appCard.layout) appCard.layout = { ...message.appCard.layout };
     if (message.appCard.height !== undefined) appCard.height = message.appCard.height;
     copy.appCard = appCard;
   }
@@ -148,7 +151,11 @@ function selectionKey(selected: PickerSelection | null | undefined): string {
   return "emoji" in selected ? `emoji:${selected.emoji}` : `type:${selected.type}`;
 }
 
-export function compileDemo(demo: DemoFlow): CompiledDemo {
+export function compileDemo(demo: DemoFlow, context?: SheetValidationContext): CompiledDemo {
+  for (const message of [...demo.messages, ...(demo.events ?? []).flatMap(e => e.type === "message" ? [e.message] : [])]) if (message.appCard?.app === 'sheet') {
+    const errors = validateSheetSpec(message.appCard.sheet, context);
+    if (errors.length) throw new Error(errors.join(' '));
+  }
   const baseline = demo.startAtMs ?? demo.messages[0]?.atMs ?? demo.events?.[0]?.atMs ?? 0;
   const events: CompiledDemo["events"] = [];
   let durationMs = 0;
@@ -174,6 +181,7 @@ export function compileDemo(demo: DemoFlow): CompiledDemo {
     const copied = copyEvent(event, baseline);
     events.push(copied);
     durationMs = Math.max(durationMs, copied.atMs);
+    if (copied.type === "sheet-app") durationMs = Math.max(durationMs, copied.atMs + (copied.action === "close" ? 2300 : 500));
     if (copied.type === "poll-vote") durationMs = Math.max(durationMs, copied.atMs + POLL_VOTE_SETTLE_MS);
     if (copied.type === "reaction" && copied.reaction) {
       durationMs = Math.max(durationMs, copied.atMs + tapbackMotion.reactionLandingMs);

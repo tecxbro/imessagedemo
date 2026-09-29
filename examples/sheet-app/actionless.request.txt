@@ -1,0 +1,1 @@
+Create a sheet app for Example Museum showing three invented objects with short labels and no action buttons.

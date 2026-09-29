@@ -1,0 +1,59 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jump Jump reference</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fdfdfd;color:#222;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif}main{position:relative;width:512px;transform:scale(var(--u));transform-origin:0 0;user-select:none}h1{position:absolute;margin:0;left:0;width:100%;text-align:center;font-weight:300;letter-spacing:-.055em;line-height:1}#line{position:absolute;left:50%;width:168px;height:5px;transform:translateX(-50%);border-radius:3px;background:linear-gradient(90deg,#299cca,#5ed278,#ffc331,#ff5454)}#blocks{position:absolute;left:50%;width:512px;height:410px;overflow:visible;transform-origin:50% 0}#control{position:absolute;left:50%;transform:translateX(-50%);width:188px;height:54px;border:0;border-radius:32px;background:#268fcb;color:white;font:22px -apple-system,sans-serif;cursor:pointer;z-index:2}body[data-presentation="compact"] #control{width:252px;height:62px;background:#e5e5e9;color:#84848b;font-weight:600;font-size:23px}footer{position:absolute;left:0;right:0;bottom:27px;display:flex;justify-content:center;align-items:center;gap:11px;color:#868389;font-size:18px}footer svg{width:24px;height:24px}footer i{display:block;width:1px;height:22px;background:#ccc}#score{position:absolute;left:0;right:0;top:25%;text-align:center;font-size:28px;color:#666}#pawn{transition:transform .32s cubic-bezier(.2,.7,.2,1)}#control:focus-visible{outline:3px solid #007aff;outline-offset:3px}
+</style>
+<main>
+<h1>Jump Jump</h1><div id="line"></div><output id="score" hidden></output>
+<svg id="blocks" viewBox="0 0 512 410" aria-label="Blue and white blocks with a purple pawn">
+<g id="destination"><path d="M178 226L314 309L462 235L326 156Z" fill="#aaa"/>
+<path d="M248 177L355 115L463 177L355 241Z" fill="#e9e9e9" stroke="#c6c6c6"/>
+<path d="M248 177L355 241V305L248 241Z" fill="#eee" stroke="#c6c6c6"/>
+<path d="M355 241L463 177V241L355 305Z" fill="#e5e5e5" stroke="#c6c6c6"/>
+</g><path d="M0 327L154 402L264 336L109 262Z" fill="#aaa"/>
+<path d="M52 290L159 227L267 290L159 352Z" fill="#559fba" stroke="#4a869d"/>
+<path d="M52 290L159 352V418L52 354Z" fill="#559ab3" stroke="#4a869d"/>
+<path d="M159 352L267 290V354L159 418Z" fill="#4d97b2" stroke="#4a869d"/>
+<defs><radialGradient id="shade" cx="30%" cy="20%"><stop stop-color="#706087"/><stop offset="1" stop-color="#362a49"/></radialGradient></defs>
+<g id="pawn"><ellipse cx="159" cy="291" rx="16" ry="7" fill="#447c94" opacity=".22"/><path d="M146 244Q159 232 172 244L177 281Q179 298 159 298Q139 298 141 282Z" fill="url(#shade)"/><circle cx="159" cy="214" r="14" fill="url(#shade)"/></g>
+</svg>
+<button id="control">▸ Start Game</button>
+<footer><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l2-7h3l-2 7zm8 6 2-7h3l-2 7zm8 5 2-7h3l-2 7z" fill="currentColor"/></svg><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16C3 12 9 7 15 4s5 2 5 6-2 6-2 9-5 1-8 0-7 0-7-3Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>miniapp</span></footer>
+</main>
+<script src="/demo-apps/sheet-host.js"></script>
+<script type="application/json" id="sheet-app-manifest">{"protocol":1,"actions":[{"id":"start","handler":"start-local-game"}]}</script>
+<script>
+const main=document.querySelector('main'),title=document.querySelector('h1'),line=document.querySelector('#line'),blocks=document.querySelector('#blocks'),control=document.querySelector('#control'),score=document.querySelector('#score');
+const sample=(points,x)=>{const i=points.findIndex(p=>p[0]>=x);if(i<0)return points.at(-1)[1];if(!i)return points[0][1];const a=points[i-1],b=points[i];return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);};
+let started=false,jumps=0;
+const fixture=new URLSearchParams(location.search).has('fixture');
+function layout(){
+ const u=innerWidth/512,h=innerHeight/u,compact=document.body.dataset.presentation==='compact';
+ main.style.setProperty('--u',u);main.style.height=h+'px';
+ const titleTop=sample([[409,83],[441,89],[462,91],[541,102],[669,121],[712,128],[864,147],[1033,168]],h);
+ const font=sample([[409,46],[462,46],[541,53],[669,66],[712,70],[864,86],[1033,91]],h);
+ title.style.fontSize=font+'px';title.style.top=(titleTop-font*.12)+'px';
+ line.style.top=(titleTop+font*.77+24)+'px';
+ const scale=compact?.55:sample([[712,.78],[864,.92],[1033,1]],h);
+ blocks.style.top=(compact?Math.max(89,(h-409)*.24+89):sample([[712,222],[864,263],[1033,298]],h))+'px';
+ blocks.style.transform=`translateX(-50%) scale(${scale})`;
+ control.style.top=(compact?sample([[409,187],[441,196],[462,201],[541,225],[669,269]],h):sample([[712,519],[864,611],[1033,701]],h))+'px';
+ control.textContent=compact?'Expand to Play':started?'Jump again':'▸ Start Game';
+ score.hidden=!started||compact;title.style.visibility=started&&!compact?'hidden':'visible';line.style.visibility=started&&!compact?'hidden':'visible';
+}
+window.addEventListener('message',event=>{
+ if(!fixture||event.source!==parent||event.data?.type!=='sheet-reference:frame')return;
+ const {clip,n}=event.data;document.body.dataset.presentation=clip==='B'&&n>=95?'compact':'expanded';
+ const dy=clip==='A'?sample([[35,-227],[36,-148],[37,-81],[38,-28],[39,-6],[40,-31],[41,-53],[42,-61],[43,-50],[44,-24],[45,3],[46,0],[47,0],[49,0]],n):0;
+ document.querySelector('#destination').style.transform=`translateY(${dy}px)`;layout();
+});
+new ResizeObserver(layout).observe(document.documentElement);
+window.addEventListener('message',event=>{if(event.source===parent&&event.data?.type==='sheet-app:presentation')requestAnimationFrame(layout);});
+control.addEventListener('click',()=>{
+ if(document.body.dataset.presentation==='compact'){parent.postMessage({type:'sheet-app:expand',version:1},'*');return;}
+ if(!started){started=true;score.textContent='0 jumps';layout();return;}
+ jumps++;score.textContent=jumps+' '+(jumps===1?'jump':'jumps');
+ const pawn=document.querySelector('#pawn');pawn.style.transform=`translate(${jumps%2?196:0}px,${jumps%2?-116:0}px)`;
+});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')parent.postMessage({type:'sheet-app:close',version:1},'*');});
+layout();parent.postMessage({type:'sheet-app:ready',version:1,compactNavigation:true},'*');
+</script></html>

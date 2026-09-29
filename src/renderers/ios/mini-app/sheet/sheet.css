@@ -1,0 +1,28 @@
+[data-slot="ios-messages-app"][data-sheet-active="true"] [data-slot="screen-conversation"] [data-slot="message-list-content"] { transform:translateY(var(--sheet-transcript-y)); }
+[data-slot="ios-messages-app"][data-sheet-active="true"] [data-slot="screen-conversation"] > [data-slot="ios-composer"],
+[data-slot="ios-messages-app"][data-sheet-active="true"] [data-slot="screen-conversation"] [data-slot="ios-composer"] { transform:translateY(var(--sheet-composer-y));opacity:var(--sheet-composer-opacity); }
+.sheet-app-dim{position:absolute;inset:54px 0 0;z-index:88;background:#000;pointer-events:none}
+.sheet-app-shell{position:absolute;z-index:90;overflow:hidden;isolation:isolate;background:#fdfdfd;color:#222;font-family:-apple-system,BlinkMacSystemFont,sans-serif;pointer-events:auto;container-type:size;}
+.sheet-app-shell[hidden]{display:none}
+.sheet-app-shell[data-content="loading"]{background:#111}
+.sheet-app-content{width:100%;height:100%;overflow:hidden}
+.sheet-app-content iframe{display:block;width:100%;height:100%;border:0;background:#fdfdfd}
+.sheet-app-grabber{position:absolute;z-index:4;left:30%;top:0;width:40%;height:32px;border:0;background:transparent;cursor:grab;touch-action:none;display:flex;justify-content:center;align-items:flex-start;padding-top:calc(8px * var(--sheet-scale));}
+.sheet-app-grabber:active{cursor:grabbing}
+.sheet-app-grabber span{display:block;width:calc(76px * var(--sheet-scale));height:calc(5px * var(--sheet-scale));border-radius:3px;background:#bcbcbc}
+[data-content="loading"] .sheet-app-grabber span{background:#4b4b4b}
+.sheet-app-shell{outline:none}
+.sheet-app-grabber:focus-visible{outline:2px solid #007aff;outline-offset:-3px;border-radius:14px}
+.sheet-app-loading{position:absolute;left:50%;top:calc(517px * var(--sheet-scale));transform:translate(-50%,-50%)}
+.sheet-app-loading span{display:block;width:20px;height:20px;border:3px dotted #555;border-radius:50%;animation:sheet-spinner 1s linear infinite}
+.sheet-app-error{position:absolute;inset:35% 20px auto;text-align:center;font-size:15px}
+.sheet-app-error button{border:0;border-radius:18px;padding:10px 18px;margin:5px;cursor:pointer}
+.sheet-app-expand{position:absolute;left:50%;top:51.4%;transform:translate(-50%,-50%);z-index:3;width:calc(252px * var(--sheet-scale));height:calc(62px * var(--sheet-scale));border:0;border-radius:40px;background:#e5e5e9;color:#84848b;font:600 calc(23px * var(--sheet-scale)) -apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}
+.sheet-app-card .photon-mini-art{height:auto;aspect-ratio:1.89893617;object-fit:cover}
+.sheet-app-card .photon-mini-copy{padding:13px 16px 16px;gap:4px}
+.sheet-app-card .photon-mini-copy>span{font-size:14px}
+.sheet-app-card{position:relative;overflow:visible}
+.sheet-app-card .photon-mini-art{border-radius:20px 20px 0 0}
+.sheet-app-card:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:16px;background:inherit;clip-path:polygon(100% 0,100% 65%,0 100%,28% 45%);}
+@keyframes sheet-spinner{to{transform:translateZ(0) rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.sheet-app-loading span{animation:none}}
