@@ -1,0 +1,39 @@
+{
+  "id": "miniapp-local",
+  "title": "Interactive mini app",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Photon",
+    "initials": "P"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "intro",
+      "text": "A little space to focus. Open the app and complete a session.",
+      "direction": "incoming",
+      "atMs": 1790008740000
+    },
+    {
+      "id": "focus",
+      "text": "Track your focus sessions",
+      "direction": "incoming",
+      "atMs": 1790008742000,
+      "kind": "app-card",
+      "appCard": {
+        "app": "miniapp",
+        "live": true,
+        "url": "/demo-apps/counter.html",
+        "layout": {
+          "caption": "Focus Sessions",
+          "subcaption": "Make time for your best work",
+          "summary": "Track completed sessions and your current focus."
+        }
+      }
+    }
+  ]
+}

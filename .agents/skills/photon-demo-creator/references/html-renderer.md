@@ -114,3 +114,7 @@ Do not run checkout tests, provider tests, or unrelated repositories for HTML co
 Return the exact produced flow paths, capture paths, working local preview URLs, and any actually verified published URL. For multiple conversations, identify the distinct use case for each. Briefly report product evidence versus invented sample data, checks actually run, assets prepared versus applied, unsupported requested features, and unverified playback/export/publishing.
 
 No texting number, provider-delivered status, device-tested claim, checkout URL, or paid transaction is implied by an HTML render. Do not finish with only a plan when the user asked for a demo and the current renderer can produce it.
+
+## Requested custom sheet apps
+
+Apply the parent skill's opt-in rule at feature selection, before any sheet-specific artwork or app content is generated. Read [Create iMessage Sheet App](../../create-imessage-sheet-app/SKILL.md) only for an explicit human sheet request with a described experience. Preserve the ordinary company-name path and all unrelated capabilities.

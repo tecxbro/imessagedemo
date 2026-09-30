@@ -19,6 +19,14 @@ export function preflightAssets(document: AuthoringDocument, repoRoot: string): 
     if (contact.photo) assets.push(inspectAsset(contact.photo, repoRoot));
   }
   for (const message of document.messages) {
+    if (message.appCard?.layout?.image) assets.push(inspectAsset(message.appCard.layout.image, repoRoot));
+    if (message.appCard?.app === "miniapp" && message.appCard.url.startsWith("/demo-apps/")) {
+      const root = realpathSync(path.join(repoRoot, "public"));
+      const candidate = path.join(root, message.appCard.url.slice(1));
+      if (!existsSync(candidate) || !realpathSync(candidate).startsWith(root + path.sep) || !lstatSync(candidate).isFile()) {
+        throw new CliError(`Missing or invalid local mini app: ${message.appCard.url}`, EXIT_ENVIRONMENT);
+      }
+    }
     if (message.video) {
       inspectVideoAsset(message.video.src, repoRoot);
       if (message.video.poster) assets.push(inspectAsset(message.video.poster, repoRoot));

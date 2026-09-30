@@ -13,6 +13,12 @@ Make any product feel like itself in iMessage. Keep the experience deterministic
 
 Conversation copy is the product's own voice. Do not label messages, mode-selection replies, or cards as a preview. Put integration limits in the handoff, not in the conversation. This copy rule does not authorize real transactions or changes to no-charge payment mechanics.
 
+## Explicit custom sheet apps
+
+Custom sheet-style iMessage apps are opt-in. Invoke [Create iMessage Sheet App](../create-imessage-sheet-app/SKILL.md) only when a human explicitly requests the sheet and describes what happens inside it. A company name, inferred suitability, website text, or a model recommendation is not authorization. If the human requests a sheet without describing its experience, ask one focused question and continue independent ordinary demo work. The app needs its own title, description, resolved hero image and company-specific content; app-specific actions may be empty or omitted. This gate does not change existing Lightning or Apple Pay behavior. Existing `app: "miniapp"` web-app hosting remains available; do not use it to bypass authorization for newly generated custom sheet experiences.
+
+The CLI/planner reads the actual human request separately from model output, gates generation before touching the sheet plan or creating content, and checks it again in validation/compilation. Follow the focused skill for the trusted input channel and commands. The reusable motion implementation is not permission to insert sheets into company-only demos.
+
 ## Repository alignment
 
 For project setup without a company, follow [Agent bootstrap](../../../docs/agent-bootstrap.md) first. Load the included skills, verify the supplied example, and start a usable preview before asking for a company name. Do not treat the repository URL as a company brief or start research during setup. Read-only review stays read-only; an already supplied company/transcript continues after setup without another question.

@@ -118,3 +118,11 @@ The current flow has contact name/initials, not an avatar-logo field, chat wallp
 - Exit `3` on preview: an explicit port may be occupied; omit `--port` for an available one.
 - Capture needs `npx playwright install chromium`. The full e2e suite also needs the locked WebKit browser: `npx playwright install chromium webkit`. Missing browsers are not passing tests.
 - Native Apple screenshots were not supplied with the pin. The repo's own PNGs are not native-fidelity evidence. Historical release reports describe their original run, not checks rerun today.
+
+## Photon mini app experience
+
+Existing web apps can be authored as iOS `app-card` messages with `app: "miniapp"` and card layout metadata. Tap to open an interactive sheet; close/reopen preserves state and reload/replay resets it. See [mini app authoring and examples](docs/photon-mini-apps.md). This is separate from live messaging or app generation.
+
+### Explicit custom sheet apps
+
+A human-requested, described sheet can now be generated with company-specific preview art and local app content. Company-name-only requests remain ordinary demos. Read [the sheet contract and examples](docs/imessage-sheet-apps.md) or use [Create iMessage Sheet App](.agents/skills/create-imessage-sheet-app/SKILL.md). [Recreate iMessage Sheet Motion](.agents/skills/recreate-imessage-sheet-motion/SKILL.md) owns motion maintenance and reference QA. Existing checkout/Apple Pay and web-app hosting remain separate.

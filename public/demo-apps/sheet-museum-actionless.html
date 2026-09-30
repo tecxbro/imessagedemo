@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A Quiet Collection</title>
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%;background:#fdfdfd;color:#272720;font-family:-apple-system,BlinkMacSystemFont,sans-serif}body{overflow:auto;overscroll-behavior:contain}header{padding:54px 25px 23px}small{letter-spacing:.14em;text-transform:uppercase;color:#777269;font-size:10px}h1{font:36px/1.1 Georgia,serif;letter-spacing:-.035em;margin:12px 0}header p{font-size:14px;line-height:1.5;color:#736e66;margin:0}img{display:block;width:100%;aspect-ratio:1.899;object-fit:cover}main{padding:16px 25px 50px}article{padding:14px 0;border-bottom:1px solid #e3ded7}article h2{font:24px Georgia,serif;margin:6px 0 12px}article p{line-height:1.65;font-size:14px;color:#6c685f}nav{display:flex;gap:8px;flex-wrap:wrap;padding-top:20px}button{border:1px solid #d9d3ca;border-radius:24px;background:#eee8df;color:#39342e;padding:11px 15px;font:500 13px -apple-system,sans-serif;cursor:pointer}button:focus-visible{outline:2px solid #007aff}body[data-presentation="compact"]{overflow:hidden;user-select:none}body[data-presentation="compact"] header{position:absolute;top:17%;left:20px;right:20px;padding:0;text-align:center}body[data-presentation="compact"] h1{font-size:clamp(20px,6vw,29px);margin:0}body[data-presentation="compact"] header p,body[data-presentation="compact"] small,body[data-presentation="compact"] main{display:none}body[data-presentation="compact"] img{position:absolute;top:35%;left:15%;width:70%;max-height:50%;object-fit:cover;border-radius:8px}output{display:block;color:#777;font-size:12px;padding:12px 0}</style></head><body>
+<header><small>Example Museum</small><h1>A Quiet Collection</h1><p>Three objects and the details that make them extraordinary.</p></header>
+<img src="/demo-assets/sheet-museum/collection.png" alt="Invented terracotta vase, bronze mirror and cobalt bottle on ivory plinths.">
+<main><article id="vase" tabindex="-1"><h2>The terracotta vase</h2><p>Clay becomes a vessel through pressure, water and heat. Follow the carved leaves around its warm surface. This object is an invented illustration for our local demo.</p></article><article id="mirror" tabindex="-1"><h2>The bronze mirror</h2><p>A circular face catches the light. The green patina gives this imagined bronze piece its quiet depth; turn your attention to the birds and branches.</p></article><article id="bottle" tabindex="-1"><h2>The cobalt bottle</h2><p>Deep blue glass becomes almost black in shadow and electric at the rim. Notice how the rounded body gathers and bends the gallery light.</p></article>
+</main>
+<script src="/demo-apps/sheet-host.js"></script>
+<script type="application/json" id="sheet-app-manifest">{"actions":[],"protocol":1}</script>
+<script>
+const destinations={};
+const articles=[...document.querySelectorAll('article')];
+const notify=type=>parent.postMessage({type,version:1},'*');
+for(const button of document.querySelectorAll('[data-sheet-action]')) button.addEventListener('click',()=>{
+ const target=document.getElementById(destinations[button.dataset.handler]);
+ if(!target)return; for(const article of articles)article.hidden=article!==target;
+ document.querySelector('output').textContent='Viewing '+target.querySelector('h2').textContent;
+ target.focus(); target.scrollIntoView({block:'nearest'});
+});
+// sheet-app:presentation and pointer handoff are owned by the shared sheet-host bridge.
+window.addEventListener('keydown',event=>{if(event.key==='Escape')notify('sheet-app:close');});
+Promise.all([...document.images].map(image=>image.decode())).then(()=>notify('sheet-app:ready'),()=>notify('sheet-app:error'));
+</script></body></html>

@@ -262,6 +262,7 @@ export const IosFrame = forwardRef<RendererHandle, IosFrameProps>(function IosFr
             {baseOverlay}
             {hostsAppCards ? <AppCardLayer messages={visual.messages} frameRef={frameRef}
               playing={demoIsPlaying()} finished={visual.timeMs >= compiled.durationMs} timeMs={visual.timeMs}
+              sheetEvents={compiled.events.filter(event => event.type === "sheet-app")}
               finalMessageId={compiled.events.filter(event => event.type === "message").sort((a, b) => a.atMs - b.atMs).at(-1)?.message.id} /> : null}
             {hostsPolls ? (
               <PollLayer compiled={compiled} frame={visual} frameRef={frameRef} onVote={castPollVote} />

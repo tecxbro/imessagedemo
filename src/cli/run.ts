@@ -1,3 +1,4 @@
+import { generateCommand, planSheetCommand } from "@/cli/commands/generate";
 import { parseArgs } from "@/cli/args";
 import { captureCommand } from "@/cli/commands/capture";
 import { capabilitiesCommand, compileCommand, validateCommand } from "@/cli/commands/core";
@@ -17,6 +18,8 @@ export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
       return EXIT_OK;
     }
     switch (args.command) {
+      case "generate": return await generateCommand(args, deps);
+      case "plan-sheet": return await planSheetCommand(args, deps);
       case "capabilities":
         return await capabilitiesCommand(args, deps);
       case "validate":

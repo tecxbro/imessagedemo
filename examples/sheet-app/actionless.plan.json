@@ -1,0 +1,36 @@
+{
+  "app": {
+    "id": "museum-actionless",
+    "companyName": "Example Museum",
+    "title": "A Quiet Collection",
+    "description": "Three objects and the details that make them extraordinary.",
+    "experienceSummary": "showing three invented objects with short labels and no action buttons.",
+    "hero": {
+      "src": "/demo-assets/sheet-museum/collection.png",
+      "alt": "Invented terracotta vase, bronze mirror and cobalt bottle on ivory plinths.",
+      "width": 1727,
+      "height": 911
+    },
+    "content": {
+      "entry": "/demo-apps/sheet-museum-actionless.html"
+    },
+    "actions": []
+  },
+  "pages": [
+    {
+      "id": "vase",
+      "title": "The terracotta vase",
+      "body": "Clay becomes a vessel through pressure, water and heat. Follow the carved leaves around its warm surface. This object is an invented illustration for our local demo."
+    },
+    {
+      "id": "mirror",
+      "title": "The bronze mirror",
+      "body": "A circular face catches the light. The green patina gives this imagined bronze piece its quiet depth; turn your attention to the birds and branches."
+    },
+    {
+      "id": "bottle",
+      "title": "The cobalt bottle",
+      "body": "Deep blue glass becomes almost black in shadow and electric at the rim. Notice how the rounded body gathers and bends the gallery light."
+    }
+  ]
+}

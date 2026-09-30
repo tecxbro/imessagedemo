@@ -1,3 +1,5 @@
+import { sheetContext } from "@/cli/sheet-context";
+import type { SheetValidationContext } from "@/generator/sheet-request";
 import { mkdirSync, writeFileSync, renameSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { authoringDocumentSchema, declaredTargets, toDemoFlow, type AuthoringDocument } from "@/cli/authoring";
@@ -12,6 +14,7 @@ import type { CompiledDemo, DemoPlatform, ValidationIssue } from "@/contracts";
 
 export type LoadedDocument = {
   file: string;
+  context?: SheetValidationContext;
   raw: unknown;
   document: AuthoringDocument;
   targets: DemoPlatform[];
@@ -52,6 +55,7 @@ export function loadAuthoring(args: ParsedArgs, deps: CliDeps): LoadedDocument {
   return {
     file,
     raw,
+    context: sheetContext(args, deps.repoRoot),
     document: parsed.data,
     targets,
   };
@@ -63,7 +67,7 @@ export function validateDocument(
 ): { ok: true; document: AuthoringDocument; targets: DemoPlatform[] } {
   const issues: ValidationIssue[] = [];
   for (const target of loaded.targets) {
-    const result = deps.validateDemo(toDemoFlow(loaded.document, target));
+    const result = deps.validateDemo(toDemoFlow(loaded.document, target), loaded.context);
     if (!result.ok) issues.push(...result.issues.map((issue) => ({ ...issue, path: `${target}.${issue.path}` })));
   }
   if (issues.length > 0) {
@@ -82,7 +86,7 @@ export function compileDocument(loaded: LoadedDocument, deps: CliDeps, outDir: s
   validateDocument(loaded, deps);
   const planned = loaded.targets.map((target) => ({
     platform: target,
-    compiled: deps.compileDemo(toDemoFlow(loaded.document, target)),
+    compiled: deps.compileDemo(toDemoFlow(loaded.document, target), loaded.context),
   }));
   mkdirSync(outDir, { recursive: true });
   const artifacts: CompiledArtifact[] = [];

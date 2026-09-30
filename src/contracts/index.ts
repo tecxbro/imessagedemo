@@ -1,5 +1,7 @@
 import type { ReactNode, Ref } from "react";
 import { z } from "zod";
+import { sheetAppSchema, type SheetAppSpec } from "./sheet-app";
+export { sheetAppSchema, type SheetAppSpec } from "./sheet-app";
 
 /**
  * Canonical authoring and timeline contract.
@@ -65,7 +67,8 @@ export const attachmentPayloadSchema = z.object({
 /**
  * A live Photon checkout card, named after Photon's `appCard(url, { live: true })`. iOS only. The
  * renderer embeds `url` in the thread when its origin is in the renderer's configured checkout origins
- * and presents the recreated Apple Pay sheet when the checkout asks. Other mini apps stay unsupported.
+ * and presents the recreated Apple Pay sheet when the checkout asks. app "miniapp" instead shows a
+ * tappable metadata card and an isolated web sheet; it never uses the checkout bridge.
  */
 export const APP_CARD_MIN_HEIGHT = 120;
 export const APP_CARD_MAX_HEIGHT = 480;
@@ -147,11 +150,24 @@ export const libraryPhotoSchema = z.object({
   alt: z.string().min(1),
 });
 
+export const miniAppLayoutSchema = z.object({
+  caption: z.string().trim().min(1).max(80),
+  subcaption: z.string().trim().min(1).max(240).optional(),
+  summary: z.string().trim().min(1).max(280),
+  image: z.string().regex(/^\/demo-assets\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:png|jpe?g|webp|gif)$/).optional(),
+  imageTitle: z.string().trim().min(1).max(160).optional(),
+}).strict().refine(value => Boolean(value.image) === Boolean(value.imageTitle), { message: "image and imageTitle must be supplied together" });
+
 export const appCardPayloadSchema = z.object({
   url: z.string().min(1),
   live: z.literal(true),
-  app: z.literal("checkout"),
+  app: z.enum(["checkout", "miniapp", "sheet"]),
+  sheet: sheetAppSchema.optional(),
+  layout: miniAppLayoutSchema.optional(),
   height: z.number().int().min(APP_CARD_MIN_HEIGHT).max(APP_CARD_MAX_HEIGHT).optional(),
+}).strict().superRefine((value, ctx) => {
+  if (value.app === 'miniapp' ? !value.layout : value.layout !== undefined) ctx.addIssue({ code: 'custom', path: ['layout'], message: 'layout is required for miniapp only' });
+  if (value.app === 'sheet' ? !value.sheet || value.url !== value.sheet.content.entry : value.sheet !== undefined) ctx.addIssue({ code: 'custom', path: ['sheet'], message: 'sheet spec is required only for sheet; url must equal content.entry' });
 });
 
 export const videoPayloadSchema = z.object({
@@ -261,6 +277,7 @@ export const systemNoticeSchema = z.discriminatedUnion("kind", [
 ]);
 
 export const compiledEventSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("sheet-app"), atMs: z.number().int(), sourceIndex: z.number().int().optional(), messageId: z.string().min(1), action: z.enum(["open", "compact", "expand", "close"]) }).strict(),
   z.object({
     type: z.literal("message"),
     atMs: z.number().int(),
@@ -452,7 +469,7 @@ export type Reaction = {
   emoji?: string;
 };
 
-export type AppCardPayload = { url: string; live: true; app: "checkout"; height?: number };
+export type AppCardPayload = { url: string; live: true; app: "checkout" | "miniapp" | "sheet"; sheet?: SheetAppSpec; height?: number; layout?: z.infer<typeof miniAppLayoutSchema> };
 
 export type ReplySnapshot = {
   id: string;
@@ -538,6 +555,7 @@ export type AudioControlState = {
 };
 
 export type CompiledEvent =
+  | { type: "sheet-app"; atMs: number; sourceIndex?: number; messageId: string; action: "open" | "compact" | "expand" | "close" }
   | { type: "message"; atMs: number; sourceIndex?: number; conversationId?: string; message: DemoMessage }
   | { type: "typing"; atMs: number; sourceIndex?: number; conversationId?: string; typing: boolean }
   | { type: "draft"; atMs: number; sourceIndex?: number; conversationId?: string; value: string }

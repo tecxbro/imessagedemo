@@ -186,6 +186,13 @@ export async function settleIosScene(options: {
       await nextFrame();
       continue;
     }
+    const sheet = shell.querySelector<HTMLElement>('[data-slot="sheet-app-shell"]:not([hidden])');
+    if (sheet?.dataset.content === 'error') throw new Error('missing asset: sheet app content');
+    if (sheet?.dataset.content === 'loading') {
+      problem = 'readiness timeout: sheet app content';
+      await nextFrame();
+      continue;
+    }
     await assertImages(shell);
     applyCheckpointScroll(shell);
     shell.querySelector('[data-slot="message-list"]')?.dispatchEvent(new Event("scroll"));

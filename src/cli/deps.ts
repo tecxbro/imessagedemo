@@ -1,3 +1,4 @@
+import type { SheetValidationContext } from "@/generator/sheet-request";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,8 +10,8 @@ export type Io = {
 };
 
 export type CliDeps = {
-  validateDemo: (input: unknown) => ValidationResult;
-  compileDemo: (demo: DemoFlow) => CompiledDemo;
+  validateDemo: (input: unknown, context?: SheetValidationContext) => ValidationResult;
+  compileDemo: (demo: DemoFlow, context?: SheetValidationContext) => CompiledDemo;
   repoRoot: string;
   io: Io;
   startPreviewServer?: typeof import("@/cli/preview-server").startPreviewServer;

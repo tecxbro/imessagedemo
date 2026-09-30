@@ -1,0 +1,21 @@
+{
+  "id": "sheet-museum-base",
+  "title": "Example Museum collection",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Example Museum"
+  },
+  "nowMs": 1790008860000,
+  "draft": "My unfinished note",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "museum-intro",
+      "text": "Three objects, three ways of seeing.",
+      "direction": "incoming",
+      "atMs": 0
+    }
+  ]
+}

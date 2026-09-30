@@ -1,0 +1,69 @@
+{
+  "id": "museum-actionful",
+  "title": "Example Museum collection",
+  "platform": "ios",
+  "theme": "dark",
+  "contact": {
+    "name": "Example Museum"
+  },
+  "nowMs": 1790008860000,
+  "draft": "My unfinished note",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "museum-intro",
+      "text": "Three objects, three ways of seeing.",
+      "direction": "incoming",
+      "atMs": 0
+    },
+    {
+      "id": "museum-actionful",
+      "text": "Choose an Object",
+      "direction": "incoming",
+      "atMs": 1000,
+      "kind": "app-card",
+      "appCard": {
+        "app": "sheet",
+        "live": true,
+        "url": "/demo-apps/sheet-museum-actionful.html",
+        "sheet": {
+          "id": "museum-actionful",
+          "companyName": "Example Museum",
+          "title": "Choose an Object",
+          "description": "Three objects and the details that make them extraordinary.",
+          "experienceSummary": "where selecting one of three invented objects opens its details inside the app.",
+          "hero": {
+            "src": "/demo-assets/sheet-museum/collection.png",
+            "alt": "Invented terracotta vase, bronze mirror and cobalt bottle on ivory plinths.",
+            "width": 1727,
+            "height": 911
+          },
+          "content": {
+            "entry": "/demo-apps/sheet-museum-actionful.html"
+          },
+          "actions": [
+            {
+              "id": "select-vase",
+              "label": "View vase",
+              "kind": "local",
+              "handler": "selectVase"
+            },
+            {
+              "id": "select-mirror",
+              "label": "View mirror",
+              "kind": "local",
+              "handler": "selectMirror"
+            },
+            {
+              "id": "select-bottle",
+              "label": "View bottle",
+              "kind": "local",
+              "handler": "selectBottle"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

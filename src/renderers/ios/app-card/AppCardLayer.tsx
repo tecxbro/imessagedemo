@@ -1,3 +1,4 @@
+import { sheetAt, type SheetEvent } from "@/runtime/sheet";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { APP_CARD_DEFAULT_HEIGHT, type DemoMessage } from "@/contracts";
@@ -5,10 +6,12 @@ import { bubbleMetrics } from "@/components/imessage/tokens";
 import { ApplePayOverlay, type ApplePayOverlayHandle } from "@/renderers/ios/apple-pay/ApplePayOverlay";
 import { createCheckoutBridge, type BridgeDecision, type CheckoutBridge } from "@/renderers/ios/apple-pay/bridge";
 import { CHECKOUT_ORIGINS_ENV, configuredCheckoutOrigins, resolveCheckoutEmbed, type CheckoutEmbed } from "./config";
+import { SheetAppHost } from "../mini-app/sheet/SheetAppHost";
+import { MiniAppDock } from "../mini-app/MiniAppDock";
 
 /**
- * Live checkout app cards (`kind: "app-card"`) in the iOS thread, and the one Apple Pay presentation
- * they share.
+ * Live checkout and mini app cards (`kind: "app-card"`) in the iOS thread, plus the Apple Pay
+ * presentation shared by checkout cards.
  *
  * The pinned message list has no slot for foreign content, so an app card is given to it as an
  * ordinary row (its clustering and gaps are the list's own) and this layer hides that row's
@@ -44,13 +47,16 @@ function rowSelector(id: string): string {
   return `[data-slot="message-row"][data-message-id="${CSS.escape(id)}"]`;
 }
 
-export function AppCardLayer({ messages, frameRef, playing = false, finished = false, timeMs = 0, finalMessageId }: {
+export function AppCardLayer({ messages, frameRef, playing = false, finished = false, timeMs = 0, finalMessageId, sheetEvents = [] }: {
   messages: readonly DemoMessage[]; frameRef: RefObject<HTMLElement | null>;
-  playing?: boolean; finished?: boolean; timeMs?: number; finalMessageId?: string;
+  playing?: boolean; finished?: boolean; timeMs?: number; finalMessageId?: string; sheetEvents?: readonly SheetEvent[];
 }) {
+  const [activeSheet, setActiveSheet] = useState<{ id: string; revision: number } | null>(null);
   const previousTime = useRef(timeMs);
   const replayGeneration = useRef(0);
+  const sheetGeneration = useRef(0);
   if (timeMs === 0 && previousTime.current > 0) replayGeneration.current += 1;
+  if (timeMs < previousTime.current) { sheetGeneration.current += 1; if (activeSheet) setActiveSheet(null); }
   previousTime.current = timeMs;
   const overlayRef = useRef<ApplePayOverlayHandle>(null);
   const decisions = useRef<BridgeDecision[]>([]);
@@ -97,16 +103,25 @@ export function AppCardLayer({ messages, frameRef, playing = false, finished = f
   }, [bridge]);
 
   const cards = messages.filter(isAppCardMessage);
+  const timeline = sheetAt(sheetEvents, timeMs);
+  const sheetId = activeSheet?.id ?? timeline.messageId;
+  const sheetMessage = cards.find(card => card.id === sheetId && card.appCard.app === 'sheet');
+  useEffect(() => { if (activeSheet && !sheetMessage) setActiveSheet(null); }, [activeSheet, sheetMessage]);
   const allowed = configuredCheckoutOrigins();
   const hideRule = cards.map((card) => `${rowSelector(card.id)} > :not([data-slot="app-card"])`).join(",");
 
   return (
     <>
       {hideRule ? <style data-slot="app-card-style">{`${hideRule}{display:none !important}`}</style> : null}
-      {cards.map((card) => (
+      {cards.map((card) => card.appCard.app === "miniapp" || card.appCard.app === "sheet" ? (
+        <MiniAppDock key={`${card.id}:${replayGeneration.current}`} message={card} frameRef={frameRef}
+          onOpenSheet={card.appCard.app === 'sheet' ? () => setActiveSheet(previous => ({ id: card.id, revision: (previous?.revision ?? 0) + 1 })) : undefined} />
+      ) : (
         <AppCardDock key={`${card.id}:${replayGeneration.current}`} message={card} frameRef={frameRef} bridge={bridge} allowed={allowed}
           playing={playing} finished={finished} automatic={card.id === finalMessageId} />
       ))}
+      {sheetMessage && <SheetAppHost key={`${sheetMessage.id}:${sheetGeneration.current}`} message={sheetMessage}
+        frameRef={frameRef} openRevision={activeSheet?.revision ?? 0} scripted={activeSheet ? undefined : timeline.snapshot} scriptedTimeMs={timeMs} onClosed={() => {}} />}
       <ApplePayOverlay ref={overlayRef} onClosed={() => bridge.closed()} />
     </>
   );

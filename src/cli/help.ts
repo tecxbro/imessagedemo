@@ -1,6 +1,8 @@
 export const HELP = `Usage: npm run demo -- <command> [file] [options]
 
 Commands:
+  plan-sheet     Gate the separate human request before sheet generation
+  generate       Assemble an ordinary flow and an authorized optional sheet plan
   capabilities   Print the frozen capability manifest
   validate       Validate a demo JSON file and preflight local assets
   compile        Validate, then write deterministic compiled artifacts
@@ -8,6 +10,9 @@ Commands:
   capture        Capture PNG frames through the IMESSAGE_DEMO ready API
 
 Options:
+  --human-request <file>    Actual human input, separate from generated app data
+  --sheet-experience <quote> Verbatim intended experience from that human input
+  --sheet-plan <file>       Company-specific app/pages/optional local actions
   --json              Write one JSON object to stdout
   --platform <name>   Constrain validation/compile to ios or macos
   --port <n>          Bind exactly this port; fail if it is occupied

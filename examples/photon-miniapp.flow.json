@@ -1,0 +1,41 @@
+{
+  "id": "photon-miniapp",
+  "title": "Photon mini apps",
+  "platform": "ios",
+  "theme": "light",
+  "contact": {
+    "name": "Photon",
+    "initials": "P"
+  },
+  "nowMs": 1790008860000,
+  "draft": "",
+  "typing": false,
+  "screen": "conversation",
+  "messages": [
+    {
+      "id": "intro",
+      "text": "Here is a quick example. Tap the card to play.",
+      "direction": "incoming",
+      "atMs": 1790008740000
+    },
+    {
+      "id": "jump",
+      "text": "Play Jump Jump",
+      "direction": "incoming",
+      "atMs": 1790008742000,
+      "kind": "app-card",
+      "appCard": {
+        "app": "miniapp",
+        "live": true,
+        "url": "https://jump-jump-production.up.railway.app/",
+        "layout": {
+          "caption": "Jump Jump",
+          "subcaption": "A mobile web rendition of the classic Jump Jump game",
+          "summary": "Play Jump Jump",
+          "image": "/demo-assets/photon-miniapp/jump.jpeg",
+          "imageTitle": "Jump Jump"
+        }
+      }
+    }
+  ]
+}

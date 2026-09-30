@@ -19,7 +19,7 @@ function filesUnder(dir) {
   });
 }
 
-const skills = ["photon-demo-creator", "make-imessage-demo"];
+const skills = ["photon-demo-creator", "make-imessage-demo", "create-imessage-sheet-app", "recreate-imessage-sheet-motion"];
 const docs = ["AGENTS.md", "README.md", "docs/agent-workflow.md", ...skills.flatMap((skill) =>
   filesUnder(`.agents/skills/${skill}`).filter((name) => name.endsWith(".md")))];
 

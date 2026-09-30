@@ -69,9 +69,9 @@ describe("app-card flows", () => {
 
   it("keeps macOS, other mini apps, and non-live cards out", () => {
     expect(issuesOf(flow({}, { platform: "macos" }))).toContain(
-      "/messages/1/kind PLATFORM_MISMATCH: app-card is an iOS surface; the macOS renderer does not host live checkout cards",
+      "/messages/1/kind PLATFORM_MISMATCH: app-card is an iOS surface; the macOS renderer does not host live app cards",
     );
-    expect(issuesOf(flow({ appCard: { ...card, app: "poll" } })).join("\n")).toMatch(/\/messages\/1\/appCard\/app UNSUPPORTED_COMPONENT: only the Photon checkout app card/);
+    expect(issuesOf(flow({ appCard: { ...card, app: "poll" } })).join("\n")).toMatch(/\/messages\/1\/appCard\/app UNSUPPORTED_COMPONENT: supported app cards are Photon checkout/);
     expect(issuesOf(flow({ appCard: { ...card, live: false } }))).toContain(
       "/messages/1/appCard/live INVALID_VALUE: only live app cards are supported: set appCard.live to true",
     );
