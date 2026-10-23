@@ -45,6 +45,20 @@ Use one recognizable company/contact name in the header; do not combine company 
 
 Contact supports `name`, optional `initials`, and optional `photo` for a local PNG/JPEG/GIF/WebP under `/demo-assets/`. Use a padded, square logo asset for profile pictures; the iOS conversation header uses the existing native photo support. Preflight verifies the asset exists. The current flow has no conversation-wallpaper or outer-presentation-background field. Keep prepared branding assets separate from claims that they were applied. Do not inject CSS/DOM overrides or new schema keys.
 
+### Required company authoring preflight
+
+For newly authored company demos, including a company plus a supplied storyline, pass `--company-review <file>` to every validate, compile, preview, and capture command after flow assembly. Prepare the separate [company review file](../../../docs/company-demo-review.md) with the official logo source and only evidenced exceptions. The preflight checks the main contact's square local avatar and visible outgoing iMessage text transitions from Delivered to Read. It does not require polls/images, rewrite a transcript, or verify a logo's provenance visually. Generic examples, existing flows, and exact transcripts retain their existing validation path; use documented exceptions when an exact transcript is part of a newly authored company demo. Do not invent flow fields or exceptions. Verify the rendered avatar and receipt states before completion, as required by the HTML review.
+
+```sh
+npm run demo -- validate scenarios/company-use-case.json --company-review artifacts/company/company-review.json --json
+npm run demo -- compile scenarios/company-use-case.json --company-review artifacts/company/company-review.json --out artifacts/company/compiled --json
+npm run demo -- preview scenarios/company-use-case.json --company-review artifacts/company/company-review.json --platform ios --port 5173 --json
+npm run demo -- capture scenarios/company-use-case.json --company-review artifacts/company/company-review.json --platform ios --checkpoint delivered --out artifacts/company/delivered --json
+npm run demo -- capture scenarios/company-use-case.json --company-review artifacts/company/company-review.json --platform ios --checkpoint read --out artifacts/company/read --json
+```
+
+Use the actual flow's declared checkpoint IDs, local paths, and existing sheet request arguments when applicable. The `delivered` and `read` names above are illustrative, not built-in checkpoints. A failed check blocks rendering through these commands; it does not authorize changing an exact transcript or replacing a logo.
+
 ### Video (iOS)
 
 Use the repository-owned `video` kind with a local MP4/WebM `video.src`, optional raster `video.poster`, and actual `video.width`/`height`; see [the video contract](../../../docs/ios-video.md). Videos automatically play muted inline as their message arrives during conversation playback. Pause holds them with the timeline; seek and Replay restore the corresponding media time. Do not add a visible “Play video” footer, elapsed-time label, scrubber, mute button, or other browser media controls or require a second click. Use real supplied/official clips, preserve aspect ratio, and record any excerpt/transcode with provenance. An attachment, poster, or animated image is not a substitute for playable video. Verify decoded motion in the browser; an inspected poster alone is insufficient.
@@ -99,6 +113,14 @@ Local images belong in `public/demo-assets/<company>/` and use `/demo-assets/<co
 
 Playback time is `message.atMs - (flow.startAtMs ?? firstMessage.atMs)`. Optional `startAtMs` is an absolute message-clock timestamp no later than the first message; omitting it preserves the existing first-message baseline. Set it earlier when an opening outgoing message needs time to type before sending. Authored messages and timeline events, including `draft`, use the same absolute message clock. Only compiled event offsets and checkpoints use relative playback milliseconds. Adding an opening lead-in leaves authored message/event timestamps unchanged; compilation increases their playback offsets. Increase later checkpoints by the lead-in offset, keeping an opening checkpoint at zero. Do not retime an exact supplied transcript without authorization. Do not confuse display timestamps with playback delays. The example reply begins at 1000 ms; 1690 ms is after its 690 ms outgoing arrival. A checkpoint at message arrival is not proof of settled motion. Use reading-length pauses, inspect transitions, and place proof checkpoints after the intended content settles and within compiled duration. Viewers start that timeline with one Play click. Author the pauses, typing, and reactions so the conversation is readable without scrubbing. Named checkpoints stay available for capture and tests.
 
+### Smooth outgoing typing
+
+For newly authored text, add **one grapheme cluster per draft event**, rather than words or multi-character chunks. The runtime displays each draft value verbatim; it does not interpolate missing characters. Large jumps also make the composer's immediate line wrapping and height changes more noticeable.
+
+Split the outgoing message with `Intl.Segmenter` using `granularity: "grapheme"`, then emit every growing prefix. Distribute timestamps evenly across the chosen typing window; roughly 20–80 ms per character is a useful starting cadence. Choose the window for the message length instead of forcing every message into a fixed number of steps. Hold the complete text for roughly 500–600 ms, then emit `value: ""` exactly at send. Keep existing message/send times and explicitly supplied draft timing when editing; use the available window or report a timing conflict instead of silently retiming the transcript.
+
+Review normal Play through a line wrap and the send, plus Pause/Resume and Replay. Check that letters accumulate continuously, the complete text is visible before send, and the composer clears with the outgoing bubble. Implement this in flow events, without per-company CSS or composer changes.
+
 ## 3. Validate and compile
 
 These runnable commands use the checked-in example. Replace `FLOW`, `OUT`, and checkpoint IDs for a real company flow. Choose a fresh output directory for each run so stale manifests/captures cannot be mistaken for success.
@@ -152,6 +174,8 @@ Inspect opening, proof/final, and changed-transition images for direction, compa
 On failure, inspect the error/`failure.json` and use a fresh output directory when retrying. Never report a pre-existing success manifest as this run's output. Do not turn an unavailable browser into a successful capture claim.
 
 ## 6. Handoff and optional publishing
+
+For requested screen recordings or MP4 deliverables, use [Record iMessage Demo](../record-imessage-demo/SKILL.md) on the validated running preview. It records real-time browser playback and exports one complete video per conversation, including any existing checkout ending. Its bundled helper is separate from the CLI's PNG capture commands.
 
 Return the exact flow paths, produced PNG/manifest paths, and actual running preview URLs. Identify each use case and state what was visually/playback checked. Report prepared versus applied branding and any unsupported required feature. A preview is not a phone number, a PNG sequence is not a video, and local output is not publication.
 

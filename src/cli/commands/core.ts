@@ -9,12 +9,14 @@ import { writeJson, writeLine } from "@/cli/deps";
 import { CliError, EXIT_ENVIRONMENT, EXIT_OK, EXIT_USAGE, EXIT_VALIDATION } from "@/cli/errors";
 import { preflightAssets } from "@/cli/preflight";
 import { findUnsupported } from "@/cli/unsupported";
+import { checkCompanyAuthoring, loadCompanyReview, type CompanyReview } from "@/cli/company-review";
 import { sortValue } from "@/player/receipt";
 import type { CompiledDemo, DemoPlatform, ValidationIssue } from "@/contracts";
 
 export type LoadedDocument = {
   file: string;
   context?: SheetValidationContext;
+  companyReview?: CompanyReview;
   raw: unknown;
   document: AuthoringDocument;
   targets: DemoPlatform[];
@@ -56,6 +58,7 @@ export function loadAuthoring(args: ParsedArgs, deps: CliDeps): LoadedDocument {
     file,
     raw,
     context: sheetContext(args, deps.repoRoot),
+    companyReview: args.companyReview ? loadCompanyReview(path.resolve(args.companyReview)) : undefined,
     document: parsed.data,
     targets,
   };
@@ -70,6 +73,7 @@ export function validateDocument(
     const result = deps.validateDemo(toDemoFlow(loaded.document, target), loaded.context);
     if (!result.ok) issues.push(...result.issues.map((issue) => ({ ...issue, path: `${target}.${issue.path}` })));
   }
+  if (loaded.companyReview) issues.push(...checkCompanyAuthoring(loaded.document, loaded.companyReview, deps.repoRoot));
   if (issues.length > 0) {
     throw new CliError("Demo validation failed", EXIT_VALIDATION, { issues });
   }

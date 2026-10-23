@@ -37,6 +37,21 @@ for(const button of document.querySelectorAll('[data-sheet-action]')) button.add
 });
 // sheet-app:presentation and pointer handoff are owned by the shared sheet-host bridge.
 window.addEventListener('keydown',event=>{if(event.key==='Escape')notify('sheet-app:close');});
-Promise.all([...document.images].map(image=>image.decode())).then(()=>notify('sheet-app:ready'),()=>notify('sheet-app:error'));
+// Retain the result so the host can recover a readiness notification missed during mounting.
+let contentStatus;
+const reportStatus=()=>{if(contentStatus)notify(contentStatus);};
+window.addEventListener('message',event=>{
+ if(event.source===parent && event.data?.version===1 && event.data.type==='sheet-app:request-status')reportStatus();
+});
+const imageLoaded=image=>new Promise((resolve,reject)=>{
+ const check=()=>image.naturalWidth>0 ? resolve() : reject(new Error('Sheet image failed to load'));
+ if(image.complete){check();return;}
+ image.addEventListener('load',check,{once:true});
+ image.addEventListener('error',reject,{once:true});
+});
+Promise.all([...document.images].map(imageLoaded)).then(
+ ()=>{contentStatus='sheet-app:ready';reportStatus();},
+ ()=>{contentStatus='sheet-app:error';reportStatus();}
+);
 </script></body></html>`;
 }

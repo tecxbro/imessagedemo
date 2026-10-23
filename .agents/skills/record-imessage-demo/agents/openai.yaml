@@ -1,0 +1,4 @@
+interface:
+  display_name: "Record iMessage Demo"
+  short_description: "Record complete demos as a single MP4"
+  default_prompt: "Use $record-imessage-demo to record each requested demo from start to finish and deliver one complete MP4 per conversation."

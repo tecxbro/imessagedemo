@@ -13,3 +13,14 @@ body,
 body {
   background: #d8d8dc;
 }
+
+[data-demo-frame] [data-slot="message-list"][data-platform="ios"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-demo-frame] [data-slot="message-list"][data-platform="ios"]::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

@@ -8,6 +8,7 @@ export type ParsedArgs = {
   json: boolean;
   help: boolean;
   file?: string;
+  companyReview?: string;
   humanRequest?: string;
   sheetExperience?: string;
   sheetPlan?: string;
@@ -66,11 +67,17 @@ export function parseArgs(argv: string[]): ParsedArgs {
     throw new CliError(`Unknown command: ${commandToken}`, EXIT_USAGE);
   }
 
+  if (flags["company-review"] !== undefined &&
+      (!["validate", "compile", "preview", "capture"].includes(commandToken) || flags.catalogue)) {
+    throw new CliError("--company-review applies to validate, compile, preview, and capture of a flow", EXIT_USAGE);
+  }
+
   return {
     command: commandToken as CliCommand,
     json: Boolean(flags.json),
     help: Boolean(flags.help) || commandToken === "help",
     file: positionals[1],
+    companyReview: optionalString(flags["company-review"]),
     humanRequest: optionalString(flags["human-request"]),
     sheetExperience: optionalString(flags["sheet-experience"]),
     sheetPlan: optionalString(flags["sheet-plan"]),

@@ -36,9 +36,13 @@ The playback clock is `message.atMs - (flow.startAtMs ?? firstMessage.atMs)`. Op
 
 Preview includes controls; captures crop to the Messages frame. PNG samples are not MP4 output. Publishing with Sites or another tool requires an explicit request plus a supported, verified export artifact and authorized target. A local development URL is not a hosted demo.
 
+## Record existing demos
+
+For screen recordings or recorded versions of existing demos, use [Record iMessage Demo](../.agents/skills/record-imessage-demo/SKILL.md). Its browser helper crops to the native Messages frame, hides recording controls and scrollbars, and encodes a complete MP4. Deliver one full video per requested conversation; raw takes and optional excerpts remain internal unless requested. Continuous capture is the default. Adjacent takes are a recovery option for seek-restorable timelines and require inspecting every join. PNG frame sampling remains a separate CLI feature.
+
 ## Keep local and repository copies aligned
 
-The renderer and creator folders, plus the scoped `recreate-apple-pay` skill, under `.agents/skills/` are canonical for this checkout. After pulling `main`, use these repository files directly. When an agent has loaded an older global `$photon-demo-creator`, point it explicitly at `.agents/skills/photon-demo-creator/SKILL.md` before starting.
+The renderer and creator folders, plus the scoped `recreate-apple-pay` and `record-imessage-demo` skills, under `.agents/skills/` are canonical for this checkout. After pulling `main`, use these repository files directly. When an agent has loaded an older global `$photon-demo-creator`, point it explicitly at `.agents/skills/photon-demo-creator/SKILL.md` before starting.
 
 To refresh a personal installation, first compare and back up that installation; then copy the complete repository skill folder, including `agents/` and `references/`. Keep these repository skill folders in the renderer checkout. Do not overwrite unrelated personal skills or assume a repository push changes files on the user's Mac. Do not maintain separately edited copies of the HTML command cookbook.
 

@@ -10,6 +10,7 @@ Commands:
   capture        Capture PNG frames through the IMESSAGE_DEMO ready API
 
 Options:
+  --company-review <file>   Company avatar/receipt preflight (validate/compile/preview/capture)
   --human-request <file>    Actual human input, separate from generated app data
   --sheet-experience <quote> Verbatim intended experience from that human input
   --sheet-plan <file>       Company-specific app/pages/optional local actions
@@ -45,21 +46,23 @@ export const COMMAND_HELP: Record<string, string> = {
 
 Print the same capability manifest the compiler uses (src/contracts/capabilities.json).
 `,
-  validate: `Usage: npm run demo -- validate <file> [--json] [--platform ios|macos]
+  validate: `Usage: npm run demo -- validate <file> [--json] [--platform ios|macos] [--company-review <file>]
 
 Load unknown JSON, reject malformed polls and unsupported features, preflight local assets
 under public/demo-assets, then validate every declared target.
+With --company-review, also require the company avatar and outgoing Delivered → Read
+transitions, except documented user/transcript exceptions. This is not visual approval.
 `,
-  compile: `Usage: npm run demo -- compile <file> [--json] [--out <dir>] [--platform ios|macos]
+  compile: `Usage: npm run demo -- compile <file> [--json] [--out <dir>] [--platform ios|macos] [--company-review <file>]
 
 Validate, then write deterministic compiled artifacts. Nothing is written on failure.
 `,
-  preview: `Usage: npm run demo -- preview <file> [--json] [--port <n>] [--catalogue]
+  preview: `Usage: npm run demo -- preview <file> [--json] [--port <n>] [--catalogue] [--company-review <file>]
 
 Prints the real local URL only after the server is bound and the run manifest is ready.
 Logs go to stderr. --json prints one ready object to stdout.
 `,
-  capture: `Usage: npm run demo -- capture <file> [--json] [--at-ms <n> | --checkpoint <id> | --frames] [--out <dir>] [--port <n>]
+  capture: `Usage: npm run demo -- capture <file> [--json] [--at-ms <n> | --checkpoint <id> | --frames] [--out <dir>] [--port <n>] [--company-review <file>]
 
 Waits on IMESSAGE_DEMO.seek/ready receipts. Screenshots [data-demo-frame] only.
 A capture failure writes failure.json and does not write a success manifest.

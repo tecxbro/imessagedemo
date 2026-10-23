@@ -19,7 +19,7 @@ function filesUnder(dir) {
   });
 }
 
-const skills = ["photon-demo-creator", "make-imessage-demo", "create-imessage-sheet-app", "recreate-imessage-sheet-motion"];
+const skills = ["photon-demo-creator", "make-imessage-demo", "create-imessage-sheet-app", "recreate-imessage-sheet-motion", "record-imessage-demo"];
 const docs = ["AGENTS.md", "README.md", "docs/agent-workflow.md", ...skills.flatMap((skill) =>
   filesUnder(`.agents/skills/${skill}`).filter((name) => name.endsWith(".md")))];
 
@@ -66,6 +66,10 @@ check(low.includes("../../../examples/agent-walkover.flow.json"), "executor must
 check(!/```json\s*\{/.test(low), "do not reintroduce a copied example with a drifting clock");
 check(!/## After assembly|Production entry points throw/.test(low + read("AGENTS.md")), "stale foundation instructions returned");
 check(/separate existing Spectrum checkout/.test(high), "Spectrum must stay outside the render-only repository");
+check(low.includes("--company-review <file>"), "executor lost the required company authoring preflight");
+check(html.includes("Delivered → Read") && html.includes("Incoming read status does not update an outgoing receipt"), "HTML workflow lost receipt semantics");
+check(html.includes("inspected captures of the header and both receipt states"), "company completion review lost rendered evidence");
+check(low.includes("does not require polls/images"), "company preflight must preserve purposeful media selection");
 
 // Compare documented commands/flags to the actual CLI parser, not a second fixed list.
 const args = read("src/cli/args.ts");

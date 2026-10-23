@@ -14,6 +14,7 @@ The canonical skills are versioned together in this repository:
 
 - [Photon Demo Creator](.agents/skills/photon-demo-creator/SKILL.md) owns company research, story selection, asset preparation, conversation defaults, and visual review.
 - [Make an iMessage demo](.agents/skills/make-imessage-demo/SKILL.md) owns schema/capabilities and the validate, compile, preview, and capture commands.
+- [Record iMessage Demo](.agents/skills/record-imessage-demo/SKILL.md) records existing previews and delivers one complete MP4 per requested conversation. Use it for screen-recording or recorded-video requests.
 
 Either tag is sufficient. Company-only requests enter research once, then render. Exact transcripts and existing flows go straight to rendering; do not loop between skills. Prefer repository copies over stale globally installed copies. [Agent workflow](docs/agent-workflow.md) explains usage and synchronization.
 

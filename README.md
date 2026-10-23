@@ -21,6 +21,8 @@ The agent does the setup; you do not have to install the skills individually, wr
 
 The included skills are `$make-imessage-demo` (rendering) and `$photon-demo-creator` (company research and conversation design). They are available from `.agents/skills/` in this checkout; personal/global skill folders are not overwritten. Agents without a skill picker can read the files directly.
 
+For recorded videos, use [Record iMessage Demo](.agents/skills/record-imessage-demo/SKILL.md): `Use $record-imessage-demo to record these demos and give me one complete MP4 per conversation.` It records existing previews with controls and scrollbars hidden, including their existing endings.
+
 After successful verification, the agent's handoff ends like this (real paths/URLs replace the placeholders):
 
 ```text

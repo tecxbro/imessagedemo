@@ -58,7 +58,7 @@ export function SheetAppHost({ message, frameRef, openRevision, onClosed, script
     media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, [machine]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const listener = (event: MessageEvent) => {
       // Local app frames have an opaque sandbox origin. Source identity is mandatory.
       if (event.source !== iframe.current?.contentWindow || event.data?.version !== 1) return;
@@ -93,7 +93,9 @@ export function SheetAppHost({ message, frameRef, openRevision, onClosed, script
   }, [machine, publish, close, run, takeControl, frameRef]);
   useEffect(() => {
     if (snapshot.content !== 'loading') return;
-    const timeout = setTimeout(() => { machine.fail(); publish(); }, 10000);
+    const timeout = setTimeout(() => {
+      if (machine.snapshot.content === 'loading') { machine.fail(); publish(); }
+    }, 10000);
     return () => clearTimeout(timeout);
   }, [snapshot.content, revision, machine, publish]);
   useEffect(() => {
@@ -110,6 +112,7 @@ export function SheetAppHost({ message, frameRef, openRevision, onClosed, script
     onCancel={() => command(() => machine.cancel(performance.now()))}>
     <iframe key={revision} ref={iframe} data-slot="sheet-app-frame" title={`${spec.title} app`} src={spec.content.entry}
       sandbox="allow-scripts" referrerPolicy="no-referrer" allow="camera 'none'; microphone 'none'; geolocation 'none'; payment 'none'"
+      onLoad={() => iframe.current?.contentWindow?.postMessage({ type: 'sheet-app:request-status', version: 1 }, '*')}
       onError={() => { machine.fail(); publish(); }} />
   </SheetSurface>;
 }
